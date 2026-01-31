@@ -1,23 +1,39 @@
+turborepo
+docker
+nginx.conf
+
 postgresql
 
 nestjs
-- PostGIS
+- typescript
 - websocket
 - prisma
-- websocket
-- typescript
+- PostGIS
+- Redis
+- zod-nestjs
 
 react
 - typescript
+- axios
 - websocket
 - tailwind
 - shadcn
 - TanStack Router
 - TanStack Table
 - TanStack React Query
+- date-fns
+- zod
+- zustand
+- Resend
+- React Email
 
 nextjs
 - typescript
+- axios
 - websocket
 - tailwind
 - shadcn
+- zod
+- date-fns
+- zustand
+- Nuqs
