@@ -1,0 +1,23 @@
+postgresql
+
+nestjs
+- PostGIS
+- websocket
+- prisma
+- websocket
+- typescript
+
+react
+- typescript
+- websocket
+- tailwind
+- shadcn
+- TanStack Router
+- TanStack Table
+- TanStack React Query
+
+nextjs
+- typescript
+- websocket
+- tailwind
+- shadcn

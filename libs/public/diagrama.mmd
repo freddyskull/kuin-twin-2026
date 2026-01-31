@@ -1,0 +1,112 @@
+---
+config:
+  theme: dark
+---
+erDiagram
+    direction TB
+    USERS ||--|| PROFILES : "tiene"
+    PROFILES ||--o{ PORTFOLIO_ITEMS : "muestra"
+    CATEGORIES ||--o{ CATEGORIES : "subcategoriza"
+    CATEGORIES ||--o{ SERVICES : "organiza"
+    SERVICE_UNITS ||--o{ SERVICES : "define cobro"
+    SERVICES ||--o{ SERVICE_METADATA : "especifica atributos"
+    USERS ||--o{ SERVICES : "publica"
+    USERS ||--o{ BOOKINGS : "contrata"
+    SERVICES ||--o{ BOOKINGS : "es contratado"
+    BOOKINGS ||--|| BOOKING_DETAILS : "desglosa"
+    BOOKINGS ||--|| PAYMENTS : "genera"
+    SERVICES ||--o{ SERVICE_SLOTS : "gestiona disponibilidad"
+    BOOKINGS ||--o{ SERVICE_SLOTS : "reserva tiempo"
+
+    USERS {
+        uuid id PK
+        string email
+        string role
+    }
+
+    PROFILES {
+        uuid id PK
+        uuid user_id FK
+        string display_name
+        string bio
+        string avatar_url
+        float latitude
+        float longitude
+        int service_radius_km
+        decimal rating_avg
+        jsonb business_hours
+        boolean is_verified
+    }
+
+    PORTFOLIO_ITEMS {
+        uuid id PK
+        uuid profile_id FK
+        string featured_image_url
+        string[] gallery_images
+        string description
+    }
+
+    SERVICES {
+        uuid id PK
+        uuid vendor_id FK
+        uuid category_id FK
+        uuid unit_id FK
+        string title
+        decimal base_price
+        jsonb dynamic_attributes
+    }
+
+    CATEGORIES {
+        uuid id PK
+        uuid parent_id FK
+        string name
+        string slug
+    }
+
+    SERVICE_METADATA {
+        uuid id PK
+        uuid service_id FK
+        string key
+        string value
+    }
+
+    SERVICE_UNITS {
+        uuid id PK
+        string name
+        string abbreviation
+    }
+
+    BOOKINGS {
+        uuid id PK
+        uuid customer_id FK
+        uuid service_id FK
+        string status
+        datetime scheduled_date
+    }
+
+    BOOKING_DETAILS {
+        uuid id PK
+        uuid booking_id FK
+        jsonb service_snapshot
+        decimal unit_price
+        int quantity
+        decimal grand_total
+    }
+
+    PAYMENTS {
+        uuid id PK
+        uuid booking_id FK
+        decimal amount
+        string processor_id
+        string status
+    }
+
+    SERVICE_SLOTS {
+        uuid id PK
+        uuid service_id FK
+        uuid booking_id FK
+        datetime start_time
+        datetime end_time
+        string status
+        boolean is_recurring
+    }
