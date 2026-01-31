@@ -56,11 +56,13 @@ model Profile {
 }
 
 model PortfolioItem {
-  id          String  @id @default(uuid())
-  profileId   String
-  profile     Profile @relation(fields: [profileId], references: [id])
-  imageUrl    String
-  description String?
+  id                String   @id @default(uuid())
+  profileId         String
+  profile           Profile  @relation(fields: [profileId], references: [id])
+  imageUrl          String
+  description       String?
+  imageGallery      String[] @default([])
+  dynamicAttributes Json?
 }
 
 // --- CATÁLOGO ---

@@ -81,7 +81,7 @@ export const UserScalarFieldEnumSchema = z.enum(['id','email','password','role',
 
 export const ProfileScalarFieldEnumSchema = z.enum(['id','userId','displayName','bio','avatarUrl','serviceRadiusKm','ratingAvg','reviewsCount','businessHours','isVerified']);
 
-export const PortfolioItemScalarFieldEnumSchema = z.enum(['id','profileId','imageUrl','description']);
+export const PortfolioItemScalarFieldEnumSchema = z.enum(['id','profileId','imageUrl','description','imageGallery','dynamicAttributes']);
 
 export const CategoryScalarFieldEnumSchema = z.enum(['id','name','slug','parentId']);
 
@@ -170,6 +170,8 @@ export const PortfolioItemSchema = z.object({
   profileId: z.string(),
   imageUrl: z.string(),
   description: z.string().nullable(),
+  imageGallery: z.string().array(),
+  dynamicAttributes: JsonValueSchema.nullable(),
 })
 
 export type PortfolioItem = z.infer<typeof PortfolioItemSchema>
@@ -384,6 +386,8 @@ export const PortfolioItemSelectSchema: z.ZodType<Prisma.PortfolioItemSelect> = 
   profileId: z.boolean().optional(),
   imageUrl: z.boolean().optional(),
   description: z.boolean().optional(),
+  imageGallery: z.boolean().optional(),
+  dynamicAttributes: z.boolean().optional(),
   profile: z.union([z.boolean(),z.lazy(() => ProfileArgsSchema)]).optional(),
 }).strict()
 
@@ -812,6 +816,8 @@ export const PortfolioItemWhereInputSchema: z.ZodType<Prisma.PortfolioItemWhereI
   profileId: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   imageUrl: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  imageGallery: z.lazy(() => StringNullableListFilterSchema).optional(),
+  dynamicAttributes: z.lazy(() => JsonNullableFilterSchema).optional(),
   profile: z.union([ z.lazy(() => ProfileScalarRelationFilterSchema), z.lazy(() => ProfileWhereInputSchema) ]).optional(),
 }).strict();
 
@@ -820,6 +826,8 @@ export const PortfolioItemOrderByWithRelationInputSchema: z.ZodType<Prisma.Portf
   profileId: z.lazy(() => SortOrderSchema).optional(),
   imageUrl: z.lazy(() => SortOrderSchema).optional(),
   description: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
+  imageGallery: z.lazy(() => SortOrderSchema).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
   profile: z.lazy(() => ProfileOrderByWithRelationInputSchema).optional(),
 }).strict();
 
@@ -834,6 +842,8 @@ export const PortfolioItemWhereUniqueInputSchema: z.ZodType<Prisma.PortfolioItem
   profileId: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   imageUrl: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  imageGallery: z.lazy(() => StringNullableListFilterSchema).optional(),
+  dynamicAttributes: z.lazy(() => JsonNullableFilterSchema).optional(),
   profile: z.union([ z.lazy(() => ProfileScalarRelationFilterSchema), z.lazy(() => ProfileWhereInputSchema) ]).optional(),
 }).strict());
 
@@ -842,6 +852,8 @@ export const PortfolioItemOrderByWithAggregationInputSchema: z.ZodType<Prisma.Po
   profileId: z.lazy(() => SortOrderSchema).optional(),
   imageUrl: z.lazy(() => SortOrderSchema).optional(),
   description: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
+  imageGallery: z.lazy(() => SortOrderSchema).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => PortfolioItemCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => PortfolioItemMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => PortfolioItemMinOrderByAggregateInputSchema).optional(),
@@ -855,6 +867,8 @@ export const PortfolioItemScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma
   profileId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema), z.string() ]).optional(),
   imageUrl: z.union([ z.lazy(() => StringWithAggregatesFilterSchema), z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string() ]).optional().nullable(),
+  imageGallery: z.lazy(() => StringNullableListFilterSchema).optional(),
+  dynamicAttributes: z.lazy(() => JsonNullableWithAggregatesFilterSchema).optional(),
 }).strict();
 
 export const CategoryWhereInputSchema: z.ZodType<Prisma.CategoryWhereInput> = z.object({
@@ -1573,6 +1587,8 @@ export const PortfolioItemCreateInputSchema: z.ZodType<Prisma.PortfolioItemCreat
   id: z.uuid().optional(),
   imageUrl: z.string(),
   description: z.string().optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemCreateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
   profile: z.lazy(() => ProfileCreateNestedOneWithoutPortfolioInputSchema),
 }).strict();
 
@@ -1581,12 +1597,16 @@ export const PortfolioItemUncheckedCreateInputSchema: z.ZodType<Prisma.Portfolio
   profileId: z.string(),
   imageUrl: z.string(),
   description: z.string().optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemCreateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const PortfolioItemUpdateInputSchema: z.ZodType<Prisma.PortfolioItemUpdateInput> = z.object({
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   imageUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemUpdateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
   profile: z.lazy(() => ProfileUpdateOneRequiredWithoutPortfolioNestedInputSchema).optional(),
 }).strict();
 
@@ -1595,6 +1615,8 @@ export const PortfolioItemUncheckedUpdateInputSchema: z.ZodType<Prisma.Portfolio
   profileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   imageUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemUpdateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const PortfolioItemCreateManyInputSchema: z.ZodType<Prisma.PortfolioItemCreateManyInput> = z.object({
@@ -1602,12 +1624,16 @@ export const PortfolioItemCreateManyInputSchema: z.ZodType<Prisma.PortfolioItemC
   profileId: z.string(),
   imageUrl: z.string(),
   description: z.string().optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemCreateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const PortfolioItemUpdateManyMutationInputSchema: z.ZodType<Prisma.PortfolioItemUpdateManyMutationInput> = z.object({
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   imageUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemUpdateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const PortfolioItemUncheckedUpdateManyInputSchema: z.ZodType<Prisma.PortfolioItemUncheckedUpdateManyInput> = z.object({
@@ -1615,6 +1641,8 @@ export const PortfolioItemUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Portf
   profileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   imageUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemUpdateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const CategoryCreateInputSchema: z.ZodType<Prisma.CategoryCreateInput> = z.object({
@@ -2437,6 +2465,14 @@ export const BoolWithAggregatesFilterSchema: z.ZodType<Prisma.BoolWithAggregates
   _max: z.lazy(() => NestedBoolFilterSchema).optional(),
 }).strict();
 
+export const StringNullableListFilterSchema: z.ZodType<Prisma.StringNullableListFilter> = z.object({
+  equals: z.string().array().optional().nullable(),
+  has: z.string().optional().nullable(),
+  hasEvery: z.string().array().optional(),
+  hasSome: z.string().array().optional(),
+  isEmpty: z.boolean().optional(),
+}).strict();
+
 export const ProfileScalarRelationFilterSchema: z.ZodType<Prisma.ProfileScalarRelationFilter> = z.object({
   is: z.lazy(() => ProfileWhereInputSchema).optional(),
   isNot: z.lazy(() => ProfileWhereInputSchema).optional(),
@@ -2447,6 +2483,8 @@ export const PortfolioItemCountOrderByAggregateInputSchema: z.ZodType<Prisma.Por
   profileId: z.lazy(() => SortOrderSchema).optional(),
   imageUrl: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
+  imageGallery: z.lazy(() => SortOrderSchema).optional(),
+  dynamicAttributes: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const PortfolioItemMaxOrderByAggregateInputSchema: z.ZodType<Prisma.PortfolioItemMaxOrderByAggregateInput> = z.object({
@@ -3036,10 +3074,19 @@ export const PortfolioItemUncheckedUpdateManyWithoutProfileNestedInputSchema: z.
   deleteMany: z.union([ z.lazy(() => PortfolioItemScalarWhereInputSchema), z.lazy(() => PortfolioItemScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const PortfolioItemCreateimageGalleryInputSchema: z.ZodType<Prisma.PortfolioItemCreateimageGalleryInput> = z.object({
+  set: z.string().array(),
+}).strict();
+
 export const ProfileCreateNestedOneWithoutPortfolioInputSchema: z.ZodType<Prisma.ProfileCreateNestedOneWithoutPortfolioInput> = z.object({
   create: z.union([ z.lazy(() => ProfileCreateWithoutPortfolioInputSchema), z.lazy(() => ProfileUncheckedCreateWithoutPortfolioInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => ProfileCreateOrConnectWithoutPortfolioInputSchema).optional(),
   connect: z.lazy(() => ProfileWhereUniqueInputSchema).optional(),
+}).strict();
+
+export const PortfolioItemUpdateimageGalleryInputSchema: z.ZodType<Prisma.PortfolioItemUpdateimageGalleryInput> = z.object({
+  set: z.string().array().optional(),
+  push: z.union([ z.string(),z.string().array() ]).optional(),
 }).strict();
 
 export const ProfileUpdateOneRequiredWithoutPortfolioNestedInputSchema: z.ZodType<Prisma.ProfileUpdateOneRequiredWithoutPortfolioNestedInput> = z.object({
@@ -4054,12 +4101,16 @@ export const PortfolioItemCreateWithoutProfileInputSchema: z.ZodType<Prisma.Port
   id: z.uuid().optional(),
   imageUrl: z.string(),
   description: z.string().optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemCreateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const PortfolioItemUncheckedCreateWithoutProfileInputSchema: z.ZodType<Prisma.PortfolioItemUncheckedCreateWithoutProfileInput> = z.object({
   id: z.uuid().optional(),
   imageUrl: z.string(),
   description: z.string().optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemCreateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const PortfolioItemCreateOrConnectWithoutProfileInputSchema: z.ZodType<Prisma.PortfolioItemCreateOrConnectWithoutProfileInput> = z.object({
@@ -4129,6 +4180,8 @@ export const PortfolioItemScalarWhereInputSchema: z.ZodType<Prisma.PortfolioItem
   profileId: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   imageUrl: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  imageGallery: z.lazy(() => StringNullableListFilterSchema).optional(),
+  dynamicAttributes: z.lazy(() => JsonNullableFilterSchema).optional(),
 }).strict();
 
 export const ProfileCreateWithoutPortfolioInputSchema: z.ZodType<Prisma.ProfileCreateWithoutPortfolioInput> = z.object({
@@ -5338,24 +5391,32 @@ export const PortfolioItemCreateManyProfileInputSchema: z.ZodType<Prisma.Portfol
   id: z.uuid().optional(),
   imageUrl: z.string(),
   description: z.string().optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemCreateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const PortfolioItemUpdateWithoutProfileInputSchema: z.ZodType<Prisma.PortfolioItemUpdateWithoutProfileInput> = z.object({
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   imageUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemUpdateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const PortfolioItemUncheckedUpdateWithoutProfileInputSchema: z.ZodType<Prisma.PortfolioItemUncheckedUpdateWithoutProfileInput> = z.object({
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   imageUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemUpdateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const PortfolioItemUncheckedUpdateManyWithoutProfileInputSchema: z.ZodType<Prisma.PortfolioItemUncheckedUpdateManyWithoutProfileInput> = z.object({
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   imageUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageGallery: z.union([ z.lazy(() => PortfolioItemUpdateimageGalleryInputSchema), z.string().array() ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const CategoryCreateManyParentInputSchema: z.ZodType<Prisma.CategoryCreateManyParentInput> = z.object({

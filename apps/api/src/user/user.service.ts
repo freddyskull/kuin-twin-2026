@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { CreateUserDto, CreateUserInput, CreateProfileDto, CreateProfileInput, RegisterUserNestedDto, RegisterUserNestedInput, UpdateUserInput } from './dto';
-import { User, Profile } from '@prisma/client';
+import { CreateUserDto, CreateUserInput, CreateProfileDto, CreateProfileInput, RegisterUserNestedDto, RegisterUserNestedInput, UpdateUserInput, CreatePortfolioItemInput } from './dto';
+import { User, Profile, PortfolioItem } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -66,7 +66,11 @@ export class UserService {
         } : undefined
       },
       include: {
-        profile: true
+        profile: {
+          include: {
+            portfolio: true
+          }
+        }
       }
     });
 
@@ -111,12 +115,54 @@ export class UserService {
   }
 
   /**
+   * Agregar un item al portafolio
+   */
+  async addPortfolioItem(userId: string, itemDto: CreatePortfolioItemInput): Promise<PortfolioItem> {
+    const profile = await this.prisma.profile.findUnique({
+      where: { userId },
+    });
+
+    if (!profile) {
+      throw new NotFoundException(`El usuario con ID ${userId} no tiene un perfil creado aún.`);
+    }
+
+    return this.prisma.portfolioItem.create({
+      data: {
+        ...itemDto,
+        dynamicAttributes: itemDto.dynamicAttributes as any,
+        profileId: profile.id,
+      },
+    });
+  }
+
+  /**
+   * Eliminar un item del portafolio
+   */
+  async removePortfolioItem(itemId: string): Promise<void> {
+    const item = await this.prisma.portfolioItem.findUnique({
+      where: { id: itemId },
+    });
+
+    if (!item) {
+      throw new NotFoundException(`Item de portafolio con ID ${itemId} no encontrado`);
+    }
+
+    await this.prisma.portfolioItem.delete({
+      where: { id: itemId },
+    });
+  }
+
+  /**
    * Obtener todos los usuarios
    */
   async findAll(): Promise<Omit<User, 'password'>[]> {
     const users = await this.prisma.user.findMany({
       include: {
-        profile: true,
+        profile: {
+          include: {
+            portfolio: true
+          }
+        },
       },
     });
 
@@ -131,7 +177,11 @@ export class UserService {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
-        profile: true,
+        profile: {
+          include: {
+            portfolio: true
+          }
+        },
         services: true,
         bookings: true,
       },

@@ -106,3 +106,25 @@ Content-Type: application/json
   "displayName": "Freddy Actualizado",
   "bio": "Nueva biografía para el perfil"
 }
+
+### 14. Agregar Item al Portafolio
+# @name addPortfolio
+POST {{baseUrl}}/api/users/{{nestedUserId}}/portfolio
+Content-Type: application/json
+
+{
+  "imageUrl": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+  "description": "Desarrollo de Software a medida",
+  "imageGallery": [
+    "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+    "https://images.unsplash.com/photo-1504639725590-34d0984388bd"
+  ],
+  "dynamicAttributes": {
+    "technologies": ["React", "NestJS", "PostgreSQL"],
+    "deliveryTime": "15 days"
+  }
+}
+
+### 15. Eliminar Item del Portafolio
+@portfolioItemId = {{addPortfolio.response.body.id}}
+DELETE {{baseUrl}}/api/users/portfolio/{{portfolioItemId}}
