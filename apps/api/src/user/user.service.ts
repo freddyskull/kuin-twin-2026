@@ -1,9 +1,7 @@
-// apps/api/src/user/user.service.ts
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { CreateUserDto, CreateUserInput } from './dto/create-user.dto';
-import { UpdateUserInput } from './dto/update-user.dto';
-import { User } from '@prisma/client';
+import { CreateUserDto, CreateUserInput, CreateProfileDto, CreateProfileInput, RegisterUserNestedDto, RegisterUserNestedInput, UpdateUserInput } from './dto';
+import { User, Profile } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -11,7 +9,7 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Crear un nuevo usuario
+   * Crear un nuevo usuario (Simple)
    */
   async create(createUserDto: CreateUserDto | CreateUserInput): Promise<Omit<User, 'password'>> {
     // Verificar si el email ya existe
@@ -37,6 +35,79 @@ export class UserService {
     // Retornar sin el password
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
+  }
+
+  /**
+   * Registro anidado: Usuario + Perfil
+   */
+  async registerNested(registerDto: RegisterUserNestedInput): Promise<Omit<User, 'password'>> {
+    const { email, password, role, profile } = registerDto;
+
+    // Verificar si el email ya existe
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('El email ya está registrado');
+    }
+
+    // Hash de la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear usuario y perfil en una transacción
+    const user = await this.prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        role,
+        profile: profile ? {
+          create: profile
+        } : undefined
+      },
+      include: {
+        profile: true
+      }
+    });
+
+    // Retornar sin el password
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
+
+  /**
+   * Crear o actualizar perfil para un usuario existente
+   */
+  async createProfile(userId: string, profileDto: CreateProfileInput): Promise<Profile> {
+    const { displayName, bio, avatarUrl, serviceRadiusKm, businessHours } = profileDto;
+
+    // Verificar si el usuario existe
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuario con ID ${userId} no encontrado`);
+    }
+
+    return this.prisma.profile.upsert({
+      where: { userId },
+      update: {
+        displayName,
+        bio,
+        avatarUrl,
+        serviceRadiusKm,
+        businessHours: businessHours as any, // Cast because of Prisma JsonValue vs Zod
+      },
+      create: {
+        userId,
+        displayName,
+        bio,
+        avatarUrl,
+        serviceRadiusKm,
+        businessHours: businessHours as any,
+      },
+    });
   }
 
   /**

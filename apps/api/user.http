@@ -79,3 +79,30 @@ Content-Type: application/json
 
 ### 11. Error - Usuario No Encontrado
 GET {{baseUrl}}/api/users/00000000-0000-0000-0000-000000000000
+
+### 12. Registro Anidado (Usuario + Perfil)
+# @name registerNested
+POST {{baseUrl}}/api/users/register
+Content-Type: application/json
+
+{
+  "email": "nested@example.com",
+  "password": "password123",
+  "role": "VENDOR",
+  "profile": {
+    "displayName": "Freddy Skull",
+    "bio": "Desarrollador Full Stack y Entusiasta de NestJS",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/1234567?v=4",
+    "serviceRadiusKm": 25
+  }
+}
+
+### 13. Crear/Actualizar Perfil (Usuario Existente)
+@nestedUserId = {{registerNested.response.body.id}}
+POST {{baseUrl}}/api/users/{{nestedUserId}}/profile
+Content-Type: application/json
+
+{
+  "displayName": "Freddy Actualizado",
+  "bio": "Nueva biografía para el perfil"
+}

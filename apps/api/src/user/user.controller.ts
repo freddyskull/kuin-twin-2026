@@ -11,7 +11,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, UpdateUserDto, UserResponseDto } from './dto';
+import { CreateUserDto, UpdateUserDto, UserResponseDto, RegisterUserNestedDto, CreateProfileDto } from './dto';
 
 @Controller('api/users')
 export class UserController {
@@ -19,12 +19,34 @@ export class UserController {
 
   /**
    * POST /api/users
-   * Crear un nuevo usuario
+   * Crear un nuevo usuario (Simple)
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
     return this.userService.create(createUserDto);
+  }
+
+  /**
+   * POST /api/users/register
+   * Registro anidado (Usuario + Perfil)
+   */
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  async registerNested(@Body() registerDto: RegisterUserNestedDto): Promise<UserResponseDto> {
+    return this.userService.registerNested(registerDto);
+  }
+
+  /**
+   * POST /api/users/:id/profile
+   * Crear o actualizar el perfil de un usuario
+   */
+  @Post(':id/profile')
+  async createProfile(
+    @Param('id') id: string,
+    @Body() profileDto: CreateProfileDto,
+  ) {
+    return this.userService.createProfile(id, profileDto);
   }
 
   /**
