@@ -1,0 +1,168 @@
+// apps/api/prisma/schema.prisma
+generator client {
+  provider        = "prisma-client-js" // Más compatible con NestJS
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [postgis]
+}
+
+// --- IDENTIDAD ---
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  role      Role      @default(CUSTOMER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  profile   Profile?
+  services  Service[] // Si es Vendor
+  bookings  Booking[] // Si es Customer
+}
+
+enum Role {
+  ADMIN
+  VENDOR
+  CUSTOMER
+}
+
+model Profile {
+  id          String  @id @default(uuid())
+  userId      String  @unique
+  user        User    @relation(fields: [userId], references: [id])
+  displayName String
+  bio         String?
+  avatarUrl   String?
+
+  // Localización para PostGIS
+  // Usamos Unsupported para manejar el tipo nativo de PostGIS
+  location        Unsupported("geography(Point, 4326)")?
+  serviceRadiusKm Int                                    @default(10)
+
+  ratingAvg     Decimal @default(0) @db.Decimal(3, 2)
+  reviewsCount  Int     @default(0)
+  businessHours Json? // Horarios generales en formato JSON
+  isVerified    Boolean @default(false)
+
+  portfolio PortfolioItem[]
+}
+
+model PortfolioItem {
+  id          String  @id @default(uuid())
+  profileId   String
+  profile     Profile @relation(fields: [profileId], references: [id])
+  imageUrl    String
+  description String?
+}
+
+// --- CATÁLOGO ---
+
+model Category {
+  id       String     @id @default(uuid())
+  name     String
+  slug     String     @unique
+  parentId String?
+  parent   Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children Category[] @relation("SubCategories")
+  services Service[]
+}
+
+model ServiceUnit {
+  id           String    @id @default(uuid())
+  name         String // Ej: "Hora", "Metro Cuadrado"
+  abbreviation String // Ej: "hr", "m2"
+  services     Service[]
+}
+
+model Service {
+  id         String      @id @default(uuid())
+  vendorId   String
+  vendor     User        @relation(fields: [vendorId], references: [id])
+  categoryId String
+  category   Category    @relation(fields: [categoryId], references: [id])
+  unitId     String
+  unit       ServiceUnit @relation(fields: [unitId], references: [id])
+
+  title             String
+  basePrice         Decimal @db.Decimal(10, 2)
+  dynamicAttributes Json? // Configuraciones adicionales
+
+  metadata ServiceMetadata[]
+  slots    ServiceSlot[]
+  bookings Booking[]
+}
+
+model ServiceMetadata {
+  id        String  @id @default(uuid())
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id])
+  key       String // Ej: "experiencia"
+  value     String // Ej: "5 años"
+}
+
+// --- FLUJO DE RESERVAS ---
+
+model Booking {
+  id         String  @id @default(uuid())
+  customerId String
+  customer   User    @relation(fields: [customerId], references: [id])
+  serviceId  String
+  service    Service @relation(fields: [serviceId], references: [id])
+
+  status        BookingStatus @default(PENDING)
+  scheduledDate DateTime
+
+  details BookingDetails?
+  payment Payment?
+  slots   ServiceSlot[] // Slots de tiempo bloqueados para esta reserva
+}
+
+enum BookingStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+model BookingDetails {
+  id        String  @id @default(uuid())
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  serviceSnapshot Json // LA FOTO DEL SERVICIO AL COMPRAR
+  unitPrice       Decimal @db.Decimal(10, 2)
+  quantity        Int     @default(1)
+  taxTotal        Decimal @db.Decimal(10, 2)
+  grandTotal      Decimal @db.Decimal(10, 2)
+}
+
+model ServiceSlot {
+  id        String   @id @default(uuid())
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id])
+  bookingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+
+  startTime   DateTime
+  endTime     DateTime
+  status      SlotStatus @default(AVAILABLE)
+  isRecurring Boolean    @default(false)
+}
+
+enum SlotStatus {
+  AVAILABLE
+  BOOKED
+  BLOCKED
+}
+
+model Payment {
+  id          String  @id @default(uuid())
+  bookingId   String  @unique
+  booking     Booking @relation(fields: [bookingId], references: [id])
+  amount      Decimal @db.Decimal(10, 2)
+  processorId String // Stripe ID / MP ID
+  status      String // p.ej: "succeeded", "pending"
+}
