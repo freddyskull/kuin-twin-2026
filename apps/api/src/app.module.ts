@@ -11,6 +11,9 @@ import { MediaModule } from './media/media.module';
 import { CategoryModule } from './category/category.module';
 import { ServiceUnitModule } from './service-unit/service-unit.module';
 import { ServiceModule } from './service/service.module';
+import { SlotModule } from './slot/slot.module';
+import { BookingModule } from './booking/booking.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -25,6 +28,9 @@ import { ServiceModule } from './service/service.module';
     CategoryModule,
     ServiceUnitModule,
     ServiceModule,
+    SlotModule,
+    BookingModule,
+    PaymentModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../..', 'apps/admin-panel/dist'),
       serveRoot: '/admin',

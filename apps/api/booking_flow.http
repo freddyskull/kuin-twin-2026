@@ -1,0 +1,47 @@
+### Variables
+@baseUrl = http://localhost:3001
+@serviceId = 00000000-0000-0000-0000-000000000000 
+@customerId = 00000000-0000-0000-0000-000000000000
+@slotId = {{createSlot.response.body.id}}
+@bookingId = {{createBooking.response.body.id}}
+
+### 1. Crear Slot de Disponibilidad
+# @name createSlot
+POST {{baseUrl}}/api/slots
+Content-Type: application/json
+
+{
+  "serviceId": "{{serviceId}}",
+  "startTime": "2026-02-15T10:00:00Z",
+  "endTime": "2026-02-15T11:00:00Z"
+}
+
+### 2. Consultar Slots de un Servicio
+GET {{baseUrl}}/api/slots/service/{{serviceId}}
+
+### 3. Crear una Reserva (Booking)
+# @name createBooking
+POST {{baseUrl}}/api/bookings
+Content-Type: application/json
+
+{
+  "customerId": "{{customerId}}",
+  "serviceId": "{{serviceId}}",
+  "scheduledDate": "2026-02-15T10:00:00Z",
+  "slotIds": ["{{slotId}}"],
+  "quantity": 1
+}
+
+### 4. Obtener Reservas del Cliente
+GET {{baseUrl}}/api/bookings?customerId={{customerId}}
+
+### 5. Obtener Detalle de Reserva
+GET {{baseUrl}}/api/bookings/{{bookingId}}
+
+### 6. Cancelar Reserva
+PATCH {{baseUrl}}/api/bookings/{{bookingId}}/status
+Content-Type: application/json
+
+{
+  "status": "CANCELLED"
+}
