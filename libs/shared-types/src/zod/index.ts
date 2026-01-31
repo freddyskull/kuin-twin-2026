@@ -85,7 +85,7 @@ export const ProfileScalarFieldEnumSchema = z.enum(['id','userId','displayName',
 
 export const PortfolioItemScalarFieldEnumSchema = z.enum(['id','profileId','imageUrl','description','imageGallery','dynamicAttributes']);
 
-export const CategoryScalarFieldEnumSchema = z.enum(['id','name','slug','parentId']);
+export const CategoryScalarFieldEnumSchema = z.enum(['id','name','slug','description','imageUrl','isActive','parentId']);
 
 export const ServiceUnitScalarFieldEnumSchema = z.enum(['id','name','abbreviation']);
 
@@ -204,6 +204,9 @@ export const CategorySchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   slug: z.string(),
+  description: z.string().nullable(),
+  imageUrl: z.string().nullable(),
+  isActive: z.boolean(),
   parentId: z.string().nullable(),
 })
 
@@ -467,6 +470,9 @@ export const CategorySelectSchema: z.ZodType<Prisma.CategorySelect> = z.object({
   id: z.boolean().optional(),
   name: z.boolean().optional(),
   slug: z.boolean().optional(),
+  description: z.boolean().optional(),
+  imageUrl: z.boolean().optional(),
+  isActive: z.boolean().optional(),
   parentId: z.boolean().optional(),
   parent: z.union([z.boolean(),z.lazy(() => CategoryArgsSchema)]).optional(),
   children: z.union([z.boolean(),z.lazy(() => CategoryFindManyArgsSchema)]).optional(),
@@ -1009,6 +1015,9 @@ export const CategoryWhereInputSchema: z.ZodType<Prisma.CategoryWhereInput> = z.
   id: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   slug: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  description: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  imageUrl: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  isActive: z.union([ z.lazy(() => BoolFilterSchema), z.boolean() ]).optional(),
   parentId: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
   parent: z.union([ z.lazy(() => CategoryNullableScalarRelationFilterSchema), z.lazy(() => CategoryWhereInputSchema) ]).optional().nullable(),
   children: z.lazy(() => CategoryListRelationFilterSchema).optional(),
@@ -1019,6 +1028,9 @@ export const CategoryOrderByWithRelationInputSchema: z.ZodType<Prisma.CategoryOr
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   slug: z.lazy(() => SortOrderSchema).optional(),
+  description: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
+  imageUrl: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
+  isActive: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
   parent: z.lazy(() => CategoryOrderByWithRelationInputSchema).optional(),
   children: z.lazy(() => CategoryOrderByRelationAggregateInputSchema).optional(),
@@ -1028,10 +1040,26 @@ export const CategoryOrderByWithRelationInputSchema: z.ZodType<Prisma.CategoryOr
 export const CategoryWhereUniqueInputSchema: z.ZodType<Prisma.CategoryWhereUniqueInput> = z.union([
   z.object({
     id: z.uuid(),
+    name: z.string(),
     slug: z.string(),
   }),
   z.object({
     id: z.uuid(),
+    name: z.string(),
+  }),
+  z.object({
+    id: z.uuid(),
+    slug: z.string(),
+  }),
+  z.object({
+    id: z.uuid(),
+  }),
+  z.object({
+    name: z.string(),
+    slug: z.string(),
+  }),
+  z.object({
+    name: z.string(),
   }),
   z.object({
     slug: z.string(),
@@ -1039,11 +1067,14 @@ export const CategoryWhereUniqueInputSchema: z.ZodType<Prisma.CategoryWhereUniqu
 ])
 .and(z.object({
   id: z.uuid().optional(),
+  name: z.string().optional(),
   slug: z.string().optional(),
   AND: z.union([ z.lazy(() => CategoryWhereInputSchema), z.lazy(() => CategoryWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => CategoryWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => CategoryWhereInputSchema), z.lazy(() => CategoryWhereInputSchema).array() ]).optional(),
-  name: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  description: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  imageUrl: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  isActive: z.union([ z.lazy(() => BoolFilterSchema), z.boolean() ]).optional(),
   parentId: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
   parent: z.union([ z.lazy(() => CategoryNullableScalarRelationFilterSchema), z.lazy(() => CategoryWhereInputSchema) ]).optional().nullable(),
   children: z.lazy(() => CategoryListRelationFilterSchema).optional(),
@@ -1054,6 +1085,9 @@ export const CategoryOrderByWithAggregationInputSchema: z.ZodType<Prisma.Categor
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   slug: z.lazy(() => SortOrderSchema).optional(),
+  description: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
+  imageUrl: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
+  isActive: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => CategoryCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => CategoryMaxOrderByAggregateInputSchema).optional(),
@@ -1067,6 +1101,9 @@ export const CategoryScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Cate
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema), z.string() ]).optional(),
   name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema), z.string() ]).optional(),
   slug: z.union([ z.lazy(() => StringWithAggregatesFilterSchema), z.string() ]).optional(),
+  description: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string() ]).optional().nullable(),
+  imageUrl: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string() ]).optional().nullable(),
+  isActive: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema), z.boolean() ]).optional(),
   parentId: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string() ]).optional().nullable(),
 }).strict();
 
@@ -1087,16 +1124,41 @@ export const ServiceUnitOrderByWithRelationInputSchema: z.ZodType<Prisma.Service
   services: z.lazy(() => ServiceOrderByRelationAggregateInputSchema).optional(),
 }).strict();
 
-export const ServiceUnitWhereUniqueInputSchema: z.ZodType<Prisma.ServiceUnitWhereUniqueInput> = z.object({
-  id: z.uuid(),
-})
+export const ServiceUnitWhereUniqueInputSchema: z.ZodType<Prisma.ServiceUnitWhereUniqueInput> = z.union([
+  z.object({
+    id: z.uuid(),
+    name: z.string(),
+    abbreviation: z.string(),
+  }),
+  z.object({
+    id: z.uuid(),
+    name: z.string(),
+  }),
+  z.object({
+    id: z.uuid(),
+    abbreviation: z.string(),
+  }),
+  z.object({
+    id: z.uuid(),
+  }),
+  z.object({
+    name: z.string(),
+    abbreviation: z.string(),
+  }),
+  z.object({
+    name: z.string(),
+  }),
+  z.object({
+    abbreviation: z.string(),
+  }),
+])
 .and(z.object({
   id: z.uuid().optional(),
+  name: z.string().optional(),
+  abbreviation: z.string().optional(),
   AND: z.union([ z.lazy(() => ServiceUnitWhereInputSchema), z.lazy(() => ServiceUnitWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => ServiceUnitWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => ServiceUnitWhereInputSchema), z.lazy(() => ServiceUnitWhereInputSchema).array() ]).optional(),
-  name: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
-  abbreviation: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   services: z.lazy(() => ServiceListRelationFilterSchema).optional(),
 }).strict());
 
@@ -1867,6 +1929,9 @@ export const CategoryCreateInputSchema: z.ZodType<Prisma.CategoryCreateInput> = 
   id: z.uuid().optional(),
   name: z.string(),
   slug: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
   parent: z.lazy(() => CategoryCreateNestedOneWithoutChildrenInputSchema).optional(),
   children: z.lazy(() => CategoryCreateNestedManyWithoutParentInputSchema).optional(),
   services: z.lazy(() => ServiceCreateNestedManyWithoutCategoryInputSchema).optional(),
@@ -1876,6 +1941,9 @@ export const CategoryUncheckedCreateInputSchema: z.ZodType<Prisma.CategoryUnchec
   id: z.uuid().optional(),
   name: z.string(),
   slug: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
   parentId: z.string().optional().nullable(),
   children: z.lazy(() => CategoryUncheckedCreateNestedManyWithoutParentInputSchema).optional(),
   services: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutCategoryInputSchema).optional(),
@@ -1885,6 +1953,9 @@ export const CategoryUpdateInputSchema: z.ZodType<Prisma.CategoryUpdateInput> = 
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   parent: z.lazy(() => CategoryUpdateOneWithoutChildrenNestedInputSchema).optional(),
   children: z.lazy(() => CategoryUpdateManyWithoutParentNestedInputSchema).optional(),
   services: z.lazy(() => ServiceUpdateManyWithoutCategoryNestedInputSchema).optional(),
@@ -1894,6 +1965,9 @@ export const CategoryUncheckedUpdateInputSchema: z.ZodType<Prisma.CategoryUnchec
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   children: z.lazy(() => CategoryUncheckedUpdateManyWithoutParentNestedInputSchema).optional(),
   services: z.lazy(() => ServiceUncheckedUpdateManyWithoutCategoryNestedInputSchema).optional(),
@@ -1903,6 +1977,9 @@ export const CategoryCreateManyInputSchema: z.ZodType<Prisma.CategoryCreateManyI
   id: z.uuid().optional(),
   name: z.string(),
   slug: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
   parentId: z.string().optional().nullable(),
 }).strict();
 
@@ -1910,12 +1987,18 @@ export const CategoryUpdateManyMutationInputSchema: z.ZodType<Prisma.CategoryUpd
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const CategoryUncheckedUpdateManyInputSchema: z.ZodType<Prisma.CategoryUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
@@ -2792,6 +2875,9 @@ export const CategoryCountOrderByAggregateInputSchema: z.ZodType<Prisma.Category
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   slug: z.lazy(() => SortOrderSchema).optional(),
+  description: z.lazy(() => SortOrderSchema).optional(),
+  imageUrl: z.lazy(() => SortOrderSchema).optional(),
+  isActive: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
@@ -2799,6 +2885,9 @@ export const CategoryMaxOrderByAggregateInputSchema: z.ZodType<Prisma.CategoryMa
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   slug: z.lazy(() => SortOrderSchema).optional(),
+  description: z.lazy(() => SortOrderSchema).optional(),
+  imageUrl: z.lazy(() => SortOrderSchema).optional(),
+  isActive: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
@@ -2806,6 +2895,9 @@ export const CategoryMinOrderByAggregateInputSchema: z.ZodType<Prisma.CategoryMi
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   slug: z.lazy(() => SortOrderSchema).optional(),
+  description: z.lazy(() => SortOrderSchema).optional(),
+  imageUrl: z.lazy(() => SortOrderSchema).optional(),
+  isActive: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
@@ -4715,6 +4807,9 @@ export const CategoryCreateWithoutChildrenInputSchema: z.ZodType<Prisma.Category
   id: z.uuid().optional(),
   name: z.string(),
   slug: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
   parent: z.lazy(() => CategoryCreateNestedOneWithoutChildrenInputSchema).optional(),
   services: z.lazy(() => ServiceCreateNestedManyWithoutCategoryInputSchema).optional(),
 }).strict();
@@ -4723,6 +4818,9 @@ export const CategoryUncheckedCreateWithoutChildrenInputSchema: z.ZodType<Prisma
   id: z.uuid().optional(),
   name: z.string(),
   slug: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
   parentId: z.string().optional().nullable(),
   services: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutCategoryInputSchema).optional(),
 }).strict();
@@ -4736,6 +4834,9 @@ export const CategoryCreateWithoutParentInputSchema: z.ZodType<Prisma.CategoryCr
   id: z.uuid().optional(),
   name: z.string(),
   slug: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
   children: z.lazy(() => CategoryCreateNestedManyWithoutParentInputSchema).optional(),
   services: z.lazy(() => ServiceCreateNestedManyWithoutCategoryInputSchema).optional(),
 }).strict();
@@ -4744,6 +4845,9 @@ export const CategoryUncheckedCreateWithoutParentInputSchema: z.ZodType<Prisma.C
   id: z.uuid().optional(),
   name: z.string(),
   slug: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
   children: z.lazy(() => CategoryUncheckedCreateNestedManyWithoutParentInputSchema).optional(),
   services: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutCategoryInputSchema).optional(),
 }).strict();
@@ -4807,6 +4911,9 @@ export const CategoryUpdateWithoutChildrenInputSchema: z.ZodType<Prisma.Category
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   parent: z.lazy(() => CategoryUpdateOneWithoutChildrenNestedInputSchema).optional(),
   services: z.lazy(() => ServiceUpdateManyWithoutCategoryNestedInputSchema).optional(),
 }).strict();
@@ -4815,6 +4922,9 @@ export const CategoryUncheckedUpdateWithoutChildrenInputSchema: z.ZodType<Prisma
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   services: z.lazy(() => ServiceUncheckedUpdateManyWithoutCategoryNestedInputSchema).optional(),
 }).strict();
@@ -4842,6 +4952,9 @@ export const CategoryScalarWhereInputSchema: z.ZodType<Prisma.CategoryScalarWher
   id: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   slug: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  description: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  imageUrl: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  isActive: z.union([ z.lazy(() => BoolFilterSchema), z.boolean() ]).optional(),
   parentId: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
 }).strict();
 
@@ -4944,6 +5057,9 @@ export const CategoryCreateWithoutServicesInputSchema: z.ZodType<Prisma.Category
   id: z.uuid().optional(),
   name: z.string(),
   slug: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
   parent: z.lazy(() => CategoryCreateNestedOneWithoutChildrenInputSchema).optional(),
   children: z.lazy(() => CategoryCreateNestedManyWithoutParentInputSchema).optional(),
 }).strict();
@@ -4952,6 +5068,9 @@ export const CategoryUncheckedCreateWithoutServicesInputSchema: z.ZodType<Prisma
   id: z.uuid().optional(),
   name: z.string(),
   slug: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
   parentId: z.string().optional().nullable(),
   children: z.lazy(() => CategoryUncheckedCreateNestedManyWithoutParentInputSchema).optional(),
 }).strict();
@@ -5108,6 +5227,9 @@ export const CategoryUpdateWithoutServicesInputSchema: z.ZodType<Prisma.Category
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   parent: z.lazy(() => CategoryUpdateOneWithoutChildrenNestedInputSchema).optional(),
   children: z.lazy(() => CategoryUpdateManyWithoutParentNestedInputSchema).optional(),
 }).strict();
@@ -5116,6 +5238,9 @@ export const CategoryUncheckedUpdateWithoutServicesInputSchema: z.ZodType<Prisma
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   children: z.lazy(() => CategoryUncheckedUpdateManyWithoutParentNestedInputSchema).optional(),
 }).strict();
@@ -5934,6 +6059,9 @@ export const CategoryCreateManyParentInputSchema: z.ZodType<Prisma.CategoryCreat
   id: z.uuid().optional(),
   name: z.string(),
   slug: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
 }).strict();
 
 export const ServiceCreateManyCategoryInputSchema: z.ZodType<Prisma.ServiceCreateManyCategoryInput> = z.object({
@@ -5949,6 +6077,9 @@ export const CategoryUpdateWithoutParentInputSchema: z.ZodType<Prisma.CategoryUp
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   children: z.lazy(() => CategoryUpdateManyWithoutParentNestedInputSchema).optional(),
   services: z.lazy(() => ServiceUpdateManyWithoutCategoryNestedInputSchema).optional(),
 }).strict();
@@ -5957,6 +6088,9 @@ export const CategoryUncheckedUpdateWithoutParentInputSchema: z.ZodType<Prisma.C
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   children: z.lazy(() => CategoryUncheckedUpdateManyWithoutParentNestedInputSchema).optional(),
   services: z.lazy(() => ServiceUncheckedUpdateManyWithoutCategoryNestedInputSchema).optional(),
 }).strict();
@@ -5965,6 +6099,9 @@ export const CategoryUncheckedUpdateManyWithoutParentInputSchema: z.ZodType<Pris
   id: z.union([ z.uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ServiceUpdateWithoutCategoryInputSchema: z.ZodType<Prisma.ServiceUpdateWithoutCategoryInput> = z.object({

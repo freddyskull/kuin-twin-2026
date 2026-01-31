@@ -1,0 +1,39 @@
+### Variables
+@baseUrl = http://localhost:3001
+@unitId = {{createUnit.response.body.id}}
+
+### 1. Crear Unidad (Hora)
+# @name createUnit
+POST {{baseUrl}}/api/service-units
+Content-Type: application/json
+
+{
+  "name": "Hora",
+  "abbreviation": "hr"
+}
+
+### 2. Crear Unidad (Metro Cuadrado)
+POST {{baseUrl}}/api/service-units
+Content-Type: application/json
+
+{
+  "name": "Metro Cuadrado",
+  "abbreviation": "m2"
+}
+
+### 3. Obtener Todas las Unidades
+GET {{baseUrl}}/api/service-units
+
+### 4. Obtener por ID
+GET {{baseUrl}}/api/service-units/{{unitId}}
+
+### 5. Actualizar Unidad
+PATCH {{baseUrl}}/api/service-units/{{unitId}}
+Content-Type: application/json
+
+{
+  "name": "Horas"
+}
+
+### 6. Eliminar Unidad
+DELETE {{baseUrl}}/api/service-units/{{unitId}}

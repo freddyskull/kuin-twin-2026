@@ -96,8 +96,8 @@ model Category {
 
 model ServiceUnit {
   id           String    @id @default(uuid())
-  name         String // Ej: "Hora", "Metro Cuadrado"
-  abbreviation String // Ej: "hr", "m2"
+  name         String    @unique // Ej: "Hora", "Metro Cuadrado"
+  abbreviation String    @unique // Ej: "hr", "m2"
   services     Service[]
 }
 

@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { MediaModule } from './media/media.module';
 import { CategoryModule } from './category/category.module';
+import { ServiceUnitModule } from './service-unit/service-unit.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CategoryModule } from './category/category.module';
     PortfolioModule,
     MediaModule,
     CategoryModule,
+    ServiceUnitModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../..', 'apps/admin-panel/dist'),
       serveRoot: '/admin',
