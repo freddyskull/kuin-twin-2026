@@ -26,6 +26,20 @@ model User {
   profile   Profile?
   services  Service[] // Si es Vendor
   bookings  Booking[] // Si es Customer
+  media     Media[] // Galería de medios (WP style)
+}
+
+model Media {
+  id        String   @id @default(uuid())
+  url       String
+  key       String? // Referencia para almacenamiento (S3, etc)
+  fileName  String
+  mimeType  String
+  size      Int
+  alt       String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum Role {

@@ -109,7 +109,7 @@ Content-Type: application/json
 
 ### 14. Agregar Item al Portafolio
 # @name addPortfolio
-POST {{baseUrl}}/api/users/{{nestedUserId}}/portfolio
+POST {{baseUrl}}/api/portfolio/{{nestedUserId}}
 Content-Type: application/json
 
 {
@@ -125,6 +125,29 @@ Content-Type: application/json
   }
 }
 
-### 15. Eliminar Item del Portafolio
+### 15. Obtener Portafolio de Usuario
+GET {{baseUrl}}/api/portfolio/user/{{nestedUserId}}
+
+### 16. Eliminar Item del Portafolio
 @portfolioItemId = {{addPortfolio.response.body.id}}
-DELETE {{baseUrl}}/api/users/portfolio/{{portfolioItemId}}
+DELETE {{baseUrl}}/api/portfolio/{{portfolioItemId}}
+
+### 17. Agregar Medio a la Galería (WP Style)
+# @name addMedia
+POST {{baseUrl}}/api/media/{{nestedUserId}}
+Content-Type: application/json
+
+{
+  "url": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97",
+  "fileName": "laptop.jpg",
+  "mimeType": "image/jpeg",
+  "size": 102400,
+  "alt": "Laptop para programación"
+}
+
+### 18. Obtener Galería de Medios de Usuario
+GET {{baseUrl}}/api/media/user/{{nestedUserId}}
+
+### 19. Eliminar Medio
+@mediaId = {{addMedia.response.body.id}}
+DELETE {{baseUrl}}/api/media/{{mediaId}}

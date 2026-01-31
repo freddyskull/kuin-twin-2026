@@ -11,7 +11,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, UpdateUserDto, UserResponseDto, RegisterUserNestedDto, CreateProfileDto, CreatePortfolioItemDto } from './dto';
+import { CreateUserDto, UpdateUserDto, UserResponseDto, RegisterUserNestedDto, CreateProfileDto } from './dto';
 
 @Controller('api/users')
 export class UserController {
@@ -47,29 +47,6 @@ export class UserController {
     @Body() profileDto: CreateProfileDto,
   ) {
     return this.userService.createProfile(id, profileDto);
-  }
-
-  /**
-   * POST /api/users/:id/portfolio
-   * Agregar un item al portafolio
-   */
-  @Post(':id/portfolio')
-  @HttpCode(HttpStatus.CREATED)
-  async addPortfolioItem(
-    @Param('id') id: string,
-    @Body() itemDto: CreatePortfolioItemDto,
-  ) {
-    return this.userService.addPortfolioItem(id, itemDto);
-  }
-
-  /**
-   * DELETE /api/users/portfolio/:itemId
-   * Eliminar un item del portafolio
-   */
-  @Delete('portfolio/:itemId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async removePortfolioItem(@Param('itemId') itemId: string): Promise<void> {
-    return this.userService.removePortfolioItem(itemId);
   }
 
   /**

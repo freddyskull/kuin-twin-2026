@@ -6,6 +6,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma.module';
 import { UserModule } from './user/user.module';
+import { PortfolioModule } from './portfolio/portfolio.module';
+import { MediaModule } from './media/media.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { UserModule } from './user/user.module';
     }),
     PrismaModule,
     UserModule,
+    PortfolioModule,
+    MediaModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../..', 'apps/admin-panel/dist'),
       serveRoot: '/admin',
