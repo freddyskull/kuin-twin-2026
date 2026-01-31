@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "start": "node apps/backend/dist/src/main.js"
   },
   "keywords": [],
   "author": "",
@@ -11,5 +14,9 @@
   "description": "",
   "workspaces": [
     "apps/*"
-  ]
+  ],
+  "dependencies": {
+    "turbo": "^2.8.1"
+  },
+  "packageManager": "npm@10.9.2"
 }
