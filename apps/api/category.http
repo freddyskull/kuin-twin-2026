@@ -1,0 +1,46 @@
+### Variables
+@baseUrl = http://localhost:3001
+@categoryId = {{createCategory.response.body.id}}
+
+### 1. Crear Categoría Raíz
+# @name createCategory
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+
+{
+  "name": "Tecnología",
+  "slug": "tecnologia",
+  "description": "Servicios y productos tecnológicos",
+  "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475"
+}
+
+### 2. Crear Subcategoría
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+
+{
+  "name": "Desarrollo Web",
+  "slug": "desarrollo-web",
+  "parentId": "{{categoryId}}",
+  "description": "Creación de sitios y aplicaciones web"
+}
+
+### 3. Obtener Todas las Categorías
+GET {{baseUrl}}/api/categories
+
+### 4. Obtener Solo Categorías Raíz
+GET {{baseUrl}}/api/categories?roots=true
+
+### 5. Obtener por Slug
+GET {{baseUrl}}/api/categories/tecnologia
+
+### 6. Actualizar Categoría
+PATCH {{baseUrl}}/api/categories/{{categoryId}}
+Content-Type: application/json
+
+{
+  "description": "Descripción actualizada para tecnología"
+}
+
+### 7. Eliminar Categoría (Fallará si tiene hijos)
+DELETE {{baseUrl}}/api/categories/{{categoryId}}
