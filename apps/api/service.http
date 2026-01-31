@@ -1,0 +1,47 @@
+### Variables
+@baseUrl = http://localhost:3001
+# Reemplazar con IDs reales de tu base de datos después de crear uno
+@vendorId = 30141cc1-f2f1-4df2-8f1d-fd9d6819a582
+@categoryId = 00000000-0000-0000-0000-000000000000 
+@unitId = 00000000-0000-0000-0000-000000000000
+@serviceId = {{createService.response.body.id}}
+
+### 1. Crear Servicio
+# @name createService
+POST {{baseUrl}}/api/services
+Content-Type: application/json
+
+{
+  "vendorId": "{{vendorId}}",
+  "categoryId": "{{categoryId}}",
+  "unitId": "{{unitId}}",
+  "title": "Mantenimiento de Aires Acondicionados",
+  "description": "Servicio profesional de limpieza y carga de gas para aires residenciales.",
+  "basePrice": 45.50,
+  "imageUrl": "https://images.unsplash.com/photo-1590486803833-ffc9409f5831"
+}
+
+### 2. Obtener Todos los Servicios
+GET {{baseUrl}}/api/services
+
+### 3. Filtrar por Vendedor
+GET {{baseUrl}}/api/services?vendorId={{vendorId}}
+
+### 4. Filtrar por Categoría
+GET {{baseUrl}}/api/services?categoryId={{categoryId}}
+
+### 5. Obtener Detalle de Servicio
+GET {{baseUrl}}/api/services/{{serviceId}}
+
+### 6. Actualizar Servicio
+PATCH {{baseUrl}}/api/services/{{serviceId}}
+Content-Type: application/json
+
+{
+  "title": "Mantenimiento Preventivo de AA",
+  "basePrice": 40.00
+}
+
+### 7. Eliminar Servicio
+DELETE {{baseUrl}}/api/services/{{serviceId}}
+ Highway

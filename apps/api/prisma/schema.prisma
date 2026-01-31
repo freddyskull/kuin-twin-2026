@@ -111,7 +111,10 @@ model Service {
   unit       ServiceUnit @relation(fields: [unitId], references: [id])
 
   title             String
+  description       String?
+  imageUrl          String?
   basePrice         Decimal @db.Decimal(10, 2)
+  isActive          Boolean @default(true)
   dynamicAttributes Json? // Configuraciones adicionales
 
   metadata ServiceMetadata[]
