@@ -2,14 +2,17 @@ import {
   Controller,
   Get,
   Post,
-  Body,
   Param,
   Delete,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipeBuilder,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { MediaService } from './media.service';
-import { CreateMediaDto } from './dto/create-media.dto';
+import { optimizeImage } from './media.utils';
 
 @Controller('api/media')
 export class MediaController {
@@ -17,15 +20,38 @@ export class MediaController {
 
   /**
    * POST /api/media/:userId
-   * Agregar un nuevo medio a la galería
+   * Subir y optimizar una imagen a la galería local
    */
   @Post(':userId')
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(FileInterceptor('file'))
   async create(
     @Param('userId') userId: string,
-    @Body() createMediaDto: CreateMediaDto,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /(jpg|jpeg|png|webp)$/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 2 * 1024 * 1024, // 2MB
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
   ) {
-    return this.mediaService.addMedia(userId, createMediaDto);
+    // 1. Optimizar la imagen
+    const processed = await optimizeImage(file, userId);
+
+    // 2. Guardar en DB
+    return this.mediaService.addMedia(userId, {
+      url: processed.url,
+      fileName: processed.fileName,
+      mimeType: processed.mimeType,
+      size: file.size,
+      alt: file.originalname,
+    });
   }
 
   /**

@@ -2,6 +2,8 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { PrismaService } from '../prisma.service';
 import { CreateMediaInput } from './dto/create-media.dto';
 import { Media, Role } from '@prisma/client';
+import { join } from 'path';
+import { promises as fs } from 'fs';
 
 @Injectable()
 export class MediaService {
@@ -55,6 +57,17 @@ export class MediaService {
       throw new NotFoundException(`Medio con ID ${mediaId} no encontrado`);
     }
 
+    // 1. Eliminar archivo físico
+    if (media.url.startsWith('/uploads/')) {
+      const filePath = join(process.cwd(), media.url);
+      try {
+        await fs.unlink(filePath);
+      } catch (error) {
+        console.error(`Error al eliminar archivo físico: ${filePath}`, error);
+      }
+    }
+
+    // 2. Eliminar de DB
     await this.prisma.media.delete({
       where: { id: mediaId },
     });

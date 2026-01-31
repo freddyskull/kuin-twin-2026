@@ -132,18 +132,17 @@ GET {{baseUrl}}/api/portfolio/user/{{nestedUserId}}
 @portfolioItemId = {{addPortfolio.response.body.id}}
 DELETE {{baseUrl}}/api/portfolio/{{portfolioItemId}}
 
-### 17. Agregar Medio a la Galería (WP Style)
+### 17. Subir y Optimizar Imagen (Galería VENDOR)
 # @name addMedia
 POST {{baseUrl}}/api/media/{{nestedUserId}}
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=boundary
 
-{
-  "url": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97",
-  "fileName": "laptop.jpg",
-  "mimeType": "image/jpeg",
-  "size": 102400,
-  "alt": "Laptop para programación"
-}
+--boundary
+Content-Disposition: form-data; name="file"; filename="test-image.jpg"
+Content-Type: image/jpeg
+
+< ./test-image.jpg
+--boundary--
 
 ### 18. Obtener Galería de Medios de Usuario
 GET {{baseUrl}}/api/media/user/{{nestedUserId}}
