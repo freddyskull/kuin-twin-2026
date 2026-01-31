@@ -13,7 +13,8 @@
   "license": "ISC",
   "description": "",
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "libs/*"
   ],
   "dependencies": {
     "turbo": "^2.8.1"
