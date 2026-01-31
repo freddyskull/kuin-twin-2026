@@ -1,0 +1,81 @@
+### Variables
+@baseUrl = http://localhost:3001
+@userId = {{createUser.response.body.id}}
+
+### 1. Crear Usuario
+# @name createUser
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123",
+  "role": "CUSTOMER"
+}
+
+### 2. Crear Usuario Vendor
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "email": "vendor@example.com",
+  "password": "password123",
+  "role": "VENDOR"
+}
+
+### 3. Crear Usuario Admin
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "password123",
+  "role": "ADMIN"
+}
+
+### 4. Obtener Todos los Usuarios
+GET {{baseUrl}}/api/users
+
+### 5. Obtener Usuario por ID
+GET {{baseUrl}}/api/users/{{userId}}
+
+### 6. Actualizar Usuario
+PATCH {{baseUrl}}/api/users/{{userId}}
+Content-Type: application/json
+
+{
+  "email": "updated@example.com"
+}
+
+### 7. Eliminar Usuario
+DELETE {{baseUrl}}/api/users/{{userId}}
+
+### 8. Error - Email Duplicado
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### 9. Error - Email Inválido
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "password": "password123"
+}
+
+### 10. Error - Password Muy Corta
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "email": "test2@example.com",
+  "password": "123"
+}
+
+### 11. Error - Usuario No Encontrado
+GET {{baseUrl}}/api/users/00000000-0000-0000-0000-000000000000

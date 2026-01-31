@@ -4,10 +4,12 @@ import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
     PrismaModule,
+    UserModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../..', 'apps/admin-panel/dist'),
       serveRoot: '/admin',
