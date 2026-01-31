@@ -4,6 +4,11 @@ generator client {
   previewFeatures = ["postgresqlExtensions"]
 }
 
+generator zod {
+  provider = "zod-prisma-types"
+  output   = "../../../libs/shared-types/src/zod"
+}
+
 datasource db {
   provider   = "postgresql"
   extensions = [postgis]
