@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma.module';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { MediaModule } from './media/media.module';
 import { CategoryModule } from './category/category.module';
@@ -37,6 +38,7 @@ import { ChatModule } from './chat/chat.module';
     }),
     PrismaModule,
     UserModule,
+    AuthModule,
     PortfolioModule,
     MediaModule,
     CategoryModule,
