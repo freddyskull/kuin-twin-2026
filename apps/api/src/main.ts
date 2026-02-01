@@ -9,9 +9,6 @@ async function bootstrap() {
   // Configurar validación global con Zod
   app.useGlobalPipes(new ZodValidationPipe());
   
-  // Establecer prefijo global para la API
-  app.setGlobalPrefix('api');
-  
   // Configurar Swagger/OpenAPI
   const config = new DocumentBuilder()
     .setTitle('Kuin Twin API')
@@ -91,14 +88,13 @@ async function bootstrap() {
   });
   
   app.enableCors();
-  app.setGlobalPrefix('/api');
   
   const port = process.env.PORT ?? 3001;
   await app.listen(port);
   
-  console.log(`\n🚀 API corriendo en: http://localhost:${port}/api`);
+  console.log(`🚀 API corriendo en: http://localhost:${port}`);
   console.log(`📚 Documentación Swagger: http://localhost:${port}/api-docs`);
   console.log(`🛒 Web Store: http://localhost:${port}`);
-  console.log(`⚙️  Admin Panel: http://localhost:${port}/admin\n`);
+  console.log(`⚙️ Admin Panel: http://localhost:${port}/admin`);
 }
 bootstrap();
