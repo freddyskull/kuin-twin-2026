@@ -8,9 +8,11 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { ServiceService } from './service.service';
 import { CreateServiceDto, UpdateServiceDto } from './dto/service.dto';
 
+@ApiTags('Services')
 @Controller('api/services')
 export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
