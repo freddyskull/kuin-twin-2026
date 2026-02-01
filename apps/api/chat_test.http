@@ -1,0 +1,31 @@
+### Variables
+@baseUrl = http://localhost:3001
+@senderId = 00000000-0000-0000-0000-000000000000
+@receiverId = 00000000-0000-0000-0000-000000000000
+
+### 1. Enviar Mensaje
+POST {{baseUrl}}/api/chat/send/{{senderId}}
+Content-Type: application/json
+
+{
+  "receiverId": "{{receiverId}}",
+  "content": "Hola, ¿podrías darme más detalles sobre el servicio?"
+}
+
+### 2. Obtener Conversaciones
+GET {{baseUrl}}/api/chat/conversations/{{senderId}}
+
+### 3. Obtener Historial con un usuario
+GET {{baseUrl}}/api/chat/messages/{{senderId}}/{{receiverId}}
+
+### 4. Marcar como leído
+PATCH {{baseUrl}}/api/chat/read/{{receiverId}}/{{senderId}}
+
+### --- EVENTOS WEBSOCKETS (Client-side usage) ---
+# Los eventos disponibles para escuchar en el frontend son:
+# 1. 'new_message': Recibe un objeto Message cuando alguien te escribe.
+# 2. 'new_booking': Los Vendedores reciben el detalle del Booking al ser creado.
+# 3. 'booking_status_changed': Cliente y Vendedor reciben el Booking actualizado.
+# 4. 'slots_updated': Todos los clientes reciben actualización de disponibilidad.
+# 5. 'payment_confirmed': El Cliente recibe confirmación de su pago.
+# 6. 'booking_paid': El Vendedor recibe aviso de que cobró una reserva.

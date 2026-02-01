@@ -14,6 +14,8 @@ import { ServiceModule } from './service/service.module';
 import { SlotModule } from './slot/slot.module';
 import { BookingModule } from './booking/booking.module';
 import { PaymentModule } from './payment/payment.module';
+import { SocketModule } from './socket/socket.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { PaymentModule } from './payment/payment.module';
     SlotModule,
     BookingModule,
     PaymentModule,
+    SocketModule,
+    ChatModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../..', 'apps/admin-panel/dist'),
       serveRoot: '/admin',

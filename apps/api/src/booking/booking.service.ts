@@ -2,10 +2,14 @@ import { Injectable, NotFoundException, BadRequestException, ConflictException }
 import { PrismaService } from '../prisma.service';
 import { CreateBookingInput, UpdateBookingDto } from './dto/booking.dto';
 import { Booking, BookingStatus, SlotStatus } from '@prisma/client';
+import { SocketGateway } from '../socket/socket.gateway';
 
 @Injectable()
 export class BookingService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly socketGateway: SocketGateway,
+  ) {}
 
   /**
    * Crear una nueva reserva con detalles y bloqueo de slots
@@ -77,10 +81,31 @@ export class BookingService {
         });
       }
 
-      return tx.booking.findUnique({
+      const bookingWithData = await tx.booking.findUnique({
         where: { id: booking.id },
-        include: { details: true, slots: true },
-      }) as unknown as Booking;
+        include: { details: true, slots: true, service: true },
+      });
+
+      // --- NOTIFICACIONES REAL-TIME ---
+      // 1. Notificar al Vendedor
+      if (bookingWithData) {
+        this.socketGateway.sendToUser(
+          bookingWithData.service.vendorId,
+          'new_booking',
+          bookingWithData,
+        );
+      }
+
+      // 2. Notificar actualización de disponibilidad local/global
+      if (slotIds && slotIds.length > 0) {
+        this.socketGateway.broadcast('slots_updated', {
+          serviceId,
+          slotIds,
+          status: SlotStatus.BOOKED,
+        });
+      }
+
+      return bookingWithData as unknown as Booking;
     });
   }
 
@@ -138,10 +163,16 @@ export class BookingService {
       });
     }
 
-    return this.prisma.booking.update({
+    const updatedBooking = await this.prisma.booking.update({
       where: { id },
       data: { status: updateDto.status },
-      include: { details: true },
+      include: { details: true, service: true },
     });
+
+    // Notificar al cliente y al vendedor del cambio de estado
+    this.socketGateway.sendToUser(updatedBooking.customerId, 'booking_status_changed', updatedBooking);
+    this.socketGateway.sendToUser(updatedBooking.service.vendorId, 'booking_status_changed', updatedBooking);
+
+    return updatedBooking;
   }
 }

@@ -2,10 +2,14 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { PrismaService } from '../prisma.service';
 import { CreateSlotInput, UpdateSlotDto } from './dto/slot.dto';
 import { ServiceSlot, SlotStatus } from '@prisma/client';
+import { SocketGateway } from '../socket/socket.gateway';
 
 @Injectable()
 export class SlotService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly socketGateway: SocketGateway,
+  ) {}
 
   /**
    * Crear un slot de tiempo para un servicio
@@ -39,13 +43,22 @@ export class SlotService {
       throw new ConflictException('El horario se solapa con un slot existente para este servicio');
     }
 
-    return this.prisma.serviceSlot.create({
+    const slot = await this.prisma.serviceSlot.create({
       data: {
         ...createDto,
         startTime: new Date(startTime),
         endTime: new Date(endTime),
       },
     });
+
+    // Notificar actualización de disponibilidad global
+    this.socketGateway.broadcast('slots_updated', {
+      serviceId: slot.serviceId,
+      slotIds: [slot.id],
+      status: slot.status,
+    });
+
+    return slot;
   }
 
   /**
@@ -99,10 +112,13 @@ export class SlotService {
 
     if (!slot) throw new NotFoundException('Slot no encontrado');
 
-    if (slot.status === SlotStatus.BOOKED) {
-      throw new ConflictException('No se puede eliminar un slot que ya está reservado');
-    }
-
     await this.prisma.serviceSlot.delete({ where: { id } });
+
+    // Notificar eliminación (para que desaparezca del UI)
+    this.socketGateway.broadcast('slots_updated', {
+      serviceId: slot.serviceId,
+      slotIds: [slot.id],
+      status: 'DELETED',
+    });
   }
 }

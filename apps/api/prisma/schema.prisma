@@ -27,6 +27,20 @@ model User {
   services  Service[] // Si es Vendor
   bookings  Booking[] // Si es Customer
   media     Media[] // Galería de medios (WP style)
+
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  content    String
+  senderId   String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
 }
 
 model Media {
