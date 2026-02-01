@@ -1,11 +1,16 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma.service';
 import { CreateServiceInput, UpdateServiceDto } from './dto/service.dto';
 import { Service, Role } from '@prisma/client';
 
 @Injectable()
 export class ServiceService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   /**
    * Crear un nuevo servicio
@@ -28,7 +33,7 @@ export class ServiceService {
     const unit = await this.prisma.serviceUnit.findUnique({ where: { id: unitId } });
     if (!unit) throw new NotFoundException('Unidad de servicio no encontrada');
 
-    return this.prisma.service.create({
+    const service = await this.prisma.service.create({
       data: {
         ...rest,
         vendorId,
@@ -36,13 +41,34 @@ export class ServiceService {
         unitId,
       },
     });
+
+    // Invalidar cache de listados
+    await this.cacheManager.del('services:all');
+    await this.cacheManager.del(`services:vendor:${vendorId}`);
+    await this.cacheManager.del(`services:category:${categoryId}`);
+
+    return service;
   }
 
   /**
    * Listar todos los servicios con filtros opcionales
    */
   async findAll(filters?: { vendorId?: string; categoryId?: string; isActive?: boolean }): Promise<Service[]> {
-    return this.prisma.service.findMany({
+    // Generar clave de cache basada en filtros
+    const cacheKey = filters?.vendorId 
+      ? `services:vendor:${filters.vendorId}`
+      : filters?.categoryId
+      ? `services:category:${filters.categoryId}`
+      : 'services:all';
+
+    // Intentar obtener del cache
+    const cached = await this.cacheManager.get<Service[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    // Si no está en cache, consultar DB
+    const services = await this.prisma.service.findMany({
       where: {
         vendorId: filters?.vendorId,
         categoryId: filters?.categoryId,
@@ -61,12 +87,25 @@ export class ServiceService {
       },
       orderBy: { title: 'asc' },
     });
+
+    // Guardar en cache por 5 minutos
+    await this.cacheManager.set(cacheKey, services, 300000);
+
+    return services;
   }
 
   /**
    * Obtener un servicio por ID con todo su detalle
    */
   async findOne(id: string): Promise<Service> {
+    const cacheKey = `service:${id}`;
+    
+    // Intentar obtener del cache
+    const cached = await this.cacheManager.get<Service>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const service = await this.prisma.service.findUnique({
       where: { id },
       include: {
@@ -87,6 +126,9 @@ export class ServiceService {
       throw new NotFoundException(`Servicio con ID ${id} no encontrado`);
     }
 
+    // Guardar en cache por 10 minutos
+    await this.cacheManager.set(cacheKey, service, 600000);
+
     return service;
   }
 
@@ -97,10 +139,18 @@ export class ServiceService {
     const service = await this.prisma.service.findUnique({ where: { id } });
     if (!service) throw new NotFoundException(`Servicio con ID ${id} no encontrado`);
 
-    return this.prisma.service.update({
+    const updated = await this.prisma.service.update({
       where: { id },
       data: updateDto as any,
     });
+
+    // Invalidar caches relacionados
+    await this.cacheManager.del(`service:${id}`);
+    await this.cacheManager.del('services:all');
+    await this.cacheManager.del(`services:vendor:${service.vendorId}`);
+    await this.cacheManager.del(`services:category:${service.categoryId}`);
+
+    return updated;
   }
 
   /**
@@ -118,6 +168,12 @@ export class ServiceService {
     if (service.bookings.length > 0) {
       throw new ForbiddenException('No se puede eliminar un servicio con reservas pendientes');
     }
+
+    // Invalidar caches antes de eliminar
+    await this.cacheManager.del(`service:${id}`);
+    await this.cacheManager.del('services:all');
+    await this.cacheManager.del(`services:vendor:${service.vendorId}`);
+    await this.cacheManager.del(`services:category:${service.categoryId}`);
 
     // Nota: En una app real preferiríamos isActive = false
     await this.prisma.service.delete({ where: { id } });

@@ -1,11 +1,16 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma.service';
 import { CreateCategoryInput, UpdateCategoryDto } from './dto/category.dto';
 import { Category } from '@prisma/client';
 
 @Injectable()
 export class CategoryService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   /**
    * Crear una nueva categoría
@@ -20,30 +25,57 @@ export class CategoryService {
       throw new ConflictException(`Ya existe una categoría con el slug: ${createDto.slug}`);
     }
 
-    return this.prisma.category.create({
+    const category = await this.prisma.category.create({
       data: {
         ...createDto,
       },
     });
+
+    // Invalidar cache de categorías
+    await this.cacheManager.del('categories:all');
+    await this.cacheManager.del('categories:roots');
+
+    return category;
   }
 
   /**
    * Obtener todas las categorías (árbol o lista plana)
    */
   async findAll(onlyRoots = false): Promise<Category[]> {
-    return this.prisma.category.findMany({
+    const cacheKey = onlyRoots ? 'categories:roots' : 'categories:all';
+
+    // Intentar obtener del cache
+    const cached = await this.cacheManager.get<Category[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const categories = await this.prisma.category.findMany({
       where: onlyRoots ? { parentId: null } : {},
       include: {
         children: true,
       },
       orderBy: { name: 'asc' },
     });
+
+    // Guardar en cache por 15 minutos (las categorías cambian poco)
+    await this.cacheManager.set(cacheKey, categories, 900000);
+
+    return categories;
   }
 
   /**
    * Obtener una categoría por ID o Slug
    */
   async findOne(idOrSlug: string): Promise<Category> {
+    const cacheKey = `category:${idOrSlug}`;
+
+    // Intentar obtener del cache
+    const cached = await this.cacheManager.get<Category>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const category = await this.prisma.category.findFirst({
       where: {
         OR: [
@@ -60,6 +92,9 @@ export class CategoryService {
     if (!category) {
       throw new NotFoundException(`Categoría ${idOrSlug} no encontrada`);
     }
+
+    // Guardar en cache por 15 minutos
+    await this.cacheManager.set(cacheKey, category, 900000);
 
     return category;
   }
@@ -84,10 +119,18 @@ export class CategoryService {
       }
     }
 
-    return this.prisma.category.update({
+    const updated = await this.prisma.category.update({
       where: { id },
       data: updateDto as any,
     });
+
+    // Invalidar caches
+    await this.cacheManager.del(`category:${id}`);
+    await this.cacheManager.del(`category:${category.slug}`);
+    await this.cacheManager.del('categories:all');
+    await this.cacheManager.del('categories:roots');
+
+    return updated;
   }
 
   /**
@@ -106,6 +149,12 @@ export class CategoryService {
     if (category.children.length > 0) {
       throw new ConflictException('No se puede eliminar una categoría que tiene subcategorías');
     }
+
+    // Invalidar caches
+    await this.cacheManager.del(`category:${id}`);
+    await this.cacheManager.del(`category:${category.slug}`);
+    await this.cacheManager.del('categories:all');
+    await this.cacheManager.del('categories:roots');
 
     await this.prisma.category.delete({ where: { id } });
   }

@@ -1,4 +1,6 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma.service';
 import { CreateUserDto, CreateUserInput, CreateProfileDto, CreateProfileInput, RegisterUserNestedDto, RegisterUserNestedInput, UpdateUserInput } from './dto';
 import { User, Profile } from '@prisma/client';
@@ -6,7 +8,10 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   /**
    * Crear un nuevo usuario (Simple)
@@ -118,6 +123,14 @@ export class UserService {
    * Obtener todos los usuarios
    */
   async findAll(): Promise<Omit<User, 'password'>[]> {
+    const cacheKey = 'users:all';
+
+    // Intentar obtener del cache
+    const cached = await this.cacheManager.get<Omit<User, 'password'>[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const users = await this.prisma.user.findMany({
       include: {
         profile: {
@@ -129,13 +142,26 @@ export class UserService {
     });
 
     // Remover passwords de todos los usuarios
-    return users.map(({ password, ...user }) => user);
+    const usersWithoutPassword = users.map(({ password, ...user }) => user);
+
+    // Guardar en cache por 3 minutos
+    await this.cacheManager.set(cacheKey, usersWithoutPassword, 180000);
+
+    return usersWithoutPassword;
   }
 
   /**
    * Obtener un usuario por ID
    */
   async findOne(id: string): Promise<Omit<User, 'password'>> {
+    const cacheKey = `user:${id}`;
+
+    // Intentar obtener del cache
+    const cached = await this.cacheManager.get<Omit<User, 'password'>>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -154,6 +180,10 @@ export class UserService {
     }
 
     const { password, ...userWithoutPassword } = user;
+
+    // Guardar en cache por 5 minutos
+    await this.cacheManager.set(cacheKey, userWithoutPassword, 300000);
+
     return userWithoutPassword;
   }
 
@@ -202,6 +232,10 @@ export class UserService {
       data: updateData,
     });
 
+    // Invalidar caches
+    await this.cacheManager.del(`user:${id}`);
+    await this.cacheManager.del('users:all');
+
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
@@ -217,6 +251,10 @@ export class UserService {
     if (!user) {
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
     }
+
+    // Invalidar caches
+    await this.cacheManager.del(`user:${id}`);
+    await this.cacheManager.del('users:all');
 
     await this.prisma.user.delete({
       where: { id },
