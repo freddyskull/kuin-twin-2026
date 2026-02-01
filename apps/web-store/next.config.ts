@@ -2,10 +2,19 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'export',
-  typescript: {
-    ignoreBuildErrors: true,
+  trailingSlash: true,
+  images: {
+    unoptimized: true,
   },
-
+  transpilePackages: ['ui-components'],
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:3001/api/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

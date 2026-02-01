@@ -5,8 +5,21 @@ generator client {
 }
 
 generator zod {
-  provider = "zod-prisma-types"
-  output   = "../../../libs/shared-types/src/zod"
+  provider                         = "zod-prisma-types"
+  output                           = "../../../libs/shared-types/src/zod"
+  useDecimalJs                     = true
+  prismaJsonNullability            = true
+  createInputTypes                 = true
+  createModelTypes                 = true
+  addInputTypeValidation           = false
+  useDefaultValidators             = false
+  coerceDate                       = true
+  writeNullishInModelTypes         = true
+  createOptionalDefaultValuesTypes = true
+  createRelationValuesTypes        = true
+  createPartialTypes               = true
+  useTypeAssertions                = true
+  writeBarrelFiles                 = false
 }
 
 datasource db {
@@ -17,6 +30,7 @@ datasource db {
 // --- IDENTIDAD ---
 
 model User {
+  /// @zod.custom.use(z.string())
   id        String    @id @default(uuid())
   email     String    @unique
   password  String
@@ -33,6 +47,7 @@ model User {
 }
 
 model Message {
+  /// @zod.custom.use(z.string())
   id         String   @id @default(uuid())
   content    String
   senderId   String
@@ -44,6 +59,7 @@ model Message {
 }
 
 model Media {
+  /// @zod.custom.use(z.string())
   id        String   @id @default(uuid())
   url       String
   key       String? // Referencia para almacenamiento (S3, etc)
@@ -63,6 +79,7 @@ enum Role {
 }
 
 model Profile {
+  /// @zod.custom.use(z.string())
   id          String  @id @default(uuid())
   userId      String  @unique
   user        User    @relation(fields: [userId], references: [id])
@@ -84,6 +101,7 @@ model Profile {
 }
 
 model PortfolioItem {
+  /// @zod.custom.use(z.string())
   id                String   @id @default(uuid())
   profileId         String
   profile           Profile  @relation(fields: [profileId], references: [id])
@@ -96,6 +114,7 @@ model PortfolioItem {
 // --- CATÁLOGO ---
 
 model Category {
+  /// @zod.custom.use(z.string())
   id          String     @id @default(uuid())
   name        String     @unique
   slug        String     @unique
@@ -109,6 +128,7 @@ model Category {
 }
 
 model ServiceUnit {
+  /// @zod.custom.use(z.string())
   id           String    @id @default(uuid())
   name         String    @unique // Ej: "Hora", "Metro Cuadrado"
   abbreviation String    @unique // Ej: "hr", "m2"
@@ -116,6 +136,7 @@ model ServiceUnit {
 }
 
 model Service {
+  /// @zod.custom.use(z.string())
   id         String      @id @default(uuid())
   vendorId   String
   vendor     User        @relation(fields: [vendorId], references: [id])
@@ -137,6 +158,7 @@ model Service {
 }
 
 model ServiceMetadata {
+  /// @zod.custom.use(z.string())
   id        String  @id @default(uuid())
   serviceId String
   service   Service @relation(fields: [serviceId], references: [id])
@@ -147,6 +169,7 @@ model ServiceMetadata {
 // --- FLUJO DE RESERVAS ---
 
 model Booking {
+  /// @zod.custom.use(z.string())
   id         String  @id @default(uuid())
   customerId String
   customer   User    @relation(fields: [customerId], references: [id])
@@ -169,6 +192,7 @@ enum BookingStatus {
 }
 
 model BookingDetails {
+  /// @zod.custom.use(z.string())
   id        String  @id @default(uuid())
   bookingId String  @unique
   booking   Booking @relation(fields: [bookingId], references: [id])
@@ -181,6 +205,7 @@ model BookingDetails {
 }
 
 model ServiceSlot {
+  /// @zod.custom.use(z.string())
   id        String   @id @default(uuid())
   serviceId String
   service   Service  @relation(fields: [serviceId], references: [id])
@@ -200,6 +225,7 @@ enum SlotStatus {
 }
 
 model Payment {
+  /// @zod.custom.use(z.string())
   id          String  @id @default(uuid())
   bookingId   String  @unique
   booking     Booking @relation(fields: [bookingId], references: [id])

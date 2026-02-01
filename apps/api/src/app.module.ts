@@ -47,18 +47,34 @@ import { ChatModule } from './chat/chat.module';
     PaymentModule,
     SocketModule,
     ChatModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../..', 'apps/admin-panel/dist'),
-      serveRoot: '/admin',
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../..', 'apps/web-store/out'),
-      exclude: ['/api/{*splat}'],
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'uploads'),
-      serveRoot: '/uploads',
-    }),
+    // Servir archivos estáticos
+    ServeStaticModule.forRoot(
+      // 1. API uploads - prioridad alta
+      {
+        rootPath: join(process.cwd(), 'apps/api/uploads'),
+        serveRoot: '/uploads',
+        serveStaticOptions: {
+          index: false,
+        },
+      },
+      // 2. Admin Panel - prioridad media
+      {
+        rootPath: join(process.cwd(), 'apps/admin-panel/dist'),
+        serveRoot: '/admin',
+        serveStaticOptions: {
+          index: ['index.html'],
+        },
+      },
+      // 3. Web Store - prioridad baja (fallback)
+      {
+        rootPath: join(process.cwd(), 'apps/web-store/out'),
+        exclude: ['/api/*path', '/admin/*path', '/uploads/*path'],
+        serveStaticOptions: {
+          index: ['index.html'],
+          extensions: ['html'],
+        },
+      },
+    ),
   ],
   controllers: [AppController],
   providers: [AppService],

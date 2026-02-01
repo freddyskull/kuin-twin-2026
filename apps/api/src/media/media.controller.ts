@@ -14,7 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { MediaService } from './media.service';
 import { optimizeImage } from './media.utils';
 
-@Controller('api/media')
+@Controller('media')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 

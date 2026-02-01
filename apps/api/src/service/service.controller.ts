@@ -13,7 +13,7 @@ import { ServiceService } from './service.service';
 import { CreateServiceDto, UpdateServiceDto } from './dto/service.dto';
 
 @ApiTags('Services')
-@Controller('api/services')
+@Controller('services')
 export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
 

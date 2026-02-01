@@ -11,7 +11,7 @@ import {
 import { SlotService } from './slot.service';
 import { CreateSlotDto, UpdateSlotDto } from './dto/slot.dto';
 
-@Controller('api/slots')
+@Controller('slots')
 export class SlotController {
   constructor(private readonly slotService: SlotService) {}
 

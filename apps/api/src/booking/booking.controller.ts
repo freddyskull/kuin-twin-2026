@@ -11,7 +11,7 @@ import { BookingService } from './booking.service';
 import { CreateBookingDto, UpdateBookingDto } from './dto/booking.dto';
 import { BookingStatus } from '@prisma/client';
 
-@Controller('api/bookings')
+@Controller('bookings')
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 

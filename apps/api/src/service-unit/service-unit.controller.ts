@@ -10,7 +10,7 @@ import {
 import { ServiceUnitService } from './service-unit.service';
 import { CreateServiceUnitDto, UpdateServiceUnitDto } from './dto/service-unit.dto';
 
-@Controller('api/service-units')
+@Controller('service-units')
 export class ServiceUnitController {
   constructor(private readonly serviceUnitService: ServiceUnitService) {}
 
