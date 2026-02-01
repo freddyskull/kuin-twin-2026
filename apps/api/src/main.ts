@@ -53,6 +53,8 @@ async function bootstrap() {
       'dev@kuintwin.com'
     )
     .setLicense('Privado', '')
+    .addBearerAuth()
+    .addTag('Auth', 'Autenticación de usuarios')
     .addTag('Users', 'Gestión de usuarios y perfiles')
     .addTag('Portfolio', 'Portafolio de trabajos de proveedores')
     .addTag('Media', 'Galería de medios (estilo WordPress)')
