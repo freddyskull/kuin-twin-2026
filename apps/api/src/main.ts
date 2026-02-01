@@ -8,6 +8,11 @@ async function bootstrap() {
   
   // Configurar validación global con Zod
   app.useGlobalPipes(new ZodValidationPipe());
+
+  // Configurar prefijo global /api
+  app.setGlobalPrefix('api', {
+    exclude: ['api-docs'] // Mantener Swagger en la raíz/api-docs (o moverlo si se prefiere)
+  });
   
   // Configurar Swagger/OpenAPI
   const config = new DocumentBuilder()
@@ -62,8 +67,8 @@ async function bootstrap() {
     .addTag('Bookings', 'Reservas y contrataciones')
     .addTag('Payments', 'Procesamiento de pagos')
     .addTag('Chat', 'Mensajería interna')
-    .addServer('http://localhost:3001', 'Desarrollo Local')
-    .addServer('https://api.kuintwin.com', 'Producción')
+    .addServer('http://localhost:3001/api', 'Desarrollo Local')
+    .addServer('https://api.kuintwin.com/api', 'Producción')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -91,10 +96,16 @@ async function bootstrap() {
   
   const port = process.env.PORT ?? 3001;
   await app.listen(port);
-  
-  console.log(`🚀 API corriendo en: http://localhost:${port}`);
+  console.log(`production mode: ${process.env.NODE_ENV === 'production'}`);
+  console.log(`🚀 API corriendo en: http://localhost:${port}/api`);
   console.log(`📚 Documentación Swagger: http://localhost:${port}/api-docs`);
   console.log(`🛒 Web Store: http://localhost:${port}`);
-  console.log(`⚙️ Admin Panel: http://localhost:${port}/admin`);
+  console.log(`⚙️ Admin Panel: http://localhost:${port}/admin\n`);
+
+  console.log(`local mode: ${process.env.NODE_ENV === 'local'}`);
+  console.log(`🚀 API corriendo en: http://localhost:${port}/api`);
+  console.log(`📚 Documentación Swagger: http://localhost:${port}/api-docs`);
+  console.log(`🛒 Web Store: http://localhost:3000`);
+  console.log(`⚙️ Admin Panel: http://localhost:5173/admin/`);
 }
 bootstrap();
