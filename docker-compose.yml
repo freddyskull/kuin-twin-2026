@@ -28,6 +28,28 @@ services:
     volumes:
       - redis_data:/data
 
+  migrator:
+    image: node:20-alpine
+    container_name: kuin-twin-migrator
+    environment:
+      # Use the internal docker network hostname 'db'
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/kuin_twin?schema=public
+    volumes:
+      # Mount the api directory to include prisma.config.ts and prisma folder
+      - ./apps/api:/app
+      # Anonymous volume for node_modules to avoid conflicting with host (Windows) modules and to keep container installs ephemeral
+      - /app/node_modules
+    working_dir: /app
+    # Install dependencies required for prisma.config.ts and migration
+    # Using --no-save to avoid altering package.json, and --legacy-peer-deps to ignore strict peer dep conflicts in the repo
+    # Run 'migrate reset --force' first to wipe any pre-existing state (drift) from the PostGIS container, preventing interactive prompts.
+    # Then 'migrate dev' will create the initial migration and apply the schema correctly.
+    # Note: --skip-seed is also not supported in recent versions or contexts, relying on default behavior.
+    command: sh -c "npm install prisma@7.3.0 dotenv typescript ts-node @types/node --no-save --legacy-peer-deps && npx prisma migrate reset --force && npx prisma migrate dev --name init"
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   postgres_data:
   redis_data:
