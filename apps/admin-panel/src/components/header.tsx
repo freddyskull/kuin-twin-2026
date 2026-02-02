@@ -8,10 +8,10 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const navItems = [
-    { to: '/dashboard', label: 'Dashboard', icon: Home },
+    { to: '/', label: 'Dashboard', icon: Home },
     { to: '/login', label: 'Login', icon: Home },
-    { to: '/dashboard', label: 'Usuarios', icon: Users, search: { section: 'users' } },
-    { to: '/dashboard', label: 'Configuración', icon: Settings, search: { section: 'settings' } },
+    { to: '/', label: 'Usuarios', icon: Users, search: { section: 'users' } },
+    { to: '/', label: 'Configuración', icon: Settings, search: { section: 'settings' } },
   ]
 
   return (
