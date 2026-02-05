@@ -11,6 +11,16 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@assets': path.resolve(__dirname, '../../libs/public'),
+      '@ui-components': path.resolve(__dirname, '../../libs/ui-components'),
+    },
+  },
+  optimizeDeps: {
+    include: ['shared-types', 'shared-types/zod'],
+  },
+  build: {
+    commonjsOptions: {
+      include: [/shared-types/, /node_modules/],
     },
   },
   server: {

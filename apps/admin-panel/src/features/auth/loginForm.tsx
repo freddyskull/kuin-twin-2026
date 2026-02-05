@@ -1,34 +1,94 @@
-import { Button, Input, Label, cn } from "ui-components"
-// import { cn } from "@/lib/utils"
+import { Button, cn, useToast, FormInput } from "ui-components"
+import { Link, useRouter } from "@tanstack/react-router"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { useAuthStore } from "../../stores/auth.store"
+
+const loginSchema = z.object({
+  email: z.string().email("Correo electrónico inválido"),
+  password: z.string().min(1, "La contraseña es requerida"),
+})
+
+type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
+  const { toast } = useToast()
+  const router = useRouter()
+  const login = useAuthStore((state) => state.login)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema as any),
+  })
+
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      await login(data)
+      toast({
+        title: "Bienvenido",
+        description: "Has iniciado sesión correctamente"
+      })
+      router.navigate({ to: "/" })
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error al iniciar sesión",
+        description: error.response?.data?.message || "Credenciales incorrectas",
+      })
+    }
+  }
+
   return (
-    <form className={cn("flex relative flex-col gap-6", className)} {...props}>
+    <form
+      className={cn("flex relative flex-col gap-6", className)}
+      onSubmit={handleSubmit(onSubmit)}
+      {...props}
+    >
       <div className="flex flex-col gap-6 ">
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-xl font-bold uppercase">Inicia sesión</h1>
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="email">Correo electrónico</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
+          <FormInput
+            id="email"
+            label="Correo electrónico"
+            type="email"
+            placeholder="m@example.com"
+            registration={register("email")}
+            error={errors.email?.message}
+          />
         </div>
         <div className="grid gap-2">
-          <div className="flex items-center">
-            <Label htmlFor="password">Contraseña</Label>
-            <a
-              href="#"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
+          <div className="flex items-center justify-between">
+            <FormInput
+              id="password"
+              label="Contraseña"
+              type="password"
+              registration={register("password")}
+              error={errors.password?.message}
+              className="w-full"
+            />
+          </div>
+          <div className="flex justify-end">
+            <Link
+              to="/"
+              className="text-sm underline-offset-4 hover:underline"
             >
               ¿Olvidaste tu contraseña?
-            </a>
+            </Link>
           </div>
-          <Input id="password" type="password" required />
         </div>
         <div className="grid gap-2">
-          <Button type="submit">Iniciar sesión</Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
+          </Button>
         </div>
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">
@@ -43,13 +103,13 @@ export function LoginForm({
                 fill="currentColor"
               />
             </svg>
-            Login with GitHub
+            Entrar con GitHub
           </Button>
           <div className="text-center text-sm text-balance">
             ¿No tienes una cuenta?{" "}
-            <a href="#" className="underline underline-offset-4">
+            <Link to="/register" className="underline underline-offset-4">
               Regístrate
-            </a>
+            </Link>
           </div>
         </div>
       </div>

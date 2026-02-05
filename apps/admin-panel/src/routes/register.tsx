@@ -1,11 +1,9 @@
-import { LoginForm } from '@/features/auth/loginForm'
 import { createFileRoute, redirect } from '@tanstack/react-router'
-// import { Button } from 'ui-components'
-
 import logo from '@assets/logo-kuin-twin.svg'
+import { RegisterForm } from '@/features/auth/registerForm'
 import { motion } from 'framer-motion'
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute('/register')({
   beforeLoad: async () => {
     const authStore = (await import('../stores/auth.store')).useAuthStore
     await authStore.getState().checkAuth()
@@ -14,10 +12,10 @@ export const Route = createFileRoute('/login')({
       throw redirect({ to: '/' })
     }
   },
-  component: LoginPage,
+  component: RouteComponent,
 })
 
-function LoginPage() {
+function RouteComponent() {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -31,24 +29,21 @@ function LoginPage() {
         <div className="absolute bottom-20 left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="flex flex-col gap-4 p-6 md:p-10 relative">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <div className="text-foreground flex items-center justify-center">
-            <img src={logo} alt="Logo" className="h-40 w-auto absolute top-10 left-1/2 -translate-x-1/2" />
-          </div>
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-sm bg-card/30 backdrop-blur-md p-6 rounded-md border border-border/50">
-            <LoginForm />
-          </div>
-        </div>
-      </div>
       <div className="bg-muted relative hidden lg:block">
         <img
           src="/admin/login-image3.jpg"
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.5] "
         />
+      </div>
+
+      <div className="flex flex-col  p-6 md:p-10 relative">
+        <img src={logo} alt="Logo" className="h-40 w-auto" />
+        <div className="flex flex-1 items-center justify-center">
+          <div className="w-full max-w-sm bg-card/30 backdrop-blur-md p-6 rounded-md border border-border/50 mt-4">
+            <RegisterForm />
+          </div>
+        </div>
       </div>
     </motion.div>
   )

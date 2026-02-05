@@ -1,7 +1,22 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { Header } from '../components/header'
 
 export const Route = createFileRoute('/_layout')({
+  beforeLoad: async ({ location }) => {
+    // Check if we can access the store directly
+    const authStore = (await import('../stores/auth.store')).useAuthStore
+    await authStore.getState().checkAuth()
+    const { isAuthenticated } = authStore.getState()
+
+    if (!isAuthenticated) {
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      })
+    }
+  },
   component: LayoutComponent,
 })
 
