@@ -33,4 +33,14 @@ export class AuthService {
       user,
     };
   }
+
+  async getProfile(userId: string) {
+    const user = await this.userService.findOne(userId);
+    // user contains profile via include in UserService.findOne
+    const { profile, ...userData } = user as any;
+    return {
+      user: userData,
+      profile: profile || null,
+    };
+  }
 }
