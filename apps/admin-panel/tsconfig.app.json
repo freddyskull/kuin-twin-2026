@@ -27,6 +27,11 @@
     /* Path Mapping */
     "baseUrl": ".",
     "paths": {
+      "@/lib/utils": ["../../libs/ui-components/src/lib/utils"],
+      "@components": ["../../libs/ui-components/src/components"],
+      "@components/*": ["../../libs/ui-components/src/components/*"],
+      "@assets": ["../../libs/public"],
+      "@shared-types": ["../../libs/shared-types"],
       "@/*": ["./src/*"]
     }
   },

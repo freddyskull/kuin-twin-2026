@@ -11,19 +11,25 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                sidebar: {
-                    DEFAULT: 'hsl(var(--sidebar-background))',
-                    foreground: 'hsl(var(--sidebar-foreground))',
-                    primary: 'hsl(var(--sidebar-primary))',
-                    'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-                    accent: 'hsl(var(--sidebar-accent))',
-                    'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-                    border: 'hsl(var(--sidebar-border))',
-                    ring: 'hsl(var(--sidebar-ring))'
+                dashboard: {
+                    bg: "#0a0b1e",
+                    sidebar: "#11122d",
+                    card: "#1a1c3d",
+                    border: "rgba(255, 255, 255, 0.05)",
+                    primary: "#f5c06a",
+                    secondary: "#94a3b8",
                 }
+            },
+            borderRadius: {
+                "3xl": "2rem",
+                "4xl": "2.5rem",
+            },
+            boxShadow: {
+                'gold-glow': '0 0 20px rgba(245, 192, 106, 0.2)',
             }
         }
-    }
+    },
+    plugins: [require("tailwindcss-animate")],
 };
 
 export default config;

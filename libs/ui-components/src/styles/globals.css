@@ -4,13 +4,13 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 226, 49%, 10%;
+    --foreground: 226, 49%, 10%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0.68 0.21 85;
+    --primary: #E5C068;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
@@ -24,28 +24,46 @@
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
     --radius: 0.5rem;
+    --sidebar-background: 224, 45%, 10%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 43 96% 56%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 199 89% 48%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 217 45% 11%;
+    --sidebar-ring: 217 45% 11%;
+    --radius: 0.8rem;
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
+    --background: 228, 48%, 13%;
+    --foreground: 0, 0%, 100%;
+    --card: 223, 42%, 13%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0.68 0.21 85;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    --popover: 223, 42%, 13%;
+    --popover-foreground: 0 0% 88%;
+    --primary: 34, 81%, 78%;
+    --primary-foreground: 0, 0%, 100%;
+    --secondary: 53, 47%, 96%;
+    --secondary-foreground: 0 0% 8%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 80%;
+    --accent: 34, 81%, 78%;
+    --accent-foreground: 0 0% 10%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
+    --sidebar-background: 223, 47%, 24%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 43 96% 56%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 34, 81%, 78%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 0 0% 45%;
+    --sidebar-ring: 0 0% 100%;
+    --radius: 0.8rem;
   }
 }
 
@@ -54,6 +72,99 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: hsl(228, 48%, 13%);
+    background-image: 
+      radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0);
+    background-size: 24px 24px;
+    background-position: 0 0;
+  }
+}
+
+@layer components {
+  /* Sidebar gradient background with grain effect */
+  [data-sidebar="sidebar"] {
+    background: 
+      repeating-conic-gradient(from 0deg at 50% 50%, 
+        rgba(255, 255, 255, 0.03) 0deg, 
+        transparent 0.5deg, 
+        transparent 1deg, 
+        rgba(0, 0, 0, 0.03) 1.5deg),
+      linear-gradient(180deg, hsl(223, 47%, 24%) 0%, hsl(223, 50%, 9%) 100%);
+    position: relative;
+  }
+
+  /* Alternative grain using CSS filter */
+  [data-sidebar="sidebar"]::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 50%, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%),
+      radial-gradient(circle at 80% 50%, transparent 0%, rgba(0, 0, 0, 0.03) 50%, transparent 100%),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.015) 2px, rgba(255, 255, 255, 0.015) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, 0.015) 2px, rgba(0, 0, 0, 0.015) 4px);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.8;
+  }
+
+  /* Ensure content is above grain */
+  [data-sidebar="sidebar"] > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Gold gradient hover effect for sidebar items */
+  [data-sidebar="menu-button"]:hover,
+  [data-sidebar="menu-sub-button"]:hover {
+    background: linear-gradient(10deg, hsl(40, 70%, 65%) 0%, hsl(35, 75%, 55%) 50%, hsl(40, 70%, 65%) 100%);
+    color: hsl(220, 40%, 15%);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Active state with gold gradient */
+  [data-sidebar="menu-button"][data-active="true"] {
+    background: linear-gradient(10deg, hsl(40, 70%, 65%) 0%, hsl(35, 75%, 55%) 50%, hsl(40, 70%, 65%) 100%);
+    color: hsl(220, 40%, 15%);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Galaxy-style starfield background */
+  main.bg-background,
+  [data-sidebar="inset"],
+  .group-data-\[collapsible\=icon\]\:hidden ~ main {
+    background-color: hsl(228, 48%, 13%) !important;
+    background-image: 
+      /* Tiny stars layer 1 - very subtle */
+      radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.15), transparent),
+      radial-gradient(1px 1px at 60% 70%, rgba(255, 255, 255, 0.12), transparent),
+      radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.18), transparent),
+      radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.1), transparent),
+      radial-gradient(1px 1px at 90% 60%, rgba(255, 255, 255, 0.14), transparent),
+      radial-gradient(1px 1px at 30% 80%, rgba(255, 255, 255, 0.11), transparent),
+      radial-gradient(1px 1px at 15% 10%, rgba(255, 255, 255, 0.16), transparent),
+      radial-gradient(1px 1px at 40% 40%, rgba(255, 255, 255, 0.13), transparent),
+      /* Tiny stars layer 2 */
+      radial-gradient(1px 1px at 70% 25%, rgba(255, 255, 255, 0.08), transparent),
+      radial-gradient(1px 1px at 25% 60%, rgba(255, 255, 255, 0.09), transparent),
+      radial-gradient(1px 1px at 85% 85%, rgba(255, 255, 255, 0.07), transparent),
+      radial-gradient(1px 1px at 45% 15%, rgba(255, 255, 255, 0.1), transparent),
+      radial-gradient(1px 1px at 10% 45%, rgba(255, 255, 255, 0.08), transparent),
+      /* Medium stars with blur effect */
+      radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.12) 1px, transparent 3px),
+      radial-gradient(circle at 75% 55%, rgba(255, 255, 255, 0.1) 1px, transparent 3px),
+      radial-gradient(circle at 55% 85%, rgba(255, 255, 255, 0.11) 1px, transparent 3px),
+      /* Larger glowing stars - barely visible */
+      radial-gradient(circle at 15% 65%, rgba(255, 255, 255, 0.15) 1.5px, rgba(255, 255, 255, 0.03) 4px, transparent 6px),
+      radial-gradient(circle at 65% 20%, rgba(255, 255, 255, 0.12) 1.5px, rgba(255, 255, 255, 0.03) 4px, transparent 6px),
+      radial-gradient(circle at 95% 40%, rgba(255, 255, 255, 0.14) 1.5px, rgba(255, 255, 255, 0.03) 4px, transparent 6px) !important;
+    background-size: 200px 200px !important;
+    background-position: 0 0, 50px 50px, 100px 100px !important;
   }
 }

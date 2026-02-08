@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
-import { Header } from '../components/header'
+import { Sidebar } from '../features/dashboard/components/CustomSidebar'
 
 export const Route = createFileRoute('/_layout')({
   beforeLoad: async ({ location }) => {
@@ -22,9 +22,12 @@ export const Route = createFileRoute('/_layout')({
 
 function LayoutComponent() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1 container py-6">
+    <div className="flex bg-dashboard-bg min-h-screen relative">
+      {/* Fixed Sidebar */}
+      <Sidebar />
+
+      {/* Main Content Area */}
+      <main className="flex-1 ml-72 p-12">
         <Outlet />
       </main>
     </div>

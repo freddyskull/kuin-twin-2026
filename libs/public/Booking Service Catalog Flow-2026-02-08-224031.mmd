@@ -1,0 +1,85 @@
+erDiagram
+    %% --- DOMINIO DE IDENTIDAD Y PERFIL ---
+    USER ||--|| PROFILE : "posee"
+    USER ||--o{ MEDIA : "sube"
+    PROFILE ||--o{ PORTFOLIO_ITEM : "contiene"
+    
+    %% --- DOMINIO DE COMUNICACIÓN ---
+    USER ||--o{ MESSAGE : "envía (sender)"
+    USER ||--o{ MESSAGE : "recibe (receiver)"
+
+    %% --- DOMINIO DE CATÁLOGO ---
+    USER ||--o{ SERVICE : "ofrece (vendor)"
+    CATEGORY ||--o{ CATEGORY : "tiene subcategorías"
+    CATEGORY ||--o{ SERVICE : "clasifica"
+    SERVICE_UNIT ||--o{ SERVICE : "mide"
+    SERVICE ||--o{ SERVICE_METADATA : "especifica"
+    SERVICE ||--o{ SERVICE_SLOT : "dispone"
+
+    %% --- DOMINIO DE TRANSACCIONES ---
+    USER ||--o{ BOOKING : "realiza (customer)"
+    SERVICE ||--o{ BOOKING : "es reservado"
+    BOOKING ||--|| BOOKING_DETAILS : "registra snapshot"
+    BOOKING ||--|| PAYMENT : "paga"
+    BOOKING ||--o{ SERVICE_SLOT : "ocupa"
+
+    USER {
+        uuid id PK
+        string email
+        string password
+        enum role
+        datetime createdAt
+    }
+
+    MESSAGE {
+        uuid id PK
+        string content
+        uuid senderId FK
+        uuid receiverId FK
+        boolean isRead
+    }
+
+    MEDIA {
+        uuid id PK
+        string url
+        string fileName
+        string mimeType
+        uuid userId FK
+    }
+
+    PROFILE {
+        uuid id PK
+        uuid userId FK
+        string displayName
+        geography location "PostGIS Point"
+        int serviceRadiusKm
+        decimal ratingAvg
+        jsonb businessHours
+    }
+
+    SERVICE {
+        uuid id PK
+        uuid vendorId FK
+        uuid categoryId FK
+        uuid unitId FK
+        string title
+        decimal basePrice
+        boolean isActive
+    }
+
+    BOOKING {
+        uuid id PK
+        uuid customerId FK
+        uuid serviceId FK
+        enum status
+        datetime scheduledDate
+    }
+
+    SERVICE_SLOT {
+        uuid id PK
+        uuid serviceId FK
+        uuid bookingId FK "null if available"
+        datetime startTime
+        datetime endTime
+        enum status
+    }

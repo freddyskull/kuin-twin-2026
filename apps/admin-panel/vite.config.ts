@@ -1,6 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
@@ -10,9 +14,12 @@ export default defineConfig({
   plugins: [TanStackRouterVite(), react()],
   resolve: {
     alias: {
+      '@/lib/utils': path.resolve(__dirname, '../../libs/ui-components/src/lib/utils'),
+      '@components': path.resolve(__dirname, '../../libs/ui-components/src/components/'),
       '@': path.resolve(__dirname, './src'),
       '@assets': path.resolve(__dirname, '../../libs/public'),
-      '@ui-components': path.resolve(__dirname, '../../libs/ui-components'),
+      '@shared-types': path.resolve(__dirname, '../../libs/shared-types'),
+      'ui-components/styles': path.resolve(__dirname, '../../libs/ui-components/src/styles/globals.css'),
     },
   },
   optimizeDeps: {
