@@ -13,9 +13,6 @@
       "default": "./dist/zod/index.js"
     }
   },
-  "scripts": {
-    "build": "tsc"
-  },
   "peerDependencies": {
     "zod": "^3.24.1",
     "@prisma/client": "^7.3.0"

@@ -7,7 +7,6 @@ import { RoleSchema } from 'shared-types/zod'
 import * as z from 'zod'
 import { Link, useRouter } from '@tanstack/react-router'
 import { FormInput } from 'ui-components'
-import { api } from 'api-client'
 import { useAuthStore } from '@/stores/auth.store'
 
 const registerSchema = z.object({

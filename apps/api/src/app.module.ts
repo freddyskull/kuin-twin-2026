@@ -53,7 +53,7 @@ import { ChatModule } from './chat/chat.module';
     ServeStaticModule.forRoot(
       // 1. API uploads - prioridad alta
       {
-        rootPath: join(process.cwd(), 'apps/api/uploads'),
+        rootPath: join(process.cwd(), 'uploads'),
         serveRoot: '/uploads',
         serveStaticOptions: {
           index: false,

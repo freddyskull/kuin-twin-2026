@@ -13,6 +13,10 @@ interface Service {
   isActive: boolean;
   category?: { name: string };
   unit?: { name: string, abbreviation: string };
+  metadata?: Array<{ key: string; value: string }>;
+  dynamicAttributes?: any;
+  workSchedule?: any;
+  slots?: Array<any>;
 }
 
 interface Category {
@@ -44,6 +48,7 @@ interface ServicesState {
   updateService: (id: string, data: any) => Promise<void>;
   deleteService: (id: string) => Promise<void>;
   toggleServiceStatus: (id: string, isActive: boolean) => Promise<void>;
+  uploadMedia: (userId: string, file: File) => Promise<any>;
 }
 
 export const useServicesStore = create<ServicesState>((set) => ({
@@ -130,6 +135,22 @@ export const useServicesStore = create<ServicesState>((set) => ({
       }));
     } catch (error: any) {
       set({ error: error.message });
+    }
+  },
+
+  uploadMedia: async (userId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const response = await api.post(`/media/${userId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Upload failed:', error);
+      throw error;
     }
   }
 }));

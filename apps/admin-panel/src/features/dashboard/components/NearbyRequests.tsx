@@ -5,29 +5,29 @@ import { motion } from 'framer-motion';
 const requests = [
   {
     id: 1,
-    title: 'Luxury Spa Concierge',
-    distance: '2.4 miles away',
+    title: 'Conserje de Spa de Lujo',
+    distance: 'a 2.4 millas',
     time: '45 mins',
     price: '$180.00',
-    status: 'URGENT',
+    status: 'URGENTE',
     icon: Flower2,
   },
   {
     id: 2,
-    title: 'Private Chef Experience',
-    distance: '5.1 miles away',
-    time: 'Tomorrow',
+    title: 'Chef Privado',
+    distance: 'a 5.1 millas',
+    time: 'Mañana',
     price: '$450.00',
-    status: 'STANDARD',
+    status: 'ESTÁNDAR',
     icon: Utensils,
   },
   {
     id: 3,
-    title: 'Chauffeur Service',
-    distance: '0.8 miles away',
-    time: 'Scheduled',
+    title: 'Servicio de Chofer',
+    distance: 'a 0.8 millas',
+    time: 'Programado',
     price: '$120.00',
-    status: 'LUXURY',
+    status: 'LUJO',
     icon: Car,
   }
 ];
@@ -36,8 +36,8 @@ export const NearbyRequests: React.FC = () => {
   return (
     <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full overflow-hidden">
       <div className="flex justify-between items-center mb-10">
-        <h2 className="text-2xl font-bold text-white tracking-tight">Nearby Professional Requests</h2>
-        <button className="text-sm font-bold text-dashboard-primary hover:text-dashboard-primary/80 transition-all uppercase tracking-widest">View All</button>
+        <h2 className="text-2xl font-bold text-white tracking-tight">Solicitudes Profesionales Cercanas</h2>
+        <button className="text-sm font-bold text-dashboard-primary hover:text-dashboard-primary/80 transition-all uppercase tracking-widest">Ver Todo</button>
       </div>
 
       <div className="space-y-6">
@@ -62,10 +62,10 @@ export const NearbyRequests: React.FC = () => {
             <div className="flex items-center gap-10">
               <div className="text-right">
                 <p className="text-xl font-black text-white mb-1 tracking-tight">{req.price}</p>
-                <p className={`text-[11px] font-black tracking-[0.2em] ${req.status === 'URGENT' ? 'text-red-500' : 'text-slate-500'} uppercase`}>{req.status}</p>
+                <p className={`text-[11px] font-black tracking-[0.2em] ${req.status === 'URGENTE' ? 'text-red-500' : 'text-slate-500'} uppercase`}>{req.status}</p>
               </div>
               <button className="bg-dashboard-primary hover:bg-dashboard-primary/90 text-dashboard-bg px-8 py-3.5 rounded-2xl text-sm font-black shadow-xl shadow-dashboard-primary/20 transition-all active:scale-95">
-                Accept
+                Aceptar
               </button>
             </div>
           </motion.div>

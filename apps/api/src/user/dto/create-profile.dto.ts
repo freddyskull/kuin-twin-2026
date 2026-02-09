@@ -1,16 +1,32 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
+import { IsInt, IsOptional, IsString, IsUrl, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
 
 /**
- * Schema para la creación de un perfil
+ * DTO para la creación de un perfil
  */
-export const CreateProfileSchema = z.object({
-  displayName: z.string().min(2, 'El nombre mostrado debe tener al menos 2 caracteres'),
-  bio: z.string().max(500, 'La biografía no puede exceder los 500 caracteres').optional().nullable(),
-  avatarUrl: z.string().url('URL de avatar inválida').optional().nullable(),
-  serviceRadiusKm: z.number().int().min(1).max(500).optional().default(10),
-  businessHours: z.any().optional().nullable(), // JSON
-});
+export class CreateProfileDto {
+  @IsString()
+  @MinLength(2, { message: 'El nombre mostrado debe tener al menos 2 caracteres' })
+  displayName: string;
 
-export class CreateProfileDto extends createZodDto(CreateProfileSchema) {}
-export type CreateProfileInput = z.infer<typeof CreateProfileSchema>;
+  @IsString()
+  @MaxLength(500, { message: 'La biografía no puede exceder los 500 caracteres' })
+  @IsOptional()
+  bio?: string;
+
+  @IsUrl({}, { message: 'URL de avatar inválida' })
+  @IsOptional()
+  avatarUrl?: string;
+
+  @IsInt()
+  @Min(1)
+  @Max(500)
+  @IsOptional()
+  @Type(() => Number)
+  serviceRadiusKm?: number = 10;
+
+  @IsOptional()
+  businessHours?: any; // JSON
+}
+
+export type CreateProfileInput = CreateProfileDto;

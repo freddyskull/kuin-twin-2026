@@ -1,27 +1,62 @@
-// apps/api/src/user/dto/user-response.dto.ts
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
-import { UserSchema, ProfileSchema } from 'shared-types/zod';
+import { IsArray, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { Role } from '@prisma/client';
 
-// Schema básico para un item de portafolio en la respuesta
-export const PortfolioItemResponseSchema = z.object({
-  id: z.string().uuid(),
-  imageUrl: z.string(),
-  description: z.string().nullable().optional(),
-  imageGallery: z.array(z.string()).optional(),
-  dynamicAttributes: z.any().optional(),
-});
+export class PortfolioItemResponseDto {
+  @IsUUID()
+  id: string;
 
-// Schema para el perfil incluyendo el portafolio
-export const ProfileResponseSchema = ProfileSchema.extend({
-  portfolio: z.array(PortfolioItemResponseSchema).optional(),
-});
+  @IsString()
+  imageUrl: string;
 
-// Schema para la respuesta de usuario (sin password)
-export const UserResponseSchema = UserSchema.omit({ password: true }).extend({
-  profile: ProfileResponseSchema.nullable().optional(),
-});
+  @IsString()
+  @IsOptional()
+  description?: string;
 
-export class UserResponseDto extends createZodDto(UserResponseSchema) {}
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  imageGallery?: string[];
 
-export type UserResponse = z.infer<typeof UserResponseSchema>;
+  @IsOptional()
+  dynamicAttributes?: any;
+}
+
+export class ProfileResponseDto {
+    id: string;
+    userId: string;
+    displayName: string;
+    bio: string | null;
+    avatarUrl: string | null;
+    serviceRadiusKm: number;
+    ratingAvg: any; // Prisma Decimal
+    reviewsCount: number;
+    businessHours: any; // JSON
+    isVerified: boolean;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PortfolioItemResponseDto)
+  @IsOptional()
+  portfolio?: PortfolioItemResponseDto[];
+}
+
+export class UserResponseDto {
+  @IsUUID()
+  id: string;
+
+  @IsString()
+  email: string;
+
+  role: Role;
+
+  createdAt: Date;
+  updatedAt: Date;
+
+  @ValidateNested()
+  @Type(() => ProfileResponseDto)
+  @IsOptional()
+  profile?: ProfileResponseDto | null;
+}
+
+export type UserResponse = UserResponseDto;

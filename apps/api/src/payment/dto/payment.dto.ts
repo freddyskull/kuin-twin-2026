@@ -1,12 +1,22 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
+import { IsNotEmpty, IsNumber, IsPositive, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
 
-export const CreatePaymentSchema = z.object({
-  bookingId: z.string().uuid(),
-  amount: z.number().positive(),
-  processorId: z.string().min(1),
-  status: z.string().min(1),
-});
+export class CreatePaymentDto {
+  @IsUUID('4')
+  bookingId: string;
 
-export class CreatePaymentDto extends createZodDto(CreatePaymentSchema) {}
-export type CreatePaymentInput = z.infer<typeof CreatePaymentSchema>;
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  amount: number;
+
+  @IsString()
+  @IsNotEmpty()
+  processorId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  status: string;
+}
+
+export type CreatePaymentInput = CreatePaymentDto;

@@ -23,12 +23,12 @@ export const Sidebar: React.FC = () => {
   };
 
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', to: '/' },
-    { icon: Plus, label: 'New Service', to: '/services/create' },
-    { icon: Briefcase, label: 'My Services', to: '/services' },
-    { icon: ShoppingBag, label: 'Orders', to: '/orders' },
-    { icon: BarChart3, label: 'Analytics', to: '/analytics' },
-    { icon: Settings, label: 'Settings', to: '/settings' },
+    { icon: LayoutDashboard, label: 'Panel Control', to: '/' },
+    { icon: Plus, label: 'Nuevo Servicio', to: '/services/create' },
+    { icon: Briefcase, label: 'Mis Servicios', to: '/services' },
+    { icon: ShoppingBag, label: 'Pedidos', to: '/orders' },
+    { icon: BarChart3, label: 'Estadísticas', to: '/analytics' },
+    { icon: Settings, label: 'Ajustes', to: '/settings' },
   ];
 
   return (
@@ -72,7 +72,7 @@ export const Sidebar: React.FC = () => {
         className="flex items-center gap-4 text-red-500 hover:text-red-400 transition-colors p-4 mt-auto group"
       >
         <LogOut className="h-5 w-5 group-hover:scale-110 transition-transform" />
-        <span className="font-semibold">Logout</span>
+        <span className="font-semibold">Cerrar Sesión</span>
       </button>
     </aside>
   );

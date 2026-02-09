@@ -1,20 +1,109 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
+import { IsString, IsUUID, MinLength, IsOptional, IsNumber, IsPositive, IsBoolean, IsArray, ValidateNested, IsObject } from 'class-validator';
+import { Type } from 'class-transformer';
+import { PartialType } from '@nestjs/swagger';
 
-export const CreateServiceSchema = z.object({
-  vendorId: z.string().uuid('ID de vendedor inválido'),
-  categoryId: z.string().uuid('ID de categoría inválido'),
-  unitId: z.string().uuid('ID de unidad inválido'),
-  title: z.string().min(3, 'El título debe tener al menos 3 caracteres'),
-  description: z.string().max(1000, 'La descripción no puede exceder los 1000 caracteres').optional().nullable(),
-  imageUrl: z.string().url('URL de imagen inválida').optional().nullable(),
-  basePrice: z.number().positive('El precio base debe ser mayor a 0'),
-  isActive: z.boolean().optional().default(true),
-  dynamicAttributes: z.any().optional().nullable(),
-});
+class MetadataDto {
+  @IsString()
+  key: string;
 
-export class CreateServiceDto extends createZodDto(CreateServiceSchema) {}
-export type CreateServiceInput = z.infer<typeof CreateServiceSchema>;
+  @IsString()
+  value: string;
+}
 
-export const UpdateServiceSchema = CreateServiceSchema.partial();
-export class UpdateServiceDto extends createZodDto(UpdateServiceSchema) {}
+class ScheduleDto {
+  @IsString()
+  day: string;
+
+  @IsBoolean()
+  enabled: boolean;
+
+  @IsString()
+  startTime: string;
+
+  @IsString()
+  endTime: string;
+}
+
+class HolidayRulesDto {
+  @IsBoolean()
+  workHolidays: boolean;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  whitelist?: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  blacklist?: string[];
+}
+
+class WorkScheduleDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ScheduleDto)
+  @IsOptional()
+  schedule?: ScheduleDto[];
+
+  @ValidateNested()
+  @Type(() => HolidayRulesDto)
+  @IsOptional()
+  holidayRules?: HolidayRulesDto;
+}
+
+export class CreateServiceDto {
+  @IsUUID('4', { message: 'ID de vendedor inválido' })
+  vendorId: string;
+
+  @IsUUID('4', { message: 'ID de categoría inválido' })
+  categoryId: string;
+
+  @IsUUID('4', { message: 'ID de unidad inválido' })
+  unitId: string;
+
+  @IsString()
+  @MinLength(3, { message: 'El título debe tener al menos 3 caracteres' })
+  title: string;
+
+  @IsString()
+  @MinLength(10, { message: 'La descripción es muy corta' })
+  @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsOptional()
+  imageUrl?: string;
+
+  @IsNumber()
+  @IsPositive({ message: 'El precio base debe ser mayor a 0' })
+  @Type(() => Number)
+  basePrice: number;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean = true;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => MetadataDto)
+  @IsOptional()
+  metadata?: MetadataDto[] = [];
+
+  @IsOptional()
+  dynamicAttributes?: any;
+
+  @ValidateNested()
+  @Type(() => WorkScheduleDto)
+  @IsOptional()
+  workSchedule?: WorkScheduleDto;
+
+  @IsArray()
+  @IsOptional()
+  slots?: any[] = [];
+}
+
+export class UpdateServiceDto extends PartialType(CreateServiceDto) {}
+
+// Alias for compatibility if needed, though mostly replaced directly
+export type CreateServiceInput = CreateServiceDto;

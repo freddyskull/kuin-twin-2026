@@ -151,6 +151,8 @@ model Service {
   basePrice         Decimal @db.Decimal(10, 2)
   isActive          Boolean @default(true)
   dynamicAttributes Json? // Configuraciones adicionales
+  /// @zod.custom.use(z.any())
+  workSchedule      Json? // Configuracion de dias y feriados
 
   metadata ServiceMetadata[]
   slots    ServiceSlot[]

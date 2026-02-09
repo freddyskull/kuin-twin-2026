@@ -16,10 +16,10 @@ export const BookingsChart: React.FC = () => {
   return (
     <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-[500px] flex flex-col relative overflow-hidden group">
       <div className="flex justify-between items-center mb-10 z-10">
-        <h2 className="text-2xl font-bold text-white tracking-tight">Bookings Over Time</h2>
+        <h2 className="text-2xl font-bold text-white tracking-tight">Reservas en el Tiempo</h2>
         <div className="flex bg-[#0a0b1e]/60 p-1.5 rounded-xl border border-white/5">
-          <button className="px-5 py-2 text-sm text-slate-500 font-bold rounded-lg transition-all hover:text-slate-300">Week</button>
-          <button className="px-5 py-2 text-sm text-white bg-dashboard-primary/20 rounded-lg transition-all font-bold">Month</button>
+          <button className="px-5 py-2 text-sm text-slate-500 font-bold rounded-lg transition-all hover:text-slate-300">Semana</button>
+          <button className="px-5 py-2 text-sm text-white bg-dashboard-primary/20 rounded-lg transition-all font-bold">Mes</button>
         </div>
       </div>
 
@@ -59,7 +59,7 @@ export const BookingsChart: React.FC = () => {
               fillOpacity={1}
               fill="url(#colorBookings)"
               dot={{ r: 0 }}
-              activeDot={{ r: 8, fill: '#f5c06a', stroke: '#11122d', strokeWidth: 3, shadow: '0 0 20px rgba(245, 192, 106, 0.8)' }}
+              activeDot={{ r: 8, fill: '#f5c06a', stroke: '#11122d', strokeWidth: 3 }}
             />
           </AreaChart>
         </ResponsiveContainer>

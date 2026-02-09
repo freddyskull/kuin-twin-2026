@@ -9,7 +9,7 @@ export const RevenueCard: React.FC = () => {
 
       <div className="flex justify-between items-start relative z-10">
         <div>
-          <p className="text-white/80 text-base font-bold mb-2">Total Revenue</p>
+          <p className="text-white/80 text-base font-bold mb-2">Ingresos Totales</p>
           <h2 className="text-[2.75rem] font-black text-white tracking-tighter leading-tight">$48,295.50</h2>
         </div>
         <div className="bg-white/20 p-3 rounded-[1.25rem] backdrop-blur-md border border-white/30">
@@ -20,7 +20,7 @@ export const RevenueCard: React.FC = () => {
       <div className="mt-8 relative z-10">
         <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/30">
           <TrendingUp className="h-5 w-5 text-white" />
-          <span className="text-sm font-black text-white">+12.4% from last month</span>
+          <span className="text-sm font-black text-white">+12.4% desde el mes pasado</span>
         </div>
       </div>
     </div>
@@ -29,14 +29,14 @@ export const RevenueCard: React.FC = () => {
 
 export const ActiveUsers: React.FC = () => {
   const stats = [
-    { label: 'Active Booking', value: '2,147', color: 'bg-dashboard-primary' },
-    { label: 'Pending Requests', value: '0,792', color: 'bg-slate-700' },
-    { label: 'Completed Today', value: '1,318', color: 'bg-slate-700' },
+    { label: 'Reservas Activas', value: '2,147', color: 'bg-dashboard-primary' },
+    { label: 'Solicitudes Pendientes', value: '0,792', color: 'bg-slate-700' },
+    { label: 'Completado Hoy', value: '1,318', color: 'bg-slate-700' },
   ];
 
   return (
     <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full">
-      <h2 className="text-2xl font-bold text-white mb-10 tracking-tight">Active Users Activity</h2>
+      <h2 className="text-2xl font-bold text-white mb-10 tracking-tight">Actividad de Usuarios</h2>
 
       <div className="space-y-10">
         {stats.map((stat, index) => (

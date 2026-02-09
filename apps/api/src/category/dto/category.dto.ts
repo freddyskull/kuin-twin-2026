@@ -1,17 +1,34 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
+import { IsBoolean, IsOptional, IsString, IsUrl, IsUUID, Matches, MaxLength, MinLength } from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
 
-export const CreateCategorySchema = z.object({
-  name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  slug: z.string().min(2, 'El slug debe tener al menos 2 caracteres').regex(/^[a-z0-9-]+$/, 'El slug solo puede contener letras minúsculas, números y guiones'),
-  description: z.string().max(500, 'La descripción no puede exceder los 500 caracteres').optional().nullable(),
-  imageUrl: z.string().url('URL de imagen inválida').optional().nullable(),
-  parentId: z.string().uuid('ID de categoría padre inválido').optional().nullable(),
-  isActive: z.boolean().optional().default(true),
-});
+export class CreateCategoryDto {
+  @IsString()
+  @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres' })
+  name: string;
 
-export class CreateCategoryDto extends createZodDto(CreateCategorySchema) {}
-export type CreateCategoryInput = z.infer<typeof CreateCategorySchema>;
+  @IsString()
+  @MinLength(2, { message: 'El slug debe tener al menos 2 caracteres' })
+  @Matches(/^[a-z0-9-]+$/, { message: 'El slug solo puede contener letras minúsculas, números y guiones' })
+  slug: string;
 
-export const UpdateCategorySchema = CreateCategorySchema.partial();
-export class UpdateCategoryDto extends createZodDto(UpdateCategorySchema) {}
+  @IsString()
+  @MaxLength(500, { message: 'La descripción no puede exceder los 500 caracteres' })
+  @IsOptional()
+  description?: string;
+
+  @IsUrl({}, { message: 'URL de imagen inválida' })
+  @IsOptional()
+  imageUrl?: string;
+
+  @IsUUID('4', { message: 'ID de categoría padre inválido' })
+  @IsOptional()
+  parentId?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean = true;
+}
+
+export type CreateCategoryInput = CreateCategoryDto;
+
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {}

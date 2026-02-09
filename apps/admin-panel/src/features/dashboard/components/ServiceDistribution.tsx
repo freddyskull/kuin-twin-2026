@@ -2,14 +2,14 @@ import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const data = [
-  { name: 'In-Home Service', value: 4291, color: '#f5c06a' },
-  { name: 'Virtual Session', value: 1502, color: '#475569' },
+  { name: 'Servicio a Domicilio', value: 4291, color: '#f5c06a' },
+  { name: 'Sesión Virtual', value: 1502, color: '#475569' },
 ];
 
 export const ServiceDistribution: React.FC = () => {
   return (
     <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full flex flex-col">
-      <h2 className="text-2xl font-bold text-white mb-10 tracking-tight">Service Distribution</h2>
+      <h2 className="text-2xl font-bold text-white mb-10 tracking-tight">Distribución de Servicios</h2>
 
       <div className="flex-1 relative min-h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -34,7 +34,7 @@ export const ServiceDistribution: React.FC = () => {
 
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span className="text-5xl font-black text-white leading-none mb-2">72%</span>
-          <span className="text-xs text-slate-500 font-bold tracking-[0.3em] uppercase">In-Home</span>
+          <span className="text-xs text-slate-500 font-bold tracking-[0.3em] uppercase">A Domicilio</span>
         </div>
       </div>
 

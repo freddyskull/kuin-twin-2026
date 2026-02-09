@@ -1,14 +1,26 @@
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
+import { IsEnum, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 
-export const LoginResponseSchema = z.object({
-  access_token: z.string().describe('Token JWT para autenticación'),
-  user: z.object({
-    id: z.string().uuid(),
-    email: z.string().email(),
-    role: z.enum(['ADMIN', 'VENDOR', 'CUSTOMER']),
-    // Add other fields as necessary, matching what AuthService returns
-  }).describe('Información del usuario autenticado'),
-});
+export class UserLoginDto {
+  @IsUUID()
+  id: string;
 
-export class LoginResponseDto extends createZodDto(LoginResponseSchema) {}
+  @IsString()
+  email: string;
+
+  @IsEnum(Role)
+  role: Role;
+}
+
+export class LoginResponseDto {
+  @IsString()
+  @ApiProperty({ description: 'Token JWT para autenticación' })
+  access_token: string;
+
+  @ValidateNested()
+  @Type(() => UserLoginDto)
+  @ApiProperty({ description: 'Información del usuario autenticado' })
+  user: UserLoginDto;
+}

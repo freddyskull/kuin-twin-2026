@@ -6,11 +6,11 @@ import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const serviceSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
-  basePrice: z.coerce.number().min(1, 'Price must be greater than 0'),
-  categoryId: z.string().min(1, 'Category is required'),
-  unitId: z.string().min(1, 'Unit is required'),
+  title: z.string().min(3, 'El título debe tener al menos 3 caracteres'),
+  description: z.string().min(10, 'La descripción debe tener al menos 10 caracteres'),
+  basePrice: z.coerce.number().min(1, 'el precio debe ser mayor a 0'),
+  categoryId: z.string().min(1, 'La categoría es requerida'),
+  unitId: z.string().min(1, 'La unidad es requerida'),
   isActive: z.boolean().default(true),
 });
 
@@ -25,7 +25,7 @@ interface ServiceFormProps {
 
 export const ServiceForm: React.FC<ServiceFormProps> = ({ onClose, onSubmit, initialData, title }) => {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ServiceFormValues>({
-    resolver: zodResolver(serviceSchema),
+    resolver: zodResolver(serviceSchema as any),
     defaultValues: initialData || { isActive: true },
   });
 
@@ -50,20 +50,20 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({ onClose, onSubmit, ini
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-6">
           <div className="space-y-2">
-            <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-1">Service Title</label>
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-1">Título del Servicio</label>
             <input
               {...register('title')}
-              placeholder="e.g. Luxury Spa Concierge"
+              placeholder="ej. Conserje de Spa de Lujo"
               className="w-full bg-[#1a1c3d]/60 border border-white/5 rounded-2xl py-4 px-6 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50 transition-all"
             />
             {errors.title && <p className="text-red-500 text-xs font-bold pl-1">{errors.title.message}</p>}
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-1">Description</label>
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-1">Descripción</label>
             <textarea
               {...register('description')}
-              placeholder="Describe your service in detail..."
+              placeholder="Describe tu servicio en detalle..."
               rows={4}
               className="w-full bg-[#1a1c3d]/60 border border-white/5 rounded-2xl py-4 px-6 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50 transition-all resize-none"
             />
@@ -72,7 +72,7 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({ onClose, onSubmit, ini
 
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-1">Base Price ($)</label>
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-1">Precio Base ($)</label>
               <input
                 {...register('basePrice')}
                 type="number"
@@ -84,13 +84,13 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({ onClose, onSubmit, ini
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-1">Status</label>
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-1">Estado</label>
               <select
                 {...register('isActive', { setValueAs: (v) => v === 'true' })}
                 className="w-full bg-[#1a1c3d]/60 border border-white/5 rounded-2xl py-4 px-6 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50 transition-all appearance-none"
               >
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
+                <option value="true">Activo</option>
+                <option value="false">Inactivo</option>
               </select>
             </div>
           </div>
@@ -105,14 +105,14 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({ onClose, onSubmit, ini
               onClick={onClose}
               className="flex-1 bg-white/5 text-slate-400 py-4 rounded-2xl font-black hover:bg-white/10 transition-all"
             >
-              Cancel
+              Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
               className="flex-1 bg-dashboard-primary text-dashboard-bg py-4 rounded-2xl font-black shadow-xl shadow-dashboard-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
             >
-              {isSubmitting ? 'Saving...' : 'Save Service'}
+              {isSubmitting ? 'Guardando...' : 'Guardar Servicio'}
             </button>
           </div>
         </form>
