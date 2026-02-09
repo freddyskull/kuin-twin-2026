@@ -8,9 +8,15 @@ export const serviceSchema = z.object({
   unitId: z.string().min(1, 'La unidad es requerida'),
   imageUrl: z.string().optional(),
   metadata: z.array(z.object({
-    key: z.string().min(1, 'Etiqueta requerida'),
-    value: z.string().min(1, 'Valor requerido'),
-  })).default([]),
+    key: z.string(),
+    value: z.string(),
+  })).default([]).transform((items) => {
+    // Filter out empty items (where both key and value are empty)
+    return items.filter(item => item.key.trim() !== '' || item.value.trim() !== '');
+  }).refine((items) => {
+    // Validate that if an item exists, both key and value must be filled
+    return items.every(item => item.key.trim() !== '' && item.value.trim() !== '');
+  }, 'Todos los atributos deben tener etiqueta y valor'),
   dynamicAttributes: z.string().optional().refine((val) => {
     if (!val) return true;
     try {

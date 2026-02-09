@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Image as ImageIcon, Trash2, Loader2, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useToast } from 'ui-components';
 import type { ServiceFormValues } from '../schema';
 import { useServicesStore } from '../../../../../stores/services.store';
 import { useAuthStore } from '../../../../../stores/auth.store';
@@ -12,6 +13,7 @@ export const ServiceMediaStep: React.FC = () => {
 
   const { uploadMedia } = useServicesStore();
   const { user } = useAuthStore();
+  const { toast } = useToast();
 
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -20,14 +22,64 @@ export const ServiceMediaStep: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file || !user?.id) return;
 
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      toast({
+        variant: "destructive",
+        title: "Imagen demasiado grande",
+        description: `La imagen pesa ${(file.size / 1024 / 1024).toFixed(2)}MB. El tamaño máximo permitido es 5MB.`,
+      });
+      // Reset the input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return;
+    }
+
     setIsUploading(true);
     try {
       const media = await uploadMedia(user.id, file);
       setValue('imageUrl', media.url);
-    } catch (error) {
+      toast({
+        variant: "default",
+        title: "Imagen subida",
+        description: "La imagen se ha subido correctamente.",
+      });
+    } catch (error: any) {
       console.error('Failed to upload image:', error);
+
+      // Check if it's a 422 error (file too large or validation error)
+      if (error?.response?.status === 422) {
+        const errorMessage = error?.response?.data?.message || '';
+
+        // Check if the error is related to file size
+        if (errorMessage.toLowerCase().includes('size') || errorMessage.toLowerCase().includes('large') || errorMessage.toLowerCase().includes('tamaño')) {
+          toast({
+            variant: "destructive",
+            title: "Imagen demasiado grande",
+            description: "La imagen que intentas subir pesa demasiado. Por favor, usa una imagen más pequeña (máximo 5MB).",
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Error al procesar la imagen",
+            description: errorMessage || "No se pudo procesar la imagen. Verifica que sea un formato válido.",
+          });
+        }
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error al subir imagen",
+          description: "Hubo un problema al subir la imagen. Inténtalo de nuevo.",
+        });
+      }
     } finally {
       setIsUploading(false);
+      // Reset the input so the same file can be selected again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -64,6 +116,11 @@ export const ServiceMediaStep: React.FC = () => {
           <p className="text-slate-500 font-bold text-sm">
             {isUploading ? 'Subiendo...' : 'Click para subir imagen'}
           </p>
+          {!isUploading && (
+            <p className="text-slate-600 text-xs">
+              Tamaño máximo: 5MB
+            </p>
+          )}
         </div>
       )}
     </motion.section>

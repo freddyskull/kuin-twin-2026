@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { AnimatePresence } from 'framer-motion';
 import { Check, ArrowRight, Loader2 } from 'lucide-react';
+import { useToast } from 'ui-components';
 
 import { serviceSchema } from './schema';
 import type { ServiceFormValues } from './schema';
@@ -45,6 +46,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
   const [currentStep, setCurrentStep] = useState(1);
   const { fetchMetadata, categories, units } = useServicesStore();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const methods = useForm<ServiceFormValues>({
     // @ts-expect-error - Type incompatibility between zod 3.25+ and @hookform/resolvers
@@ -61,7 +63,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     }
   });
 
-  const { trigger, handleSubmit, formState: { isSubmitting }, setValue, watch } = methods;
+  const { trigger, handleSubmit, formState: { isSubmitting, errors }, setValue, watch } = methods;
   const watchedCategoryId = watch('categoryId');
   const watchedUnitId = watch('unitId');
 
@@ -81,14 +83,33 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     }
   }, [categories, units, isEditMode, setValue, watchedCategoryId, watchedUnitId]);
 
-  const handleNext = async () => {
+  const handleNext = async (e?: React.MouseEvent<HTMLButtonElement>) => {
+    // Prevent form submission
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
     let fieldsToValidate: any[] = [];
     if (currentStep === 1) fieldsToValidate = ['title', 'description', 'categoryId'];
     if (currentStep === 2) fieldsToValidate = ['basePrice', 'unitId'];
     if (currentStep === 4) fieldsToValidate = ['metadata', 'dynamicAttributes'];
 
     const isValid = await trigger(fieldsToValidate);
-    if (isValid && currentStep < 5) setCurrentStep(currentStep + 1);
+
+    if (isValid && currentStep < 5) {
+      setCurrentStep(currentStep + 1);
+    } else if (!isValid) {
+      // Show error toast with specific field errors
+      const stepErrors = fieldsToValidate.map(field => errors[field as keyof typeof errors]).filter(Boolean);
+      if (stepErrors.length > 0) {
+        toast({
+          variant: "destructive",
+          title: "Revisa los campos",
+          description: "Hay errores en el formulario que debes corregir antes de continuar.",
+        });
+      }
+    }
   };
 
   const handleBack = () => {
