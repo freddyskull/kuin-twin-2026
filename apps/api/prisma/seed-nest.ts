@@ -15,6 +15,7 @@ async function bootstrap() {
     { name: 'Día', abbreviation: 'DÍA' },
     { name: 'Sesión', abbreviation: 'SES' },
     { name: 'Persona', abbreviation: 'PER' },
+    { name: 'm²', abbreviation: 'M²' },
   ];
 
   console.log('📦 Creando unidades de servicio...');

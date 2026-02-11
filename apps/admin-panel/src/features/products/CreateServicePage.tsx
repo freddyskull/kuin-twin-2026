@@ -24,6 +24,7 @@ export const CreateServicePage: React.FC = () => {
         imageUrl: data.imageUrl,
         metadata: data.metadata,
         dynamicAttributes: data.dynamicAttributes ? JSON.parse(data.dynamicAttributes) : {},
+        workSchedule: data.workSchedule,
         slots: data.slots || []
       };
 

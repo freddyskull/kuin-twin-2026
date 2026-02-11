@@ -19,6 +19,9 @@ import { SocketModule } from './socket/socket.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { ChatModule } from './chat/chat.module';
+import { CompaniesModule } from './companies/companies.module';
+import { BranchesModule } from './branches/branches.module';
+
 
 @Module({
   imports: [
@@ -49,6 +52,9 @@ import { ChatModule } from './chat/chat.module';
     PaymentModule,
     SocketModule,
     ChatModule,
+    CompaniesModule,
+    BranchesModule,
+
     // Servir archivos estáticos
     ServeStaticModule.forRoot(
       // 1. API uploads - prioridad alta

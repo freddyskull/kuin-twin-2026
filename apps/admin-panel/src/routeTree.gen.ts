@@ -14,8 +14,11 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout.index'
 import { Route as LayoutServicesIndexRouteImport } from './routes/_layout.services.index'
+import { Route as LayoutCompaniesIndexRouteImport } from './routes/_layout.companies.index'
 import { Route as LayoutServicesCreateRouteImport } from './routes/_layout.services.create'
+import { Route as LayoutCompaniesCreateRouteImport } from './routes/_layout.companies.create'
 import { Route as LayoutServicesIdEditRouteImport } from './routes/_layout.services.$id.edit'
+import { Route as LayoutCompaniesIdEditRouteImport } from './routes/_layout.companies.$id.edit'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -41,9 +44,19 @@ const LayoutServicesIndexRoute = LayoutServicesIndexRouteImport.update({
   path: '/services/',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutCompaniesIndexRoute = LayoutCompaniesIndexRouteImport.update({
+  id: '/companies/',
+  path: '/companies/',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutServicesCreateRoute = LayoutServicesCreateRouteImport.update({
   id: '/services/create',
   path: '/services/create',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutCompaniesCreateRoute = LayoutCompaniesCreateRouteImport.update({
+  id: '/companies/create',
+  path: '/companies/create',
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutServicesIdEditRoute = LayoutServicesIdEditRouteImport.update({
@@ -51,21 +64,32 @@ const LayoutServicesIdEditRoute = LayoutServicesIdEditRouteImport.update({
   path: '/services/$id/edit',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutCompaniesIdEditRoute = LayoutCompaniesIdEditRouteImport.update({
+  id: '/companies/$id/edit',
+  path: '/companies/$id/edit',
+  getParentRoute: () => LayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof LayoutIndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/companies/create': typeof LayoutCompaniesCreateRoute
   '/services/create': typeof LayoutServicesCreateRoute
+  '/companies/': typeof LayoutCompaniesIndexRoute
   '/services/': typeof LayoutServicesIndexRoute
+  '/companies/$id/edit': typeof LayoutCompaniesIdEditRoute
   '/services/$id/edit': typeof LayoutServicesIdEditRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/': typeof LayoutIndexRoute
+  '/companies/create': typeof LayoutCompaniesCreateRoute
   '/services/create': typeof LayoutServicesCreateRoute
+  '/companies': typeof LayoutCompaniesIndexRoute
   '/services': typeof LayoutServicesIndexRoute
+  '/companies/$id/edit': typeof LayoutCompaniesIdEditRoute
   '/services/$id/edit': typeof LayoutServicesIdEditRoute
 }
 export interface FileRoutesById {
@@ -74,8 +98,11 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/_layout/': typeof LayoutIndexRoute
+  '/_layout/companies/create': typeof LayoutCompaniesCreateRoute
   '/_layout/services/create': typeof LayoutServicesCreateRoute
+  '/_layout/companies/': typeof LayoutCompaniesIndexRoute
   '/_layout/services/': typeof LayoutServicesIndexRoute
+  '/_layout/companies/$id/edit': typeof LayoutCompaniesIdEditRoute
   '/_layout/services/$id/edit': typeof LayoutServicesIdEditRoute
 }
 export interface FileRouteTypes {
@@ -84,16 +111,22 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/register'
+    | '/companies/create'
     | '/services/create'
+    | '/companies/'
     | '/services/'
+    | '/companies/$id/edit'
     | '/services/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/register'
     | '/'
+    | '/companies/create'
     | '/services/create'
+    | '/companies'
     | '/services'
+    | '/companies/$id/edit'
     | '/services/$id/edit'
   id:
     | '__root__'
@@ -101,8 +134,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/_layout/'
+    | '/_layout/companies/create'
     | '/_layout/services/create'
+    | '/_layout/companies/'
     | '/_layout/services/'
+    | '/_layout/companies/$id/edit'
     | '/_layout/services/$id/edit'
   fileRoutesById: FileRoutesById
 }
@@ -149,11 +185,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutServicesIndexRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/companies/': {
+      id: '/_layout/companies/'
+      path: '/companies'
+      fullPath: '/companies/'
+      preLoaderRoute: typeof LayoutCompaniesIndexRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/services/create': {
       id: '/_layout/services/create'
       path: '/services/create'
       fullPath: '/services/create'
       preLoaderRoute: typeof LayoutServicesCreateRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/companies/create': {
+      id: '/_layout/companies/create'
+      path: '/companies/create'
+      fullPath: '/companies/create'
+      preLoaderRoute: typeof LayoutCompaniesCreateRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/services/$id/edit': {
@@ -163,20 +213,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutServicesIdEditRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/companies/$id/edit': {
+      id: '/_layout/companies/$id/edit'
+      path: '/companies/$id/edit'
+      fullPath: '/companies/$id/edit'
+      preLoaderRoute: typeof LayoutCompaniesIdEditRouteImport
+      parentRoute: typeof LayoutRoute
+    }
   }
 }
 
 interface LayoutRouteChildren {
   LayoutIndexRoute: typeof LayoutIndexRoute
+  LayoutCompaniesCreateRoute: typeof LayoutCompaniesCreateRoute
   LayoutServicesCreateRoute: typeof LayoutServicesCreateRoute
+  LayoutCompaniesIndexRoute: typeof LayoutCompaniesIndexRoute
   LayoutServicesIndexRoute: typeof LayoutServicesIndexRoute
+  LayoutCompaniesIdEditRoute: typeof LayoutCompaniesIdEditRoute
   LayoutServicesIdEditRoute: typeof LayoutServicesIdEditRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutIndexRoute: LayoutIndexRoute,
+  LayoutCompaniesCreateRoute: LayoutCompaniesCreateRoute,
   LayoutServicesCreateRoute: LayoutServicesCreateRoute,
+  LayoutCompaniesIndexRoute: LayoutCompaniesIndexRoute,
   LayoutServicesIndexRoute: LayoutServicesIndexRoute,
+  LayoutCompaniesIdEditRoute: LayoutCompaniesIdEditRoute,
   LayoutServicesIdEditRoute: LayoutServicesIdEditRoute,
 }
 

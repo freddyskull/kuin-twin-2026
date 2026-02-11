@@ -1,13 +1,18 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
-import { Settings, ChevronDown } from 'lucide-react';
+import { useFormContext, Controller } from 'react-hook-form';
+import { Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { ServiceFormValues } from '../schema';
 import { useServicesStore } from '../../../../../stores/services.store';
+import { CategorySelector } from '../CategorySelector';
 
 export const ServiceInfoStep: React.FC = () => {
-  const { register, formState: { errors } } = useFormContext<ServiceFormValues>();
-  const { categories } = useServicesStore();
+  const { register, control, formState: { errors } } = useFormContext<ServiceFormValues>();
+  const { fetchMetadata } = useServicesStore();
+
+  React.useEffect(() => {
+    fetchMetadata();
+  }, [fetchMetadata]);
 
   return (
     <motion.section
@@ -28,12 +33,17 @@ export const ServiceInfoStep: React.FC = () => {
 
         <div className="space-y-2">
           <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Categoría</label>
-          <div className="relative">
-            <select {...register('categoryId')} className="w-full bg-[#0a0b1e]/40 border border-white/5 rounded-xl py-3 px-4 text-white font-bold appearance-none focus:outline-none focus:ring-2 focus:ring-dashboard-primary/30 transition-all cursor-pointer">
-              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
-          </div>
+          <Controller
+            name="categoryId"
+            control={control}
+            render={({ field }) => (
+              <CategorySelector
+                value={field.value}
+                onChange={field.onChange}
+                error={errors.categoryId?.message}
+              />
+            )}
+          />
         </div>
 
         <div className="space-y-2">

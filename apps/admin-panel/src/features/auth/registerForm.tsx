@@ -16,6 +16,9 @@ const registerSchema = z.object({
   role: z.enum(RoleSchema.options, {
     errorMap: () => ({ message: "Por favor selecciona un rol" }),
   }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmPassword"],
 })
 
 type RegisterFormValues = z.infer<typeof registerSchema>
@@ -36,7 +39,8 @@ export const RegisterForm = ({ className, ...props }: React.ComponentProps<'form
 
   const onSubmit = async (data: RegisterFormValues) => {
     try {
-      await authStore.register(data)
+      const { confirmPassword, ...registerData } = data
+      await authStore.register(registerData)
       await authStore.login({ email: data.email, password: data.password })
       toast({
         variant: "default",

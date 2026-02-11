@@ -6,11 +6,13 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  Plus
+  Plus,
+  Building2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../../stores/auth.store';
 import { useNavigate, Link, useLocation } from '@tanstack/react-router';
+
 
 export const Sidebar: React.FC = () => {
   const logout = useAuthStore((state) => state.logout);
@@ -26,10 +28,12 @@ export const Sidebar: React.FC = () => {
     { icon: LayoutDashboard, label: 'Panel Control', to: '/' },
     { icon: Plus, label: 'Nuevo Servicio', to: '/services/create' },
     { icon: Briefcase, label: 'Mis Servicios', to: '/services' },
+    { icon: Building2, label: 'Empresas', to: '/companies' },
     { icon: ShoppingBag, label: 'Pedidos', to: '/orders' },
     { icon: BarChart3, label: 'Estadísticas', to: '/analytics' },
     { icon: Settings, label: 'Ajustes', to: '/settings' },
   ];
+
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-72 bg-dashboard-sidebar flex flex-col p-8 z-50">

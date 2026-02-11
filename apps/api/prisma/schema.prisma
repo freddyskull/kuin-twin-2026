@@ -91,13 +91,101 @@ model Profile {
   // Usamos Unsupported para manejar el tipo nativo de PostGIS
   location        Unsupported("geography(Point, 4326)")?
   serviceRadiusKm Int                                    @default(10)
+  starsRatio      Int                                    @default(0)
+  phone           String?
+  whatsapp        String?
+  facebook        String?
+  instagram       String?
+  tiktok          String?
+  twitter         String?
+  linkedin        String?
+  youtube         String?
+  website         String?
 
   ratingAvg     Decimal @default(0) @db.Decimal(3, 2)
   reviewsCount  Int     @default(0)
   businessHours Json? // Horarios generales en formato JSON
   isVerified    Boolean @default(false)
 
+  // Relación con empresa (opcional)
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
   portfolio PortfolioItem[]
+}
+
+// --- EMPRESAS ---
+
+model Company {
+  /// @zod.custom.use(z.string())
+  id String @id @default(uuid())
+
+  // Datos visibles al cliente
+  businessName String // Nombre comercial
+  logoUrl      String?
+  description  String?
+
+  // Datos fiscales (SAT - México)
+  rfc              String  @unique // Registro Federal de Contribuyentes
+  legalName        String // Razón social
+  fiscalRegime     String // Régimen fiscal (ej: "601 - General de Ley Personas Morales")
+  taxAddress       String // Domicilio fiscal
+  taxAddressZip    String // Código postal fiscal
+  taxAddressCity   String
+  taxAddressState  String
+  taxAddressCounty String? // Municipio/Delegación
+
+  // Validación SAT
+  isSatVerified      Boolean   @default(false)
+  satVerifiedAt      DateTime?
+  satCertificateUrl  String? // URL del documento de constancia de situación fiscal
+  satVerificationDoc String? // Clave del documento almacenado
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
+
+  // Relaciones
+  profiles Profile[] // Perfiles asociados a esta empresa
+  branches Branch[] // Sucursales de la empresa
+}
+
+model Branch {
+  /// @zod.custom.use(z.string())
+  id        String  @id @default(uuid())
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // Información de la sucursal
+  name        String // Ej: "Sucursal Centro", "Matriz"
+  isMain      Boolean @default(false) // Si es la sucursal principal
+  description String?
+
+  // Contacto
+  phone    String?
+  whatsapp String?
+  email    String?
+
+  // Ubicación física
+  address      String
+  addressLine2 String? // Interior, piso, etc.
+  city         String
+  state        String
+  county       String? // Municipio/Delegación
+  zipCode      String
+  country      String                                 @default("México")
+  location     Unsupported("geography(Point, 4326)")? // Coordenadas PostGIS
+  addressNotes String? // Referencias para llegar
+
+  // Horarios
+  /// @zod.custom.use(z.any())
+  businessHours Json? // Horarios específicos de esta sucursal
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
 }
 
 model PortfolioItem {
