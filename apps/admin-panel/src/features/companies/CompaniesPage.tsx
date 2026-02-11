@@ -1,23 +1,24 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, Pencil, Trash2, Building2, CheckCircle, XCircle } from 'lucide-react';
-import { useCompaniesStore } from '../../stores/companies.store';
+import { useCompanies, useDeleteCompany } from './companies.hooks';
 import type { Company } from '../../stores/companies.store';
 import { DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
 
 export const CompaniesPage: React.FC = () => {
-  const { companies, fetchCompanies, deleteCompany, error, isLoading } = useCompaniesStore();
+  const { data: companies = [], isLoading, error } = useCompanies();
+  const deleteMutation = useDeleteCompany();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filter, setFilter] = React.useState<'all' | 'verified' | 'unverified'>('all');
 
-  useEffect(() => {
-    fetchCompanies();
-  }, [fetchCompanies]);
-
   const handleDelete = async (id: string, name: string) => {
     if (window.confirm(`¿Estás seguro de que deseas eliminar la empresa "${name}"?`)) {
-      await deleteCompany(id);
+      try {
+        await deleteMutation.mutateAsync(id);
+      } catch (err) {
+        console.error('Error al eliminar empresa:', err);
+      }
     }
   };
 
@@ -95,7 +96,7 @@ export const CompaniesPage: React.FC = () => {
             </Link>
             <button
               onClick={() => handleDelete(company.id, company.businessName)}
-              disabled={isLoading}
+              disabled={deleteMutation.isPending}
               className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all disabled:opacity-30"
             >
               <Trash2 className="h-4 w-4" />
@@ -156,7 +157,7 @@ export const CompaniesPage: React.FC = () => {
 
       {error && (
         <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-2xl font-bold text-sm">
-          Error: {error}
+          Error: {(error as Error).message}
         </div>
       )}
 

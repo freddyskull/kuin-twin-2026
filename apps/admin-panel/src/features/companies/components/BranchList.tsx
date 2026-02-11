@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Plus, MapPin, Phone, Mail, Trash2, Pencil, Store } from 'lucide-react';
-import { useBranchesStore } from '../../../stores/branches.store';
+import { useBranches, useCreateBranch, useUpdateBranch, useDeleteBranch } from '../branches.hooks';
 import type { Branch } from '../../../stores/branches.store';
 import { Modal } from '../../../components/Modal';
 import { BranchForm } from './BranchForm';
@@ -12,13 +12,13 @@ interface BranchListProps {
 }
 
 export const BranchList: React.FC<BranchListProps> = ({ companyId }) => {
-  const { branches, fetchBranches, createBranch, updateBranch, deleteBranch, isLoading } = useBranchesStore();
+  const { data: branches = [], isLoading } = useBranches(companyId);
+  const createMutation = useCreateBranch();
+  const updateMutation = useUpdateBranch();
+  const deleteMutation = useDeleteBranch(companyId);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
-
-  useEffect(() => {
-    fetchBranches(companyId);
-  }, [companyId, fetchBranches]);
 
   const handleCreate = () => {
     setEditingBranch(null);
@@ -33,12 +33,11 @@ export const BranchList: React.FC<BranchListProps> = ({ companyId }) => {
   const handleSave = async (data: any) => {
     try {
       if (editingBranch) {
-        await updateBranch(editingBranch.id, data);
+        await updateMutation.mutateAsync({ id: editingBranch.id, data });
       } else {
-        await createBranch({ ...data, companyId });
+        await createMutation.mutateAsync({ ...data, companyId });
       }
       setIsModalOpen(false);
-      fetchBranches(companyId);
     } catch (error) {
       console.error('Error al guardar sucursal:', error);
     }
@@ -46,8 +45,11 @@ export const BranchList: React.FC<BranchListProps> = ({ companyId }) => {
 
   const handleDelete = async (id: string, name: string) => {
     if (window.confirm(`¿Estás seguro de que deseas eliminar la sucursal "${name}"?`)) {
-      await deleteBranch(id);
-      fetchBranches(companyId);
+      try {
+        await deleteMutation.mutateAsync(id);
+      } catch (err) {
+        console.error('Error al eliminar sucursal:', err);
+      }
     }
   };
 
@@ -120,7 +122,8 @@ export const BranchList: React.FC<BranchListProps> = ({ companyId }) => {
             </button>
             <button
               onClick={() => handleDelete(branch.id, branch.name)}
-              className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
+              disabled={deleteMutation.isPending}
+              className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all disabled:opacity-30"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -165,7 +168,7 @@ export const BranchList: React.FC<BranchListProps> = ({ companyId }) => {
           initialData={editingBranch || undefined}
           onSubmit={handleSave}
           onCancel={() => setIsModalOpen(false)}
-          isLoading={isLoading}
+          isLoading={createMutation.isPending || updateMutation.isPending}
         />
       </Modal>
     </div>

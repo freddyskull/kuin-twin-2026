@@ -15,7 +15,7 @@ import { ServiceMediaStep } from './formSteps/ServiceMediaStep';
 import { ServiceAttributesStep } from './formSteps/ServiceAttributesStep';
 import { ServiceAvailabilityStep } from './formSteps/ServiceAvailabilityStep';
 import { ServicePreview } from './ServicePreview';
-import { useServicesStore } from '../../../../stores/services.store';
+import { useCategories, useServiceUnits } from '../../services.hooks';
 
 interface ServiceWizardFormProps {
   initialValues?: Partial<ServiceFormValues>;
@@ -45,7 +45,8 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
   isEditMode = false
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const { fetchMetadata, categories, units } = useServicesStore();
+  const { data: categories = [] } = useCategories();
+  const { data: units = [] } = useServiceUnits();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -67,10 +68,6 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
   const { trigger, handleSubmit, formState: { isSubmitting, errors }, setValue, watch } = methods;
   const watchedCategoryId = watch('categoryId');
   const watchedUnitId = watch('unitId');
-
-  useEffect(() => {
-    fetchMetadata();
-  }, [fetchMetadata]);
 
   // Set default category and unit if needed
   useEffect(() => {
@@ -176,7 +173,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
               {currentStep === 4 && <ServiceAttributesStep />}
               {currentStep === 5 && <ServiceAvailabilityStep />}
             </AnimatePresence>
-
+            |
             <div className="flex items-center justify-between pt-4">
               <button
                 type="button"

@@ -1,13 +1,13 @@
 import React from 'react';
 import { useAuthStore } from '../../stores/auth.store';
-import { useServicesStore } from '../../stores/services.store';
 import { useNavigate } from 'react-router-dom';
+import { useCreateService } from './services.hooks';
 
 import { ServiceWizardForm } from './components/service-form/ServiceWizardForm';
 import type { ServiceFormValues } from './components/service-form/schema';
 
 export const CreateServicePage: React.FC = () => {
-  const { createService } = useServicesStore();
+  const createMutation = useCreateService();
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ export const CreateServicePage: React.FC = () => {
         slots: data.slots || []
       };
 
-      await createService(payload);
+      await createMutation.mutateAsync(payload);
       navigate('/services');
     } catch (error) {
       console.error('Failed to create service:', error);

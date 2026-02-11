@@ -1,19 +1,19 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, Pencil, Trash2, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useServicesStore } from '../../stores/services.store';
+import { useServices, useDeleteService, useToggleServiceStatus } from './services.hooks';
 import { DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
 
 export const ServicesPage: React.FC = () => {
-  const { services, fetchServices, filter, setFilter, deleteService, toggleServiceStatus, error, isLoading } = useServicesStore();
+  const { data: services = [], isLoading, error } = useServices();
+  const deleteMutation = useDeleteService();
+  const toggleStatusMutation = useToggleServiceStatus();
+
   const [statusConfirm, setStatusConfirm] = React.useState<{ id: string, title: string, nextStatus: boolean } | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
-
-  useEffect(() => {
-    fetchServices();
-  }, [fetchServices]);
+  const [filter, setFilter] = React.useState<'all' | 'active' | 'inactive'>('all');
 
   const handleToggleStatus = (id: string, title: string, currentStatus: boolean) => {
     setStatusConfirm({ id, title, nextStatus: !currentStatus });
@@ -21,19 +21,27 @@ export const ServicesPage: React.FC = () => {
 
   const confirmToggleStatus = async () => {
     if (statusConfirm) {
-      await toggleServiceStatus(statusConfirm.id, statusConfirm.nextStatus);
-      setStatusConfirm(null);
+      try {
+        await toggleStatusMutation.mutateAsync({ id: statusConfirm.id, isActive: statusConfirm.nextStatus });
+        setStatusConfirm(null);
+      } catch (err) {
+        console.error('Error al cambiar estado del servicio:', err);
+      }
     }
   };
 
   const handleDelete = async (id: string, title: string) => {
     if (window.confirm(`¿Estás seguro de que deseas eliminar el servicio "${title}"?`)) {
-      await deleteService(id);
+      try {
+        await deleteMutation.mutateAsync(id);
+      } catch (err) {
+        console.error('Error al eliminar servicio:', err);
+      }
     }
   };
 
   const filteredServices = useMemo(() => {
-    return services.filter(s => {
+    return services.filter((s: any) => {
       const matchesFilter = filter === 'all' || (filter === 'active' ? s.isActive : !s.isActive);
       const matchesSearch = s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (s.description?.toLowerCase() || '').includes(searchQuery.toLowerCase());
@@ -104,7 +112,7 @@ export const ServicesPage: React.FC = () => {
             </Link>
             <button
               onClick={() => handleDelete(service.id, service.title)}
-              disabled={isLoading || service.isActive}
+              disabled={deleteMutation.isPending || service.isActive}
               className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <Trash2 className="h-4 w-4" />
@@ -165,7 +173,7 @@ export const ServicesPage: React.FC = () => {
 
       {error && (
         <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-2xl font-bold text-sm">
-          Error: {error}
+          Error: {(error as Error).message}
         </div>
       )}
 
