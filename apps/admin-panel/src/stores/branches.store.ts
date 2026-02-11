@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { api } from 'api-client';
 
 export interface Branch {
   id: string;
@@ -42,38 +43,24 @@ export const useBranchesStore = create<BranchesState>((set, get) => ({
   fetchBranches: async (companyId) => {
     set({ isLoading: true, error: null });
     try {
-      const url = companyId 
-        ? `http://localhost:3001/branches?companyId=${companyId}`
-        : 'http://localhost:3001/branches';
-      
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await api.get('/branches', {
+        params: companyId ? { companyId } : {}
       });
-      if (!response.ok) throw new Error('Error al cargar sucursales');
-      const data = await response.json();
-      set({ branches: data, isLoading: false });
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+      set({ branches: response.data, isLoading: false });
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Error al cargar sucursales';
+      set({ error: message, isLoading: false });
     }
   },
 
   createBranch: async (data) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch('http://localhost:3001/branches', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) throw new Error('Error al crear sucursal');
+      await api.post('/branches', data);
       await get().fetchBranches(data.companyId);
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Error al crear sucursal';
+      set({ error: message, isLoading: false });
       throw error;
     }
   },
@@ -81,18 +68,11 @@ export const useBranchesStore = create<BranchesState>((set, get) => ({
   updateBranch: async (id, data) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`http://localhost:3001/branches/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) throw new Error('Error al actualizar sucursal');
-      await get().fetchBranches();
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+      await api.patch(`/branches/${id}`, data);
+      await get().fetchBranches(data.companyId);
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Error al actualizar sucursal';
+      set({ error: message, isLoading: false });
       throw error;
     }
   },
@@ -100,16 +80,11 @@ export const useBranchesStore = create<BranchesState>((set, get) => ({
   deleteBranch: async (id) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`http://localhost:3001/branches/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if (!response.ok) throw new Error('Error al eliminar sucursal');
+      await api.delete(`/branches/${id}`);
       await get().fetchBranches();
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Error al eliminar sucursal';
+      set({ error: message, isLoading: false });
       throw error;
     }
   },
@@ -117,17 +92,12 @@ export const useBranchesStore = create<BranchesState>((set, get) => ({
   getBranchById: async (id) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`http://localhost:3001/branches/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if (!response.ok) throw new Error('Error al cargar sucursal');
-      const data = await response.json();
+      const response = await api.get(`/branches/${id}`);
       set({ isLoading: false });
-      return data;
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+      return response.data;
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Error al cargar sucursal';
+      set({ error: message, isLoading: false });
       return null;
     }
   },

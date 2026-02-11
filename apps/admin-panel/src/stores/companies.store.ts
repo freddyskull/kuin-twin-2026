@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { api } from 'api-client';
 
 export interface Company {
   id: string;
@@ -45,34 +46,22 @@ export const useCompaniesStore = create<CompaniesState>((set, get) => ({
   fetchCompanies: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch('http://localhost:3001/companies', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if (!response.ok) throw new Error('Error al cargar empresas');
-      const data = await response.json();
-      set({ companies: data, isLoading: false });
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+      const response = await api.get('/companies');
+      set({ companies: response.data, isLoading: false });
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Error al cargar empresas';
+      set({ error: message, isLoading: false });
     }
   },
 
   createCompany: async (data) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch('http://localhost:3001/companies', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) throw new Error('Error al crear empresa');
+      await api.post('/companies', data);
       await get().fetchCompanies();
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Error al crear empresa';
+      set({ error: message, isLoading: false });
       throw error;
     }
   },
@@ -80,18 +69,11 @@ export const useCompaniesStore = create<CompaniesState>((set, get) => ({
   updateCompany: async (id, data) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`http://localhost:3001/companies/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) throw new Error('Error al actualizar empresa');
+      await api.patch(`/companies/${id}`, data);
       await get().fetchCompanies();
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Error al actualizar empresa';
+      set({ error: message, isLoading: false });
       throw error;
     }
   },
@@ -99,16 +81,11 @@ export const useCompaniesStore = create<CompaniesState>((set, get) => ({
   deleteCompany: async (id) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`http://localhost:3001/companies/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if (!response.ok) throw new Error('Error al eliminar empresa');
+      await api.delete(`/companies/${id}`);
       await get().fetchCompanies();
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Error al eliminar empresa';
+      set({ error: message, isLoading: false });
       throw error;
     }
   },
@@ -116,17 +93,12 @@ export const useCompaniesStore = create<CompaniesState>((set, get) => ({
   getCompanyById: async (id) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`http://localhost:3001/companies/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if (!response.ok) throw new Error('Error al cargar empresa');
-      const data = await response.json();
+      const response = await api.get(`/companies/${id}`);
       set({ isLoading: false });
-      return data;
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+      return response.data;
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Error al cargar empresa';
+      set({ error: message, isLoading: false });
       return null;
     }
   },
