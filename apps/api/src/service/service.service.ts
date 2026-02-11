@@ -16,7 +16,7 @@ export class ServiceService {
    * Crear un nuevo servicio
    */
   async create(createDto: CreateServiceDto): Promise<Service> {
-    const { vendorId, categoryId, unitId, ...rest } = createDto;
+    const { vendorId, categoryId, unitId, companyIds, ...rest } = createDto;
 
     // 1. Validar Vendor
     const vendor = await this.prisma.user.findUnique({ where: { id: vendorId } });
@@ -39,6 +39,9 @@ export class ServiceService {
         vendorId,
         categoryId,
         unitId,
+        companies: {
+          connect: (companyIds || []).map(id => ({ id }))
+        },
         metadata: {
           create: createDto.metadata || [],
         },
@@ -114,6 +117,7 @@ export class ServiceService {
       include: {
         category: true,
         unit: true,
+        companies: true,
         vendor: {
           select: {
             id: true,
@@ -148,6 +152,7 @@ export class ServiceService {
       include: {
         category: true,
         unit: true,
+        companies: true,
         vendor: {
           include: { profile: true },
         },
@@ -176,13 +181,20 @@ export class ServiceService {
     const service = await this.prisma.service.findUnique({ where: { id } });
     if (!service) throw new NotFoundException(`Servicio con ID ${id} no encontrado`);
 
-    const { metadata, slots, workSchedule, ...rest } = updateDto;
+    const { metadata, slots, workSchedule, companyIds, ...rest } = updateDto;
     
     // Preparar el objeto de actualización de Prisma
     const updateData: any = { ...rest };
     
     if (workSchedule) {
       updateData.workSchedule = workSchedule;
+    }
+
+    // Manejar empresas si vienen en el DTO
+    if (companyIds) {
+      updateData.companies = {
+        set: companyIds.map(id => ({ id }))
+      };
     }
 
     // Manejar metadatos si vienen en el DTO

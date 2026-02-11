@@ -61,6 +61,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
       dynamicAttributes: '',
       workSchedule: undefined,
       slots: [],
+      companyIds: [],
       ...initialValues
     }
   });
@@ -89,7 +90,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     }
 
     let fieldsToValidate: any[] = [];
-    if (currentStep === 1) fieldsToValidate = ['title', 'description', 'categoryId'];
+    if (currentStep === 1) fieldsToValidate = ['title', 'description', 'categoryId', 'companyIds'];
     if (currentStep === 2) fieldsToValidate = ['basePrice', 'unitId'];
     if (currentStep === 4) fieldsToValidate = ['metadata', 'dynamicAttributes'];
 

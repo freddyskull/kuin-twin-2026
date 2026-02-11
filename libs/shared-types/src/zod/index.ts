@@ -625,6 +625,7 @@ export type CompanyOptionalDefaults = z.infer<typeof CompanyOptionalDefaultsSche
 export type CompanyRelations = {
   profiles: ProfileWithRelations[];
   branches: BranchWithRelations[];
+  services: ServiceWithRelations[];
 };
 
 export type CompanyWithRelations = z.infer<typeof CompanySchema> & CompanyRelations
@@ -632,6 +633,7 @@ export type CompanyWithRelations = z.infer<typeof CompanySchema> & CompanyRelati
 export const CompanyWithRelationsSchema: z.ZodType<CompanyWithRelations> = CompanySchema.merge(z.object({
   profiles: z.lazy(() => ProfileWithRelationsSchema).array(),
   branches: z.lazy(() => BranchWithRelationsSchema).array(),
+  services: z.lazy(() => ServiceWithRelationsSchema).array(),
 }))
 
 // COMPANY OPTIONAL DEFAULTS RELATION SCHEMA
@@ -640,6 +642,7 @@ export const CompanyWithRelationsSchema: z.ZodType<CompanyWithRelations> = Compa
 export type CompanyOptionalDefaultsRelations = {
   profiles: ProfileOptionalDefaultsWithRelations[];
   branches: BranchOptionalDefaultsWithRelations[];
+  services: ServiceOptionalDefaultsWithRelations[];
 };
 
 export type CompanyOptionalDefaultsWithRelations = z.infer<typeof CompanyOptionalDefaultsSchema> & CompanyOptionalDefaultsRelations
@@ -647,6 +650,7 @@ export type CompanyOptionalDefaultsWithRelations = z.infer<typeof CompanyOptiona
 export const CompanyOptionalDefaultsWithRelationsSchema: z.ZodType<CompanyOptionalDefaultsWithRelations> = CompanyOptionalDefaultsSchema.merge(z.object({
   profiles: z.lazy(() => ProfileOptionalDefaultsWithRelationsSchema).array(),
   branches: z.lazy(() => BranchOptionalDefaultsWithRelationsSchema).array(),
+  services: z.lazy(() => ServiceOptionalDefaultsWithRelationsSchema).array(),
 }))
 
 // COMPANY PARTIAL RELATION SCHEMA
@@ -655,6 +659,7 @@ export const CompanyOptionalDefaultsWithRelationsSchema: z.ZodType<CompanyOption
 export type CompanyPartialRelations = {
   profiles?: ProfilePartialWithRelations[];
   branches?: BranchPartialWithRelations[];
+  services?: ServicePartialWithRelations[];
 };
 
 export type CompanyPartialWithRelations = z.infer<typeof CompanyPartialSchema> & CompanyPartialRelations
@@ -662,6 +667,7 @@ export type CompanyPartialWithRelations = z.infer<typeof CompanyPartialSchema> &
 export const CompanyPartialWithRelationsSchema: z.ZodType<CompanyPartialWithRelations> = CompanyPartialSchema.merge(z.object({
   profiles: z.lazy(() => ProfilePartialWithRelationsSchema).array(),
   branches: z.lazy(() => BranchPartialWithRelationsSchema).array(),
+  services: z.lazy(() => ServicePartialWithRelationsSchema).array(),
 })).partial()
 
 export type CompanyOptionalDefaultsWithPartialRelations = z.infer<typeof CompanyOptionalDefaultsSchema> & CompanyPartialRelations
@@ -669,6 +675,7 @@ export type CompanyOptionalDefaultsWithPartialRelations = z.infer<typeof Company
 export const CompanyOptionalDefaultsWithPartialRelationsSchema: z.ZodType<CompanyOptionalDefaultsWithPartialRelations> = CompanyOptionalDefaultsSchema.merge(z.object({
   profiles: z.lazy(() => ProfilePartialWithRelationsSchema).array(),
   branches: z.lazy(() => BranchPartialWithRelationsSchema).array(),
+  services: z.lazy(() => ServicePartialWithRelationsSchema).array(),
 }).partial())
 
 export type CompanyWithPartialRelations = z.infer<typeof CompanySchema> & CompanyPartialRelations
@@ -676,6 +683,7 @@ export type CompanyWithPartialRelations = z.infer<typeof CompanySchema> & Compan
 export const CompanyWithPartialRelationsSchema: z.ZodType<CompanyWithPartialRelations> = CompanySchema.merge(z.object({
   profiles: z.lazy(() => ProfilePartialWithRelationsSchema).array(),
   branches: z.lazy(() => BranchPartialWithRelationsSchema).array(),
+  services: z.lazy(() => ServicePartialWithRelationsSchema).array(),
 }).partial())
 
 /////////////////////////////////////////
@@ -1113,6 +1121,7 @@ export type ServiceRelations = {
   metadata: ServiceMetadataWithRelations[];
   slots: ServiceSlotWithRelations[];
   bookings: BookingWithRelations[];
+  companies: CompanyWithRelations[];
 };
 
 export type ServiceWithRelations = Omit<z.infer<typeof ServiceSchema>, "dynamicAttributes" | "workSchedule"> & {
@@ -1127,6 +1136,7 @@ export const ServiceWithRelationsSchema: z.ZodType<ServiceWithRelations> = Servi
   metadata: z.lazy(() => ServiceMetadataWithRelationsSchema).array(),
   slots: z.lazy(() => ServiceSlotWithRelationsSchema).array(),
   bookings: z.lazy(() => BookingWithRelationsSchema).array(),
+  companies: z.lazy(() => CompanyWithRelationsSchema).array(),
 }))
 
 // SERVICE OPTIONAL DEFAULTS RELATION SCHEMA
@@ -1139,6 +1149,7 @@ export type ServiceOptionalDefaultsRelations = {
   metadata: ServiceMetadataOptionalDefaultsWithRelations[];
   slots: ServiceSlotOptionalDefaultsWithRelations[];
   bookings: BookingOptionalDefaultsWithRelations[];
+  companies: CompanyOptionalDefaultsWithRelations[];
 };
 
 export type ServiceOptionalDefaultsWithRelations = Omit<z.infer<typeof ServiceOptionalDefaultsSchema>, "dynamicAttributes" | "workSchedule"> & {
@@ -1153,6 +1164,7 @@ export const ServiceOptionalDefaultsWithRelationsSchema: z.ZodType<ServiceOption
   metadata: z.lazy(() => ServiceMetadataOptionalDefaultsWithRelationsSchema).array(),
   slots: z.lazy(() => ServiceSlotOptionalDefaultsWithRelationsSchema).array(),
   bookings: z.lazy(() => BookingOptionalDefaultsWithRelationsSchema).array(),
+  companies: z.lazy(() => CompanyOptionalDefaultsWithRelationsSchema).array(),
 }))
 
 // SERVICE PARTIAL RELATION SCHEMA
@@ -1165,6 +1177,7 @@ export type ServicePartialRelations = {
   metadata?: ServiceMetadataPartialWithRelations[];
   slots?: ServiceSlotPartialWithRelations[];
   bookings?: BookingPartialWithRelations[];
+  companies?: CompanyPartialWithRelations[];
 };
 
 export type ServicePartialWithRelations = Omit<z.infer<typeof ServicePartialSchema>, "dynamicAttributes" | "workSchedule"> & {
@@ -1179,6 +1192,7 @@ export const ServicePartialWithRelationsSchema: z.ZodType<ServicePartialWithRela
   metadata: z.lazy(() => ServiceMetadataPartialWithRelationsSchema).array(),
   slots: z.lazy(() => ServiceSlotPartialWithRelationsSchema).array(),
   bookings: z.lazy(() => BookingPartialWithRelationsSchema).array(),
+  companies: z.lazy(() => CompanyPartialWithRelationsSchema).array(),
 })).partial()
 
 export type ServiceOptionalDefaultsWithPartialRelations = Omit<z.infer<typeof ServiceOptionalDefaultsSchema>, "dynamicAttributes" | "workSchedule"> & {
@@ -1193,6 +1207,7 @@ export const ServiceOptionalDefaultsWithPartialRelationsSchema: z.ZodType<Servic
   metadata: z.lazy(() => ServiceMetadataPartialWithRelationsSchema).array(),
   slots: z.lazy(() => ServiceSlotPartialWithRelationsSchema).array(),
   bookings: z.lazy(() => BookingPartialWithRelationsSchema).array(),
+  companies: z.lazy(() => CompanyPartialWithRelationsSchema).array(),
 }).partial())
 
 export type ServiceWithPartialRelations = Omit<z.infer<typeof ServiceSchema>, "dynamicAttributes" | "workSchedule"> & {
@@ -1207,6 +1222,7 @@ export const ServiceWithPartialRelationsSchema: z.ZodType<ServiceWithPartialRela
   metadata: z.lazy(() => ServiceMetadataPartialWithRelationsSchema).array(),
   slots: z.lazy(() => ServiceSlotPartialWithRelationsSchema).array(),
   bookings: z.lazy(() => BookingPartialWithRelationsSchema).array(),
+  companies: z.lazy(() => CompanyPartialWithRelationsSchema).array(),
 }).partial())
 
 /////////////////////////////////////////
@@ -1822,6 +1838,7 @@ export const ProfileSelectSchema: z.ZodType<Prisma.ProfileSelect> = z.object({
 export const CompanyIncludeSchema: z.ZodType<Prisma.CompanyInclude> = z.object({
   profiles: z.union([z.boolean(),z.lazy(() => ProfileFindManyArgsSchema)]).optional(),
   branches: z.union([z.boolean(),z.lazy(() => BranchFindManyArgsSchema)]).optional(),
+  services: z.union([z.boolean(),z.lazy(() => ServiceFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => CompanyCountOutputTypeArgsSchema)]).optional(),
 }).strict();
 
@@ -1837,6 +1854,7 @@ export const CompanyCountOutputTypeArgsSchema: z.ZodType<Prisma.CompanyCountOutp
 export const CompanyCountOutputTypeSelectSchema: z.ZodType<Prisma.CompanyCountOutputTypeSelect> = z.object({
   profiles: z.boolean().optional(),
   branches: z.boolean().optional(),
+  services: z.boolean().optional(),
 }).strict();
 
 export const CompanySelectSchema: z.ZodType<Prisma.CompanySelect> = z.object({
@@ -1861,6 +1879,7 @@ export const CompanySelectSchema: z.ZodType<Prisma.CompanySelect> = z.object({
   isActive: z.boolean().optional(),
   profiles: z.union([z.boolean(),z.lazy(() => ProfileFindManyArgsSchema)]).optional(),
   branches: z.union([z.boolean(),z.lazy(() => BranchFindManyArgsSchema)]).optional(),
+  services: z.union([z.boolean(),z.lazy(() => ServiceFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => CompanyCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -1999,6 +2018,7 @@ export const ServiceIncludeSchema: z.ZodType<Prisma.ServiceInclude> = z.object({
   metadata: z.union([z.boolean(),z.lazy(() => ServiceMetadataFindManyArgsSchema)]).optional(),
   slots: z.union([z.boolean(),z.lazy(() => ServiceSlotFindManyArgsSchema)]).optional(),
   bookings: z.union([z.boolean(),z.lazy(() => BookingFindManyArgsSchema)]).optional(),
+  companies: z.union([z.boolean(),z.lazy(() => CompanyFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => ServiceCountOutputTypeArgsSchema)]).optional(),
 }).strict();
 
@@ -2015,6 +2035,7 @@ export const ServiceCountOutputTypeSelectSchema: z.ZodType<Prisma.ServiceCountOu
   metadata: z.boolean().optional(),
   slots: z.boolean().optional(),
   bookings: z.boolean().optional(),
+  companies: z.boolean().optional(),
 }).strict();
 
 export const ServiceSelectSchema: z.ZodType<Prisma.ServiceSelect> = z.object({
@@ -2035,6 +2056,7 @@ export const ServiceSelectSchema: z.ZodType<Prisma.ServiceSelect> = z.object({
   metadata: z.union([z.boolean(),z.lazy(() => ServiceMetadataFindManyArgsSchema)]).optional(),
   slots: z.union([z.boolean(),z.lazy(() => ServiceSlotFindManyArgsSchema)]).optional(),
   bookings: z.union([z.boolean(),z.lazy(() => BookingFindManyArgsSchema)]).optional(),
+  companies: z.union([z.boolean(),z.lazy(() => CompanyFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => ServiceCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -2584,6 +2606,7 @@ export const CompanyWhereInputSchema: z.ZodType<Prisma.CompanyWhereInput> = z.st
   isActive: z.union([ z.lazy(() => BoolFilterSchema), z.boolean() ]).optional(),
   profiles: z.lazy(() => ProfileListRelationFilterSchema).optional(),
   branches: z.lazy(() => BranchListRelationFilterSchema).optional(),
+  services: z.lazy(() => ServiceListRelationFilterSchema).optional(),
 });
 
 export const CompanyOrderByWithRelationInputSchema: z.ZodType<Prisma.CompanyOrderByWithRelationInput> = z.strictObject({
@@ -2608,6 +2631,7 @@ export const CompanyOrderByWithRelationInputSchema: z.ZodType<Prisma.CompanyOrde
   isActive: z.lazy(() => SortOrderSchema).optional(),
   profiles: z.lazy(() => ProfileOrderByRelationAggregateInputSchema).optional(),
   branches: z.lazy(() => BranchOrderByRelationAggregateInputSchema).optional(),
+  services: z.lazy(() => ServiceOrderByRelationAggregateInputSchema).optional(),
 });
 
 export const CompanyWhereUniqueInputSchema: z.ZodType<Prisma.CompanyWhereUniqueInput> = z.union([
@@ -2647,6 +2671,7 @@ export const CompanyWhereUniqueInputSchema: z.ZodType<Prisma.CompanyWhereUniqueI
   isActive: z.union([ z.lazy(() => BoolFilterSchema), z.boolean() ]).optional(),
   profiles: z.lazy(() => ProfileListRelationFilterSchema).optional(),
   branches: z.lazy(() => BranchListRelationFilterSchema).optional(),
+  services: z.lazy(() => ServiceListRelationFilterSchema).optional(),
 }));
 
 export const CompanyOrderByWithAggregationInputSchema: z.ZodType<Prisma.CompanyOrderByWithAggregationInput> = z.strictObject({
@@ -3088,6 +3113,7 @@ export const ServiceWhereInputSchema: z.ZodType<Prisma.ServiceWhereInput> = z.st
   metadata: z.lazy(() => ServiceMetadataListRelationFilterSchema).optional(),
   slots: z.lazy(() => ServiceSlotListRelationFilterSchema).optional(),
   bookings: z.lazy(() => BookingListRelationFilterSchema).optional(),
+  companies: z.lazy(() => CompanyListRelationFilterSchema).optional(),
 });
 
 export const ServiceOrderByWithRelationInputSchema: z.ZodType<Prisma.ServiceOrderByWithRelationInput> = z.strictObject({
@@ -3108,6 +3134,7 @@ export const ServiceOrderByWithRelationInputSchema: z.ZodType<Prisma.ServiceOrde
   metadata: z.lazy(() => ServiceMetadataOrderByRelationAggregateInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotOrderByRelationAggregateInputSchema).optional(),
   bookings: z.lazy(() => BookingOrderByRelationAggregateInputSchema).optional(),
+  companies: z.lazy(() => CompanyOrderByRelationAggregateInputSchema).optional(),
 });
 
 export const ServiceWhereUniqueInputSchema: z.ZodType<Prisma.ServiceWhereUniqueInput> = z.object({
@@ -3134,6 +3161,7 @@ export const ServiceWhereUniqueInputSchema: z.ZodType<Prisma.ServiceWhereUniqueI
   metadata: z.lazy(() => ServiceMetadataListRelationFilterSchema).optional(),
   slots: z.lazy(() => ServiceSlotListRelationFilterSchema).optional(),
   bookings: z.lazy(() => BookingListRelationFilterSchema).optional(),
+  companies: z.lazy(() => CompanyListRelationFilterSchema).optional(),
 }));
 
 export const ServiceOrderByWithAggregationInputSchema: z.ZodType<Prisma.ServiceOrderByWithAggregationInput> = z.strictObject({
@@ -3937,6 +3965,7 @@ export const CompanyCreateInputSchema: z.ZodType<Prisma.CompanyCreateInput> = z.
   isActive: z.boolean().optional(),
   profiles: z.lazy(() => ProfileCreateNestedManyWithoutCompanyInputSchema).optional(),
   branches: z.lazy(() => BranchCreateNestedManyWithoutCompanyInputSchema).optional(),
+  services: z.lazy(() => ServiceCreateNestedManyWithoutCompaniesInputSchema).optional(),
 });
 
 export const CompanyUncheckedCreateInputSchema: z.ZodType<Prisma.CompanyUncheckedCreateInput> = z.strictObject({
@@ -3961,6 +3990,7 @@ export const CompanyUncheckedCreateInputSchema: z.ZodType<Prisma.CompanyUnchecke
   isActive: z.boolean().optional(),
   profiles: z.lazy(() => ProfileUncheckedCreateNestedManyWithoutCompanyInputSchema).optional(),
   branches: z.lazy(() => BranchUncheckedCreateNestedManyWithoutCompanyInputSchema).optional(),
+  services: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutCompaniesInputSchema).optional(),
 });
 
 export const CompanyUpdateInputSchema: z.ZodType<Prisma.CompanyUpdateInput> = z.strictObject({
@@ -3985,6 +4015,7 @@ export const CompanyUpdateInputSchema: z.ZodType<Prisma.CompanyUpdateInput> = z.
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   profiles: z.lazy(() => ProfileUpdateManyWithoutCompanyNestedInputSchema).optional(),
   branches: z.lazy(() => BranchUpdateManyWithoutCompanyNestedInputSchema).optional(),
+  services: z.lazy(() => ServiceUpdateManyWithoutCompaniesNestedInputSchema).optional(),
 });
 
 export const CompanyUncheckedUpdateInputSchema: z.ZodType<Prisma.CompanyUncheckedUpdateInput> = z.strictObject({
@@ -4009,6 +4040,7 @@ export const CompanyUncheckedUpdateInputSchema: z.ZodType<Prisma.CompanyUnchecke
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   profiles: z.lazy(() => ProfileUncheckedUpdateManyWithoutCompanyNestedInputSchema).optional(),
   branches: z.lazy(() => BranchUncheckedUpdateManyWithoutCompanyNestedInputSchema).optional(),
+  services: z.lazy(() => ServiceUncheckedUpdateManyWithoutCompaniesNestedInputSchema).optional(),
 });
 
 export const CompanyCreateManyInputSchema: z.ZodType<Prisma.CompanyCreateManyInput> = z.strictObject({
@@ -4437,6 +4469,7 @@ export const ServiceCreateInputSchema: z.ZodType<Prisma.ServiceCreateInput> = z.
   metadata: z.lazy(() => ServiceMetadataCreateNestedManyWithoutServiceInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceUncheckedCreateInputSchema: z.ZodType<Prisma.ServiceUncheckedCreateInput> = z.strictObject({
@@ -4454,6 +4487,7 @@ export const ServiceUncheckedCreateInputSchema: z.ZodType<Prisma.ServiceUnchecke
   metadata: z.lazy(() => ServiceMetadataUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceUpdateInputSchema: z.ZodType<Prisma.ServiceUpdateInput> = z.strictObject({
@@ -4471,6 +4505,7 @@ export const ServiceUpdateInputSchema: z.ZodType<Prisma.ServiceUpdateInput> = z.
   metadata: z.lazy(() => ServiceMetadataUpdateManyWithoutServiceNestedInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const ServiceUncheckedUpdateInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateInput> = z.strictObject({
@@ -4488,6 +4523,7 @@ export const ServiceUncheckedUpdateInputSchema: z.ZodType<Prisma.ServiceUnchecke
   metadata: z.lazy(() => ServiceMetadataUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const ServiceCreateManyInputSchema: z.ZodType<Prisma.ServiceCreateManyInput> = z.strictObject({
@@ -5603,11 +5639,21 @@ export const ServiceSlotListRelationFilterSchema: z.ZodType<Prisma.ServiceSlotLi
   none: z.lazy(() => ServiceSlotWhereInputSchema).optional(),
 });
 
+export const CompanyListRelationFilterSchema: z.ZodType<Prisma.CompanyListRelationFilter> = z.strictObject({
+  every: z.lazy(() => CompanyWhereInputSchema).optional(),
+  some: z.lazy(() => CompanyWhereInputSchema).optional(),
+  none: z.lazy(() => CompanyWhereInputSchema).optional(),
+});
+
 export const ServiceMetadataOrderByRelationAggregateInputSchema: z.ZodType<Prisma.ServiceMetadataOrderByRelationAggregateInput> = z.strictObject({
   _count: z.lazy(() => SortOrderSchema).optional(),
 });
 
 export const ServiceSlotOrderByRelationAggregateInputSchema: z.ZodType<Prisma.ServiceSlotOrderByRelationAggregateInput> = z.strictObject({
+  _count: z.lazy(() => SortOrderSchema).optional(),
+});
+
+export const CompanyOrderByRelationAggregateInputSchema: z.ZodType<Prisma.CompanyOrderByRelationAggregateInput> = z.strictObject({
   _count: z.lazy(() => SortOrderSchema).optional(),
 });
 
@@ -6308,6 +6354,12 @@ export const BranchCreateNestedManyWithoutCompanyInputSchema: z.ZodType<Prisma.B
   connect: z.union([ z.lazy(() => BranchWhereUniqueInputSchema), z.lazy(() => BranchWhereUniqueInputSchema).array() ]).optional(),
 });
 
+export const ServiceCreateNestedManyWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceCreateNestedManyWithoutCompaniesInput> = z.strictObject({
+  create: z.union([ z.lazy(() => ServiceCreateWithoutCompaniesInputSchema), z.lazy(() => ServiceCreateWithoutCompaniesInputSchema).array(), z.lazy(() => ServiceUncheckedCreateWithoutCompaniesInputSchema), z.lazy(() => ServiceUncheckedCreateWithoutCompaniesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ServiceCreateOrConnectWithoutCompaniesInputSchema), z.lazy(() => ServiceCreateOrConnectWithoutCompaniesInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ServiceWhereUniqueInputSchema), z.lazy(() => ServiceWhereUniqueInputSchema).array() ]).optional(),
+});
+
 export const ProfileUncheckedCreateNestedManyWithoutCompanyInputSchema: z.ZodType<Prisma.ProfileUncheckedCreateNestedManyWithoutCompanyInput> = z.strictObject({
   create: z.union([ z.lazy(() => ProfileCreateWithoutCompanyInputSchema), z.lazy(() => ProfileCreateWithoutCompanyInputSchema).array(), z.lazy(() => ProfileUncheckedCreateWithoutCompanyInputSchema), z.lazy(() => ProfileUncheckedCreateWithoutCompanyInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => ProfileCreateOrConnectWithoutCompanyInputSchema), z.lazy(() => ProfileCreateOrConnectWithoutCompanyInputSchema).array() ]).optional(),
@@ -6320,6 +6372,12 @@ export const BranchUncheckedCreateNestedManyWithoutCompanyInputSchema: z.ZodType
   connectOrCreate: z.union([ z.lazy(() => BranchCreateOrConnectWithoutCompanyInputSchema), z.lazy(() => BranchCreateOrConnectWithoutCompanyInputSchema).array() ]).optional(),
   createMany: z.lazy(() => BranchCreateManyCompanyInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => BranchWhereUniqueInputSchema), z.lazy(() => BranchWhereUniqueInputSchema).array() ]).optional(),
+});
+
+export const ServiceUncheckedCreateNestedManyWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceUncheckedCreateNestedManyWithoutCompaniesInput> = z.strictObject({
+  create: z.union([ z.lazy(() => ServiceCreateWithoutCompaniesInputSchema), z.lazy(() => ServiceCreateWithoutCompaniesInputSchema).array(), z.lazy(() => ServiceUncheckedCreateWithoutCompaniesInputSchema), z.lazy(() => ServiceUncheckedCreateWithoutCompaniesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ServiceCreateOrConnectWithoutCompaniesInputSchema), z.lazy(() => ServiceCreateOrConnectWithoutCompaniesInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ServiceWhereUniqueInputSchema), z.lazy(() => ServiceWhereUniqueInputSchema).array() ]).optional(),
 });
 
 export const NullableDateTimeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableDateTimeFieldUpdateOperationsInput> = z.strictObject({
@@ -6354,6 +6412,19 @@ export const BranchUpdateManyWithoutCompanyNestedInputSchema: z.ZodType<Prisma.B
   deleteMany: z.union([ z.lazy(() => BranchScalarWhereInputSchema), z.lazy(() => BranchScalarWhereInputSchema).array() ]).optional(),
 });
 
+export const ServiceUpdateManyWithoutCompaniesNestedInputSchema: z.ZodType<Prisma.ServiceUpdateManyWithoutCompaniesNestedInput> = z.strictObject({
+  create: z.union([ z.lazy(() => ServiceCreateWithoutCompaniesInputSchema), z.lazy(() => ServiceCreateWithoutCompaniesInputSchema).array(), z.lazy(() => ServiceUncheckedCreateWithoutCompaniesInputSchema), z.lazy(() => ServiceUncheckedCreateWithoutCompaniesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ServiceCreateOrConnectWithoutCompaniesInputSchema), z.lazy(() => ServiceCreateOrConnectWithoutCompaniesInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ServiceUpsertWithWhereUniqueWithoutCompaniesInputSchema), z.lazy(() => ServiceUpsertWithWhereUniqueWithoutCompaniesInputSchema).array() ]).optional(),
+  set: z.union([ z.lazy(() => ServiceWhereUniqueInputSchema), z.lazy(() => ServiceWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ServiceWhereUniqueInputSchema), z.lazy(() => ServiceWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ServiceWhereUniqueInputSchema), z.lazy(() => ServiceWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ServiceWhereUniqueInputSchema), z.lazy(() => ServiceWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ServiceUpdateWithWhereUniqueWithoutCompaniesInputSchema), z.lazy(() => ServiceUpdateWithWhereUniqueWithoutCompaniesInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ServiceUpdateManyWithWhereWithoutCompaniesInputSchema), z.lazy(() => ServiceUpdateManyWithWhereWithoutCompaniesInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ServiceScalarWhereInputSchema), z.lazy(() => ServiceScalarWhereInputSchema).array() ]).optional(),
+});
+
 export const ProfileUncheckedUpdateManyWithoutCompanyNestedInputSchema: z.ZodType<Prisma.ProfileUncheckedUpdateManyWithoutCompanyNestedInput> = z.strictObject({
   create: z.union([ z.lazy(() => ProfileCreateWithoutCompanyInputSchema), z.lazy(() => ProfileCreateWithoutCompanyInputSchema).array(), z.lazy(() => ProfileUncheckedCreateWithoutCompanyInputSchema), z.lazy(() => ProfileUncheckedCreateWithoutCompanyInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => ProfileCreateOrConnectWithoutCompanyInputSchema), z.lazy(() => ProfileCreateOrConnectWithoutCompanyInputSchema).array() ]).optional(),
@@ -6380,6 +6451,19 @@ export const BranchUncheckedUpdateManyWithoutCompanyNestedInputSchema: z.ZodType
   update: z.union([ z.lazy(() => BranchUpdateWithWhereUniqueWithoutCompanyInputSchema), z.lazy(() => BranchUpdateWithWhereUniqueWithoutCompanyInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => BranchUpdateManyWithWhereWithoutCompanyInputSchema), z.lazy(() => BranchUpdateManyWithWhereWithoutCompanyInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => BranchScalarWhereInputSchema), z.lazy(() => BranchScalarWhereInputSchema).array() ]).optional(),
+});
+
+export const ServiceUncheckedUpdateManyWithoutCompaniesNestedInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateManyWithoutCompaniesNestedInput> = z.strictObject({
+  create: z.union([ z.lazy(() => ServiceCreateWithoutCompaniesInputSchema), z.lazy(() => ServiceCreateWithoutCompaniesInputSchema).array(), z.lazy(() => ServiceUncheckedCreateWithoutCompaniesInputSchema), z.lazy(() => ServiceUncheckedCreateWithoutCompaniesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ServiceCreateOrConnectWithoutCompaniesInputSchema), z.lazy(() => ServiceCreateOrConnectWithoutCompaniesInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ServiceUpsertWithWhereUniqueWithoutCompaniesInputSchema), z.lazy(() => ServiceUpsertWithWhereUniqueWithoutCompaniesInputSchema).array() ]).optional(),
+  set: z.union([ z.lazy(() => ServiceWhereUniqueInputSchema), z.lazy(() => ServiceWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ServiceWhereUniqueInputSchema), z.lazy(() => ServiceWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ServiceWhereUniqueInputSchema), z.lazy(() => ServiceWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ServiceWhereUniqueInputSchema), z.lazy(() => ServiceWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ServiceUpdateWithWhereUniqueWithoutCompaniesInputSchema), z.lazy(() => ServiceUpdateWithWhereUniqueWithoutCompaniesInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ServiceUpdateManyWithWhereWithoutCompaniesInputSchema), z.lazy(() => ServiceUpdateManyWithWhereWithoutCompaniesInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ServiceScalarWhereInputSchema), z.lazy(() => ServiceScalarWhereInputSchema).array() ]).optional(),
 });
 
 export const CompanyCreateNestedOneWithoutBranchesInputSchema: z.ZodType<Prisma.CompanyCreateNestedOneWithoutBranchesInput> = z.strictObject({
@@ -6600,6 +6684,12 @@ export const BookingCreateNestedManyWithoutServiceInputSchema: z.ZodType<Prisma.
   connect: z.union([ z.lazy(() => BookingWhereUniqueInputSchema), z.lazy(() => BookingWhereUniqueInputSchema).array() ]).optional(),
 });
 
+export const CompanyCreateNestedManyWithoutServicesInputSchema: z.ZodType<Prisma.CompanyCreateNestedManyWithoutServicesInput> = z.strictObject({
+  create: z.union([ z.lazy(() => CompanyCreateWithoutServicesInputSchema), z.lazy(() => CompanyCreateWithoutServicesInputSchema).array(), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CompanyCreateOrConnectWithoutServicesInputSchema), z.lazy(() => CompanyCreateOrConnectWithoutServicesInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CompanyWhereUniqueInputSchema), z.lazy(() => CompanyWhereUniqueInputSchema).array() ]).optional(),
+});
+
 export const ServiceMetadataUncheckedCreateNestedManyWithoutServiceInputSchema: z.ZodType<Prisma.ServiceMetadataUncheckedCreateNestedManyWithoutServiceInput> = z.strictObject({
   create: z.union([ z.lazy(() => ServiceMetadataCreateWithoutServiceInputSchema), z.lazy(() => ServiceMetadataCreateWithoutServiceInputSchema).array(), z.lazy(() => ServiceMetadataUncheckedCreateWithoutServiceInputSchema), z.lazy(() => ServiceMetadataUncheckedCreateWithoutServiceInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => ServiceMetadataCreateOrConnectWithoutServiceInputSchema), z.lazy(() => ServiceMetadataCreateOrConnectWithoutServiceInputSchema).array() ]).optional(),
@@ -6619,6 +6709,12 @@ export const BookingUncheckedCreateNestedManyWithoutServiceInputSchema: z.ZodTyp
   connectOrCreate: z.union([ z.lazy(() => BookingCreateOrConnectWithoutServiceInputSchema), z.lazy(() => BookingCreateOrConnectWithoutServiceInputSchema).array() ]).optional(),
   createMany: z.lazy(() => BookingCreateManyServiceInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => BookingWhereUniqueInputSchema), z.lazy(() => BookingWhereUniqueInputSchema).array() ]).optional(),
+});
+
+export const CompanyUncheckedCreateNestedManyWithoutServicesInputSchema: z.ZodType<Prisma.CompanyUncheckedCreateNestedManyWithoutServicesInput> = z.strictObject({
+  create: z.union([ z.lazy(() => CompanyCreateWithoutServicesInputSchema), z.lazy(() => CompanyCreateWithoutServicesInputSchema).array(), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CompanyCreateOrConnectWithoutServicesInputSchema), z.lazy(() => CompanyCreateOrConnectWithoutServicesInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CompanyWhereUniqueInputSchema), z.lazy(() => CompanyWhereUniqueInputSchema).array() ]).optional(),
 });
 
 export const UserUpdateOneRequiredWithoutServicesNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutServicesNestedInput> = z.strictObject({
@@ -6687,6 +6783,19 @@ export const BookingUpdateManyWithoutServiceNestedInputSchema: z.ZodType<Prisma.
   deleteMany: z.union([ z.lazy(() => BookingScalarWhereInputSchema), z.lazy(() => BookingScalarWhereInputSchema).array() ]).optional(),
 });
 
+export const CompanyUpdateManyWithoutServicesNestedInputSchema: z.ZodType<Prisma.CompanyUpdateManyWithoutServicesNestedInput> = z.strictObject({
+  create: z.union([ z.lazy(() => CompanyCreateWithoutServicesInputSchema), z.lazy(() => CompanyCreateWithoutServicesInputSchema).array(), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CompanyCreateOrConnectWithoutServicesInputSchema), z.lazy(() => CompanyCreateOrConnectWithoutServicesInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CompanyUpsertWithWhereUniqueWithoutServicesInputSchema), z.lazy(() => CompanyUpsertWithWhereUniqueWithoutServicesInputSchema).array() ]).optional(),
+  set: z.union([ z.lazy(() => CompanyWhereUniqueInputSchema), z.lazy(() => CompanyWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CompanyWhereUniqueInputSchema), z.lazy(() => CompanyWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CompanyWhereUniqueInputSchema), z.lazy(() => CompanyWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CompanyWhereUniqueInputSchema), z.lazy(() => CompanyWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CompanyUpdateWithWhereUniqueWithoutServicesInputSchema), z.lazy(() => CompanyUpdateWithWhereUniqueWithoutServicesInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CompanyUpdateManyWithWhereWithoutServicesInputSchema), z.lazy(() => CompanyUpdateManyWithWhereWithoutServicesInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CompanyScalarWhereInputSchema), z.lazy(() => CompanyScalarWhereInputSchema).array() ]).optional(),
+});
+
 export const ServiceMetadataUncheckedUpdateManyWithoutServiceNestedInputSchema: z.ZodType<Prisma.ServiceMetadataUncheckedUpdateManyWithoutServiceNestedInput> = z.strictObject({
   create: z.union([ z.lazy(() => ServiceMetadataCreateWithoutServiceInputSchema), z.lazy(() => ServiceMetadataCreateWithoutServiceInputSchema).array(), z.lazy(() => ServiceMetadataUncheckedCreateWithoutServiceInputSchema), z.lazy(() => ServiceMetadataUncheckedCreateWithoutServiceInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => ServiceMetadataCreateOrConnectWithoutServiceInputSchema), z.lazy(() => ServiceMetadataCreateOrConnectWithoutServiceInputSchema).array() ]).optional(),
@@ -6727,6 +6836,19 @@ export const BookingUncheckedUpdateManyWithoutServiceNestedInputSchema: z.ZodTyp
   update: z.union([ z.lazy(() => BookingUpdateWithWhereUniqueWithoutServiceInputSchema), z.lazy(() => BookingUpdateWithWhereUniqueWithoutServiceInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => BookingUpdateManyWithWhereWithoutServiceInputSchema), z.lazy(() => BookingUpdateManyWithWhereWithoutServiceInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => BookingScalarWhereInputSchema), z.lazy(() => BookingScalarWhereInputSchema).array() ]).optional(),
+});
+
+export const CompanyUncheckedUpdateManyWithoutServicesNestedInputSchema: z.ZodType<Prisma.CompanyUncheckedUpdateManyWithoutServicesNestedInput> = z.strictObject({
+  create: z.union([ z.lazy(() => CompanyCreateWithoutServicesInputSchema), z.lazy(() => CompanyCreateWithoutServicesInputSchema).array(), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CompanyCreateOrConnectWithoutServicesInputSchema), z.lazy(() => CompanyCreateOrConnectWithoutServicesInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CompanyUpsertWithWhereUniqueWithoutServicesInputSchema), z.lazy(() => CompanyUpsertWithWhereUniqueWithoutServicesInputSchema).array() ]).optional(),
+  set: z.union([ z.lazy(() => CompanyWhereUniqueInputSchema), z.lazy(() => CompanyWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CompanyWhereUniqueInputSchema), z.lazy(() => CompanyWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CompanyWhereUniqueInputSchema), z.lazy(() => CompanyWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CompanyWhereUniqueInputSchema), z.lazy(() => CompanyWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CompanyUpdateWithWhereUniqueWithoutServicesInputSchema), z.lazy(() => CompanyUpdateWithWhereUniqueWithoutServicesInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CompanyUpdateManyWithWhereWithoutServicesInputSchema), z.lazy(() => CompanyUpdateManyWithWhereWithoutServicesInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CompanyScalarWhereInputSchema), z.lazy(() => CompanyScalarWhereInputSchema).array() ]).optional(),
 });
 
 export const ServiceCreateNestedOneWithoutMetadataInputSchema: z.ZodType<Prisma.ServiceCreateNestedOneWithoutMetadataInput> = z.strictObject({
@@ -7296,6 +7418,7 @@ export const ServiceCreateWithoutVendorInputSchema: z.ZodType<Prisma.ServiceCrea
   metadata: z.lazy(() => ServiceMetadataCreateNestedManyWithoutServiceInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceUncheckedCreateWithoutVendorInputSchema: z.ZodType<Prisma.ServiceUncheckedCreateWithoutVendorInput> = z.strictObject({
@@ -7312,6 +7435,7 @@ export const ServiceUncheckedCreateWithoutVendorInputSchema: z.ZodType<Prisma.Se
   metadata: z.lazy(() => ServiceMetadataUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceCreateOrConnectWithoutVendorInputSchema: z.ZodType<Prisma.ServiceCreateOrConnectWithoutVendorInput> = z.strictObject({
@@ -7902,6 +8026,7 @@ export const CompanyCreateWithoutProfilesInputSchema: z.ZodType<Prisma.CompanyCr
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   branches: z.lazy(() => BranchCreateNestedManyWithoutCompanyInputSchema).optional(),
+  services: z.lazy(() => ServiceCreateNestedManyWithoutCompaniesInputSchema).optional(),
 });
 
 export const CompanyUncheckedCreateWithoutProfilesInputSchema: z.ZodType<Prisma.CompanyUncheckedCreateWithoutProfilesInput> = z.strictObject({
@@ -7925,6 +8050,7 @@ export const CompanyUncheckedCreateWithoutProfilesInputSchema: z.ZodType<Prisma.
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   branches: z.lazy(() => BranchUncheckedCreateNestedManyWithoutCompanyInputSchema).optional(),
+  services: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutCompaniesInputSchema).optional(),
 });
 
 export const CompanyCreateOrConnectWithoutProfilesInputSchema: z.ZodType<Prisma.CompanyCreateOrConnectWithoutProfilesInput> = z.strictObject({
@@ -8029,6 +8155,7 @@ export const CompanyUpdateWithoutProfilesInputSchema: z.ZodType<Prisma.CompanyUp
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   branches: z.lazy(() => BranchUpdateManyWithoutCompanyNestedInputSchema).optional(),
+  services: z.lazy(() => ServiceUpdateManyWithoutCompaniesNestedInputSchema).optional(),
 });
 
 export const CompanyUncheckedUpdateWithoutProfilesInputSchema: z.ZodType<Prisma.CompanyUncheckedUpdateWithoutProfilesInput> = z.strictObject({
@@ -8052,6 +8179,7 @@ export const CompanyUncheckedUpdateWithoutProfilesInputSchema: z.ZodType<Prisma.
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   branches: z.lazy(() => BranchUncheckedUpdateManyWithoutCompanyNestedInputSchema).optional(),
+  services: z.lazy(() => ServiceUncheckedUpdateManyWithoutCompaniesNestedInputSchema).optional(),
 });
 
 export const PortfolioItemUpsertWithWhereUniqueWithoutProfileInputSchema: z.ZodType<Prisma.PortfolioItemUpsertWithWhereUniqueWithoutProfileInput> = z.strictObject({
@@ -8194,6 +8322,45 @@ export const BranchCreateManyCompanyInputEnvelopeSchema: z.ZodType<Prisma.Branch
   skipDuplicates: z.boolean().optional(),
 });
 
+export const ServiceCreateWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceCreateWithoutCompaniesInput> = z.strictObject({
+  id: z.string().optional(),
+  title: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  isActive: z.boolean().optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
+  workSchedule: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
+  vendor: z.lazy(() => UserCreateNestedOneWithoutServicesInputSchema),
+  category: z.lazy(() => CategoryCreateNestedOneWithoutServicesInputSchema),
+  unit: z.lazy(() => ServiceUnitCreateNestedOneWithoutServicesInputSchema),
+  metadata: z.lazy(() => ServiceMetadataCreateNestedManyWithoutServiceInputSchema).optional(),
+  slots: z.lazy(() => ServiceSlotCreateNestedManyWithoutServiceInputSchema).optional(),
+  bookings: z.lazy(() => BookingCreateNestedManyWithoutServiceInputSchema).optional(),
+});
+
+export const ServiceUncheckedCreateWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceUncheckedCreateWithoutCompaniesInput> = z.strictObject({
+  id: z.string().optional(),
+  vendorId: z.string(),
+  categoryId: z.string(),
+  unitId: z.string(),
+  title: z.string(),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+  isActive: z.boolean().optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
+  workSchedule: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
+  metadata: z.lazy(() => ServiceMetadataUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
+  slots: z.lazy(() => ServiceSlotUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
+  bookings: z.lazy(() => BookingUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
+});
+
+export const ServiceCreateOrConnectWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceCreateOrConnectWithoutCompaniesInput> = z.strictObject({
+  where: z.lazy(() => ServiceWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => ServiceCreateWithoutCompaniesInputSchema), z.lazy(() => ServiceUncheckedCreateWithoutCompaniesInputSchema) ]),
+});
+
 export const ProfileUpsertWithWhereUniqueWithoutCompanyInputSchema: z.ZodType<Prisma.ProfileUpsertWithWhereUniqueWithoutCompanyInput> = z.strictObject({
   where: z.lazy(() => ProfileWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => ProfileUpdateWithoutCompanyInputSchema), z.lazy(() => ProfileUncheckedUpdateWithoutCompanyInputSchema) ]),
@@ -8279,6 +8446,22 @@ export const BranchScalarWhereInputSchema: z.ZodType<Prisma.BranchScalarWhereInp
   isActive: z.union([ z.lazy(() => BoolFilterSchema), z.boolean() ]).optional(),
 });
 
+export const ServiceUpsertWithWhereUniqueWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceUpsertWithWhereUniqueWithoutCompaniesInput> = z.strictObject({
+  where: z.lazy(() => ServiceWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => ServiceUpdateWithoutCompaniesInputSchema), z.lazy(() => ServiceUncheckedUpdateWithoutCompaniesInputSchema) ]),
+  create: z.union([ z.lazy(() => ServiceCreateWithoutCompaniesInputSchema), z.lazy(() => ServiceUncheckedCreateWithoutCompaniesInputSchema) ]),
+});
+
+export const ServiceUpdateWithWhereUniqueWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceUpdateWithWhereUniqueWithoutCompaniesInput> = z.strictObject({
+  where: z.lazy(() => ServiceWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => ServiceUpdateWithoutCompaniesInputSchema), z.lazy(() => ServiceUncheckedUpdateWithoutCompaniesInputSchema) ]),
+});
+
+export const ServiceUpdateManyWithWhereWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceUpdateManyWithWhereWithoutCompaniesInput> = z.strictObject({
+  where: z.lazy(() => ServiceScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => ServiceUpdateManyMutationInputSchema), z.lazy(() => ServiceUncheckedUpdateManyWithoutCompaniesInputSchema) ]),
+});
+
 export const CompanyCreateWithoutBranchesInputSchema: z.ZodType<Prisma.CompanyCreateWithoutBranchesInput> = z.strictObject({
   id: z.string().optional(),
   businessName: z.string(),
@@ -8300,6 +8483,7 @@ export const CompanyCreateWithoutBranchesInputSchema: z.ZodType<Prisma.CompanyCr
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   profiles: z.lazy(() => ProfileCreateNestedManyWithoutCompanyInputSchema).optional(),
+  services: z.lazy(() => ServiceCreateNestedManyWithoutCompaniesInputSchema).optional(),
 });
 
 export const CompanyUncheckedCreateWithoutBranchesInputSchema: z.ZodType<Prisma.CompanyUncheckedCreateWithoutBranchesInput> = z.strictObject({
@@ -8323,6 +8507,7 @@ export const CompanyUncheckedCreateWithoutBranchesInputSchema: z.ZodType<Prisma.
   updatedAt: z.coerce.date().optional(),
   isActive: z.boolean().optional(),
   profiles: z.lazy(() => ProfileUncheckedCreateNestedManyWithoutCompanyInputSchema).optional(),
+  services: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutCompaniesInputSchema).optional(),
 });
 
 export const CompanyCreateOrConnectWithoutBranchesInputSchema: z.ZodType<Prisma.CompanyCreateOrConnectWithoutBranchesInput> = z.strictObject({
@@ -8362,6 +8547,7 @@ export const CompanyUpdateWithoutBranchesInputSchema: z.ZodType<Prisma.CompanyUp
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   profiles: z.lazy(() => ProfileUpdateManyWithoutCompanyNestedInputSchema).optional(),
+  services: z.lazy(() => ServiceUpdateManyWithoutCompaniesNestedInputSchema).optional(),
 });
 
 export const CompanyUncheckedUpdateWithoutBranchesInputSchema: z.ZodType<Prisma.CompanyUncheckedUpdateWithoutBranchesInput> = z.strictObject({
@@ -8385,6 +8571,7 @@ export const CompanyUncheckedUpdateWithoutBranchesInputSchema: z.ZodType<Prisma.
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   profiles: z.lazy(() => ProfileUncheckedUpdateManyWithoutCompanyNestedInputSchema).optional(),
+  services: z.lazy(() => ServiceUncheckedUpdateManyWithoutCompaniesNestedInputSchema).optional(),
 });
 
 export const ProfileCreateWithoutPortfolioInputSchema: z.ZodType<Prisma.ProfileCreateWithoutPortfolioInput> = z.strictObject({
@@ -8572,6 +8759,7 @@ export const ServiceCreateWithoutCategoryInputSchema: z.ZodType<Prisma.ServiceCr
   metadata: z.lazy(() => ServiceMetadataCreateNestedManyWithoutServiceInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceUncheckedCreateWithoutCategoryInputSchema: z.ZodType<Prisma.ServiceUncheckedCreateWithoutCategoryInput> = z.strictObject({
@@ -8588,6 +8776,7 @@ export const ServiceUncheckedCreateWithoutCategoryInputSchema: z.ZodType<Prisma.
   metadata: z.lazy(() => ServiceMetadataUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceCreateOrConnectWithoutCategoryInputSchema: z.ZodType<Prisma.ServiceCreateOrConnectWithoutCategoryInput> = z.strictObject({
@@ -8692,6 +8881,7 @@ export const ServiceCreateWithoutUnitInputSchema: z.ZodType<Prisma.ServiceCreate
   metadata: z.lazy(() => ServiceMetadataCreateNestedManyWithoutServiceInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceUncheckedCreateWithoutUnitInputSchema: z.ZodType<Prisma.ServiceUncheckedCreateWithoutUnitInput> = z.strictObject({
@@ -8708,6 +8898,7 @@ export const ServiceUncheckedCreateWithoutUnitInputSchema: z.ZodType<Prisma.Serv
   metadata: z.lazy(() => ServiceMetadataUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceCreateOrConnectWithoutUnitInputSchema: z.ZodType<Prisma.ServiceCreateOrConnectWithoutUnitInput> = z.strictObject({
@@ -8893,6 +9084,59 @@ export const BookingCreateManyServiceInputEnvelopeSchema: z.ZodType<Prisma.Booki
   skipDuplicates: z.boolean().optional(),
 });
 
+export const CompanyCreateWithoutServicesInputSchema: z.ZodType<Prisma.CompanyCreateWithoutServicesInput> = z.strictObject({
+  id: z.string().optional(),
+  businessName: z.string(),
+  logoUrl: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
+  rfc: z.string(),
+  legalName: z.string(),
+  fiscalRegime: z.string(),
+  taxAddress: z.string(),
+  taxAddressZip: z.string(),
+  taxAddressCity: z.string(),
+  taxAddressState: z.string(),
+  taxAddressCounty: z.string().optional().nullable(),
+  isSatVerified: z.boolean().optional(),
+  satVerifiedAt: z.coerce.date().optional().nullable(),
+  satCertificateUrl: z.string().optional().nullable(),
+  satVerificationDoc: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  isActive: z.boolean().optional(),
+  profiles: z.lazy(() => ProfileCreateNestedManyWithoutCompanyInputSchema).optional(),
+  branches: z.lazy(() => BranchCreateNestedManyWithoutCompanyInputSchema).optional(),
+});
+
+export const CompanyUncheckedCreateWithoutServicesInputSchema: z.ZodType<Prisma.CompanyUncheckedCreateWithoutServicesInput> = z.strictObject({
+  id: z.string().optional(),
+  businessName: z.string(),
+  logoUrl: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
+  rfc: z.string(),
+  legalName: z.string(),
+  fiscalRegime: z.string(),
+  taxAddress: z.string(),
+  taxAddressZip: z.string(),
+  taxAddressCity: z.string(),
+  taxAddressState: z.string(),
+  taxAddressCounty: z.string().optional().nullable(),
+  isSatVerified: z.boolean().optional(),
+  satVerifiedAt: z.coerce.date().optional().nullable(),
+  satCertificateUrl: z.string().optional().nullable(),
+  satVerificationDoc: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  isActive: z.boolean().optional(),
+  profiles: z.lazy(() => ProfileUncheckedCreateNestedManyWithoutCompanyInputSchema).optional(),
+  branches: z.lazy(() => BranchUncheckedCreateNestedManyWithoutCompanyInputSchema).optional(),
+});
+
+export const CompanyCreateOrConnectWithoutServicesInputSchema: z.ZodType<Prisma.CompanyCreateOrConnectWithoutServicesInput> = z.strictObject({
+  where: z.lazy(() => CompanyWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => CompanyCreateWithoutServicesInputSchema), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema) ]),
+});
+
 export const UserUpsertWithoutServicesInputSchema: z.ZodType<Prisma.UserUpsertWithoutServicesInput> = z.strictObject({
   update: z.union([ z.lazy(() => UserUpdateWithoutServicesInputSchema), z.lazy(() => UserUncheckedUpdateWithoutServicesInputSchema) ]),
   create: z.union([ z.lazy(() => UserCreateWithoutServicesInputSchema), z.lazy(() => UserUncheckedCreateWithoutServicesInputSchema) ]),
@@ -9059,6 +9303,47 @@ export const BookingUpdateManyWithWhereWithoutServiceInputSchema: z.ZodType<Pris
   data: z.union([ z.lazy(() => BookingUpdateManyMutationInputSchema), z.lazy(() => BookingUncheckedUpdateManyWithoutServiceInputSchema) ]),
 });
 
+export const CompanyUpsertWithWhereUniqueWithoutServicesInputSchema: z.ZodType<Prisma.CompanyUpsertWithWhereUniqueWithoutServicesInput> = z.strictObject({
+  where: z.lazy(() => CompanyWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => CompanyUpdateWithoutServicesInputSchema), z.lazy(() => CompanyUncheckedUpdateWithoutServicesInputSchema) ]),
+  create: z.union([ z.lazy(() => CompanyCreateWithoutServicesInputSchema), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema) ]),
+});
+
+export const CompanyUpdateWithWhereUniqueWithoutServicesInputSchema: z.ZodType<Prisma.CompanyUpdateWithWhereUniqueWithoutServicesInput> = z.strictObject({
+  where: z.lazy(() => CompanyWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => CompanyUpdateWithoutServicesInputSchema), z.lazy(() => CompanyUncheckedUpdateWithoutServicesInputSchema) ]),
+});
+
+export const CompanyUpdateManyWithWhereWithoutServicesInputSchema: z.ZodType<Prisma.CompanyUpdateManyWithWhereWithoutServicesInput> = z.strictObject({
+  where: z.lazy(() => CompanyScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => CompanyUpdateManyMutationInputSchema), z.lazy(() => CompanyUncheckedUpdateManyWithoutServicesInputSchema) ]),
+});
+
+export const CompanyScalarWhereInputSchema: z.ZodType<Prisma.CompanyScalarWhereInput> = z.strictObject({
+  AND: z.union([ z.lazy(() => CompanyScalarWhereInputSchema), z.lazy(() => CompanyScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CompanyScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CompanyScalarWhereInputSchema), z.lazy(() => CompanyScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  businessName: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  logoUrl: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  description: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  rfc: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  legalName: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  fiscalRegime: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  taxAddress: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  taxAddressZip: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  taxAddressCity: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  taxAddressState: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  taxAddressCounty: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  isSatVerified: z.union([ z.lazy(() => BoolFilterSchema), z.boolean() ]).optional(),
+  satVerifiedAt: z.union([ z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date() ]).optional().nullable(),
+  satCertificateUrl: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  satVerificationDoc: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema), z.coerce.date() ]).optional(),
+  updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema), z.coerce.date() ]).optional(),
+  isActive: z.union([ z.lazy(() => BoolFilterSchema), z.boolean() ]).optional(),
+});
+
 export const ServiceCreateWithoutMetadataInputSchema: z.ZodType<Prisma.ServiceCreateWithoutMetadataInput> = z.strictObject({
   id: z.string().optional(),
   title: z.string(),
@@ -9073,6 +9358,7 @@ export const ServiceCreateWithoutMetadataInputSchema: z.ZodType<Prisma.ServiceCr
   unit: z.lazy(() => ServiceUnitCreateNestedOneWithoutServicesInputSchema),
   slots: z.lazy(() => ServiceSlotCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceUncheckedCreateWithoutMetadataInputSchema: z.ZodType<Prisma.ServiceUncheckedCreateWithoutMetadataInput> = z.strictObject({
@@ -9089,6 +9375,7 @@ export const ServiceUncheckedCreateWithoutMetadataInputSchema: z.ZodType<Prisma.
   workSchedule: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceCreateOrConnectWithoutMetadataInputSchema: z.ZodType<Prisma.ServiceCreateOrConnectWithoutMetadataInput> = z.strictObject({
@@ -9121,6 +9408,7 @@ export const ServiceUpdateWithoutMetadataInputSchema: z.ZodType<Prisma.ServiceUp
   unit: z.lazy(() => ServiceUnitUpdateOneRequiredWithoutServicesNestedInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const ServiceUncheckedUpdateWithoutMetadataInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateWithoutMetadataInput> = z.strictObject({
@@ -9137,6 +9425,7 @@ export const ServiceUncheckedUpdateWithoutMetadataInputSchema: z.ZodType<Prisma.
   workSchedule: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const UserCreateWithoutBookingsInputSchema: z.ZodType<Prisma.UserCreateWithoutBookingsInput> = z.strictObject({
@@ -9186,6 +9475,7 @@ export const ServiceCreateWithoutBookingsInputSchema: z.ZodType<Prisma.ServiceCr
   unit: z.lazy(() => ServiceUnitCreateNestedOneWithoutServicesInputSchema),
   metadata: z.lazy(() => ServiceMetadataCreateNestedManyWithoutServiceInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceUncheckedCreateWithoutBookingsInputSchema: z.ZodType<Prisma.ServiceUncheckedCreateWithoutBookingsInput> = z.strictObject({
@@ -9202,6 +9492,7 @@ export const ServiceUncheckedCreateWithoutBookingsInputSchema: z.ZodType<Prisma.
   workSchedule: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
   metadata: z.lazy(() => ServiceMetadataUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceCreateOrConnectWithoutBookingsInputSchema: z.ZodType<Prisma.ServiceCreateOrConnectWithoutBookingsInput> = z.strictObject({
@@ -9343,6 +9634,7 @@ export const ServiceUpdateWithoutBookingsInputSchema: z.ZodType<Prisma.ServiceUp
   unit: z.lazy(() => ServiceUnitUpdateOneRequiredWithoutServicesNestedInputSchema).optional(),
   metadata: z.lazy(() => ServiceMetadataUpdateManyWithoutServiceNestedInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const ServiceUncheckedUpdateWithoutBookingsInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateWithoutBookingsInput> = z.strictObject({
@@ -9359,6 +9651,7 @@ export const ServiceUncheckedUpdateWithoutBookingsInputSchema: z.ZodType<Prisma.
   workSchedule: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
   metadata: z.lazy(() => ServiceMetadataUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const BookingDetailsUpsertWithoutBookingInputSchema: z.ZodType<Prisma.BookingDetailsUpsertWithoutBookingInput> = z.strictObject({
@@ -9501,6 +9794,7 @@ export const ServiceCreateWithoutSlotsInputSchema: z.ZodType<Prisma.ServiceCreat
   unit: z.lazy(() => ServiceUnitCreateNestedOneWithoutServicesInputSchema),
   metadata: z.lazy(() => ServiceMetadataCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceUncheckedCreateWithoutSlotsInputSchema: z.ZodType<Prisma.ServiceUncheckedCreateWithoutSlotsInput> = z.strictObject({
@@ -9517,6 +9811,7 @@ export const ServiceUncheckedCreateWithoutSlotsInputSchema: z.ZodType<Prisma.Ser
   workSchedule: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
   metadata: z.lazy(() => ServiceMetadataUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedCreateNestedManyWithoutServiceInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedCreateNestedManyWithoutServicesInputSchema).optional(),
 });
 
 export const ServiceCreateOrConnectWithoutSlotsInputSchema: z.ZodType<Prisma.ServiceCreateOrConnectWithoutSlotsInput> = z.strictObject({
@@ -9574,6 +9869,7 @@ export const ServiceUpdateWithoutSlotsInputSchema: z.ZodType<Prisma.ServiceUpdat
   unit: z.lazy(() => ServiceUnitUpdateOneRequiredWithoutServicesNestedInputSchema).optional(),
   metadata: z.lazy(() => ServiceMetadataUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const ServiceUncheckedUpdateWithoutSlotsInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateWithoutSlotsInput> = z.strictObject({
@@ -9590,6 +9886,7 @@ export const ServiceUncheckedUpdateWithoutSlotsInputSchema: z.ZodType<Prisma.Ser
   workSchedule: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
   metadata: z.lazy(() => ServiceMetadataUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const BookingUpsertWithoutSlotsInputSchema: z.ZodType<Prisma.BookingUpsertWithoutSlotsInput> = z.strictObject({
@@ -9740,6 +10037,7 @@ export const ServiceUpdateWithoutVendorInputSchema: z.ZodType<Prisma.ServiceUpda
   metadata: z.lazy(() => ServiceMetadataUpdateManyWithoutServiceNestedInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const ServiceUncheckedUpdateWithoutVendorInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateWithoutVendorInput> = z.strictObject({
@@ -9756,6 +10054,7 @@ export const ServiceUncheckedUpdateWithoutVendorInputSchema: z.ZodType<Prisma.Se
   metadata: z.lazy(() => ServiceMetadataUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const ServiceUncheckedUpdateManyWithoutVendorInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateManyWithoutVendorInput> = z.strictObject({
@@ -10093,6 +10392,54 @@ export const BranchUncheckedUpdateManyWithoutCompanyInputSchema: z.ZodType<Prism
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 });
 
+export const ServiceUpdateWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceUpdateWithoutCompaniesInput> = z.strictObject({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
+  workSchedule: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
+  vendor: z.lazy(() => UserUpdateOneRequiredWithoutServicesNestedInputSchema).optional(),
+  category: z.lazy(() => CategoryUpdateOneRequiredWithoutServicesNestedInputSchema).optional(),
+  unit: z.lazy(() => ServiceUnitUpdateOneRequiredWithoutServicesNestedInputSchema).optional(),
+  metadata: z.lazy(() => ServiceMetadataUpdateManyWithoutServiceNestedInputSchema).optional(),
+  slots: z.lazy(() => ServiceSlotUpdateManyWithoutServiceNestedInputSchema).optional(),
+  bookings: z.lazy(() => BookingUpdateManyWithoutServiceNestedInputSchema).optional(),
+});
+
+export const ServiceUncheckedUpdateWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateWithoutCompaniesInput> = z.strictObject({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  vendorId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
+  workSchedule: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
+  metadata: z.lazy(() => ServiceMetadataUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
+  slots: z.lazy(() => ServiceSlotUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
+  bookings: z.lazy(() => BookingUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
+});
+
+export const ServiceUncheckedUpdateManyWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateManyWithoutCompaniesInput> = z.strictObject({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  vendorId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  dynamicAttributes: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
+  workSchedule: z.union([ z.lazy(() => NullableJsonNullValueInputSchema), InputJsonValueSchema ]).optional(),
+});
+
 export const CategoryCreateManyParentInputSchema: z.ZodType<Prisma.CategoryCreateManyParentInput> = z.strictObject({
   id: z.string().optional(),
   name: z.string(),
@@ -10160,6 +10507,7 @@ export const ServiceUpdateWithoutCategoryInputSchema: z.ZodType<Prisma.ServiceUp
   metadata: z.lazy(() => ServiceMetadataUpdateManyWithoutServiceNestedInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const ServiceUncheckedUpdateWithoutCategoryInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateWithoutCategoryInput> = z.strictObject({
@@ -10176,6 +10524,7 @@ export const ServiceUncheckedUpdateWithoutCategoryInputSchema: z.ZodType<Prisma.
   metadata: z.lazy(() => ServiceMetadataUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const ServiceUncheckedUpdateManyWithoutCategoryInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateManyWithoutCategoryInput> = z.strictObject({
@@ -10218,6 +10567,7 @@ export const ServiceUpdateWithoutUnitInputSchema: z.ZodType<Prisma.ServiceUpdate
   metadata: z.lazy(() => ServiceMetadataUpdateManyWithoutServiceNestedInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const ServiceUncheckedUpdateWithoutUnitInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateWithoutUnitInput> = z.strictObject({
@@ -10234,6 +10584,7 @@ export const ServiceUncheckedUpdateWithoutUnitInputSchema: z.ZodType<Prisma.Serv
   metadata: z.lazy(() => ServiceMetadataUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
   slots: z.lazy(() => ServiceSlotUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
   bookings: z.lazy(() => BookingUncheckedUpdateManyWithoutServiceNestedInputSchema).optional(),
+  companies: z.lazy(() => CompanyUncheckedUpdateManyWithoutServicesNestedInputSchema).optional(),
 });
 
 export const ServiceUncheckedUpdateManyWithoutUnitInputSchema: z.ZodType<Prisma.ServiceUncheckedUpdateManyWithoutUnitInput> = z.strictObject({
@@ -10341,6 +10692,76 @@ export const BookingUncheckedUpdateManyWithoutServiceInputSchema: z.ZodType<Pris
   customerId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   status: z.union([ z.lazy(() => BookingStatusSchema), z.lazy(() => EnumBookingStatusFieldUpdateOperationsInputSchema) ]).optional(),
   scheduledDate: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+});
+
+export const CompanyUpdateWithoutServicesInputSchema: z.ZodType<Prisma.CompanyUpdateWithoutServicesInput> = z.strictObject({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  businessName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  logoUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  rfc: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  legalName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  fiscalRegime: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddress: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressZip: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressCity: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressState: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressCounty: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isSatVerified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  satVerifiedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  satCertificateUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  satVerificationDoc: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  profiles: z.lazy(() => ProfileUpdateManyWithoutCompanyNestedInputSchema).optional(),
+  branches: z.lazy(() => BranchUpdateManyWithoutCompanyNestedInputSchema).optional(),
+});
+
+export const CompanyUncheckedUpdateWithoutServicesInputSchema: z.ZodType<Prisma.CompanyUncheckedUpdateWithoutServicesInput> = z.strictObject({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  businessName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  logoUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  rfc: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  legalName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  fiscalRegime: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddress: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressZip: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressCity: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressState: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressCounty: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isSatVerified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  satVerifiedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  satCertificateUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  satVerificationDoc: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  profiles: z.lazy(() => ProfileUncheckedUpdateManyWithoutCompanyNestedInputSchema).optional(),
+  branches: z.lazy(() => BranchUncheckedUpdateManyWithoutCompanyNestedInputSchema).optional(),
+});
+
+export const CompanyUncheckedUpdateManyWithoutServicesInputSchema: z.ZodType<Prisma.CompanyUncheckedUpdateManyWithoutServicesInput> = z.strictObject({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  businessName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  logoUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  rfc: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  legalName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  fiscalRegime: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddress: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressZip: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressCity: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressState: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  taxAddressCounty: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  isSatVerified: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  satVerifiedAt: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  satCertificateUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  satVerificationDoc: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 });
 
 export const ServiceSlotCreateManyBookingInputSchema: z.ZodType<Prisma.ServiceSlotCreateManyBookingInput> = z.strictObject({

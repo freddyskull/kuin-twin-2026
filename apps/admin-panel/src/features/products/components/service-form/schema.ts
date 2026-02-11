@@ -40,6 +40,7 @@ export const serviceSchema = z.object({
       blacklist: z.array(z.string()).optional(), // Dates NOT worked
     }).optional(),
   }).optional(),
+  companyIds: z.array(z.string()).min(1, 'Debes seleccionar al menos una empresa'),
 });
 
 export type ServiceFormValues = z.infer<typeof serviceSchema>;

@@ -55,7 +55,8 @@ export const EditServicePage: React.FC = () => {
         metadata: metadata,
         dynamicAttributes: service.dynamicAttributes ? JSON.stringify(service.dynamicAttributes, null, 2) : '',
         workSchedule: service.workSchedule as any || undefined,
-        slots: loadedSlots
+        slots: loadedSlots,
+        companyIds: service.companies?.map((c: any) => c.id) || []
       });
     }
   }, [service]);
@@ -74,7 +75,8 @@ export const EditServicePage: React.FC = () => {
         metadata: data.metadata,
         dynamicAttributes: data.dynamicAttributes ? JSON.parse(data.dynamicAttributes) : {},
         workSchedule: data.workSchedule,
-        slots: data.slots || []
+        slots: data.slots || [],
+        companyIds: data.companyIds
       };
 
       await updateMutation.mutateAsync({ id, data: payload });

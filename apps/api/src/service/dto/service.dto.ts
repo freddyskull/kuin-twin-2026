@@ -90,6 +90,11 @@ export class CreateServiceDto {
   @IsOptional()
   metadata?: MetadataDto[] = [];
 
+  @IsArray()
+  @IsUUID('4', { each: true, message: 'ID de empresa inválido' })
+  @IsOptional()
+  companyIds?: string[] = [];
+
   @IsOptional()
   dynamicAttributes?: any;
 

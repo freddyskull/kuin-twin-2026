@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import type { ServiceFormValues } from '../schema';
 import { useServicesStore } from '../../../../../stores/services.store';
 import { CategorySelector } from '../CategorySelector';
+import { CompanySelector } from '../CompanySelector';
 
 export const ServiceInfoStep: React.FC = () => {
   const { register, control, formState: { errors } } = useFormContext<ServiceFormValues>();
@@ -50,6 +51,21 @@ export const ServiceInfoStep: React.FC = () => {
           <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Descripción</label>
           <textarea {...register('description')} rows={5} placeholder="Describe tu servicio..." className="w-full bg-[#0a0b1e]/40 border border-white/5 rounded-2xl py-4 px-5 text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-dashboard-primary/30 transition-all resize-none placeholder:text-slate-700" />
           {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+        </div>
+
+        <div className="space-y-4">
+          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Empresas Asociadas</label>
+          <Controller
+            name="companyIds"
+            control={control}
+            render={({ field }) => (
+              <CompanySelector
+                value={field.value}
+                onChange={field.onChange}
+                error={errors.companyIds?.message}
+              />
+            )}
+          />
         </div>
       </div>
     </motion.section>

@@ -75,6 +75,24 @@ export const ServicesPage: React.FC = () => {
       },
     },
     {
+      accessorKey: 'companies',
+      header: 'Empresas',
+      cell: ({ row }) => {
+        const companies = row.original.companies || [];
+        if (companies.length === 0) return <span className="text-slate-500 italic">Sin empresas</span>;
+
+        return (
+          <div className="flex flex-wrap gap-1 max-w-[200px]">
+            {companies.map((c: any) => (
+              <span key={c.id} className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-white/5 text-slate-400 border border-white/5">
+                {c.businessName}
+              </span>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: 'isActive',
       header: 'Estado',
       cell: ({ row }) => {

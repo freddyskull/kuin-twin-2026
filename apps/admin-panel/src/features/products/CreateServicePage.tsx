@@ -26,7 +26,8 @@ export const CreateServicePage: React.FC = () => {
         metadata: data.metadata,
         dynamicAttributes: data.dynamicAttributes ? JSON.parse(data.dynamicAttributes) : {},
         workSchedule: data.workSchedule,
-        slots: data.slots || []
+        slots: data.slots || [],
+        companyIds: data.companyIds
       };
 
       await createMutation.mutateAsync(payload);
