@@ -23,7 +23,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['shared-types', 'shared-types/zod'],
+    include: ['shared-types', 'shared-types/zod', '@tanstack/react-table'],
   },
   build: {
     commonjsOptions: {
