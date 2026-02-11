@@ -1,13 +1,11 @@
-import React from 'react'
-import { cn, useToast } from 'ui-components'
-import { Button } from 'ui-components'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { RoleSchema } from 'shared-types/zod'
-import * as z from 'zod'
-import { Link, useRouter } from '@tanstack/react-router'
-import { FormInput } from 'ui-components'
-import { useAuthStore } from '@/stores/auth.store'
+import React from 'react';
+import { cn, useToast, Button, FormInput } from 'ui-components';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { RoleSchema } from 'shared-types/zod';
+import * as z from 'zod';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuthStore } from '@/stores/auth.store';
 
 const registerSchema = z.object({
   email: z.string().email("Correo electrónico inválido"),
@@ -19,14 +17,14 @@ const registerSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],
-})
+});
 
-type RegisterFormValues = z.infer<typeof registerSchema>
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export const RegisterForm = ({ className, ...props }: React.ComponentProps<'form'>) => {
-  const { toast } = useToast()
-  const authStore = useAuthStore()
-  const router = useRouter()
+  const { toast } = useToast();
+  const authStore = useAuthStore();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -35,38 +33,38 @@ export const RegisterForm = ({ className, ...props }: React.ComponentProps<'form
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema as any),
-  })
+  });
 
   const onSubmit = async (data: RegisterFormValues) => {
     try {
-      const { confirmPassword, ...registerData } = data
-      await authStore.register(registerData)
-      await authStore.login({ email: data.email, password: data.password })
+      const { confirmPassword, ...registerData } = data;
+      await authStore.register(registerData);
+      await authStore.login({ email: data.email, password: data.password });
       toast({
         variant: "default",
         title: "Registro exitoso",
         description: "Tu cuenta ha sido creada correctamente.",
-      })
-      router.navigate({ to: '/login' })
+      });
+      navigate('/');
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Error desconocido"
+      const message = error instanceof Error ? error.message : "Error desconocido";
       if (typeof error === 'object' && error !== null && 'response' in error) {
-        const responseData = (error as any).response?.data
+        const responseData = (error as any).response?.data;
         toast({
           variant: "destructive",
           title: "Error al registrarse",
           description: responseData?.message || message,
-        })
-        return
+        });
+        return;
       }
 
       toast({
         variant: "destructive",
         title: "Error al registrarse",
         description: "Hubo un problema al crear tu cuenta. Inténtalos de nuevo.",
-      })
+      });
     }
-  }
+  };
 
   return (
     <form
@@ -165,5 +163,5 @@ export const RegisterForm = ({ className, ...props }: React.ComponentProps<'form
         </div>
       </div>
     </form>
-  )
+  );
 }

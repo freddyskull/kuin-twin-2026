@@ -1,21 +1,9 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import logo from '@assets/logo-kuin-twin.svg'
-import { RegisterForm } from '@/features/auth/registerForm'
-import { motion } from 'framer-motion'
+import React from 'react';
+import { RegisterForm } from '@/features/auth/registerForm';
+import logo from '@assets/logo-kuin-twin.svg';
+import { motion } from 'framer-motion';
 
-export const Route = createFileRoute('/register')({
-  beforeLoad: async () => {
-    const authStore = (await import('../stores/auth.store')).useAuthStore
-    await authStore.getState().checkAuth()
-    const { isAuthenticated } = authStore.getState()
-    if (isAuthenticated) {
-      throw redirect({ to: '/' })
-    }
-  },
-  component: RouteComponent,
-})
-
-function RouteComponent() {
+export const RegisterPage: React.FC = () => {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -37,7 +25,7 @@ function RouteComponent() {
         />
       </div>
 
-      <div className="flex flex-col  p-6 md:p-10 relative">
+      <div className="flex flex-col p-6 md:p-10 relative">
         <img src={logo} alt="Logo" className="h-40 w-auto" />
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-sm bg-card/30 backdrop-blur-md p-6 rounded-md border border-border/50 mt-4">
@@ -46,5 +34,5 @@ function RouteComponent() {
         </div>
       </div>
     </motion.div>
-  )
-}
+  );
+};

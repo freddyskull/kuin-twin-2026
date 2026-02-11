@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from '@tanstack/react-router';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import { Building2, FileText, MapPin, Shield } from 'lucide-react';
 
 import { motion } from 'framer-motion';
@@ -9,7 +10,8 @@ import { BranchList } from './components/BranchList';
 
 export const EditCompanyPage: React.FC = () => {
   const navigate = useNavigate();
-  const params = useParams({ from: '/_layout/companies/$id/edit' });
+  const { id } = useParams<{ id: string }>();
+
   const { updateCompany, getCompanyById, isLoading } = useCompaniesStore();
   const [company, setCompany] = useState<Company | null>(null);
 
@@ -31,7 +33,8 @@ export const EditCompanyPage: React.FC = () => {
 
   useEffect(() => {
     const loadCompany = async () => {
-      const data = await getCompanyById(params.id);
+      const data = await getCompanyById(id!);
+
       if (data) {
         setCompany(data);
         setFormData({
@@ -52,13 +55,15 @@ export const EditCompanyPage: React.FC = () => {
       }
     };
     loadCompany();
-  }, [params.id, getCompanyById]);
+  }, [id, getCompanyById]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updateCompany(params.id, formData);
-      navigate({ to: '/companies' });
+      await updateCompany(id!, formData);
+      navigate('/companies');
+
     } catch (error) {
       console.error('Error al actualizar empresa:', error);
     }
@@ -355,14 +360,16 @@ export const EditCompanyPage: React.FC = () => {
           transition={{ delay: 0.4 }}
           className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
         >
-          <BranchList companyId={params.id} />
+          <BranchList companyId={id!} />
+
         </motion.div>
 
         {/* Actions */}
         <div className="flex gap-4 justify-end">
           <button
             type="button"
-            onClick={() => navigate({ to: '/companies' })}
+            onClick={() => navigate('/companies')}
+
             className="px-8 py-3.5 rounded-2xl bg-white/5 text-slate-400 font-bold hover:bg-white/10 transition-all"
           >
             Cancelar

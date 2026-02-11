@@ -1,28 +1,26 @@
-import { Link } from '@tanstack/react-router'
-import { Home, LayoutDashboard, Users, Settings, Menu, LogOut } from 'lucide-react'
-// import { Button } from 'ui-components'
-import { useState } from 'react'
-import { Button } from 'ui-components'
-import { useAuthStore } from '../stores/auth.store'
-import { useRouter } from '@tanstack/react-router'
+import { useNavigate, Link } from 'react-router-dom';
+import { Home, LayoutDashboard, Users, Settings, Menu, LogOut } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from 'ui-components';
+import { useAuthStore } from '../stores/auth.store';
 
 export function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { logout } = useAuthStore();
+  const navigate = useNavigate();
 
-  const { logout } = useAuthStore()
-  const router = useRouter()
   const navItems = [
     { to: '/', label: 'Dashboard', icon: Home },
     { to: '/login', label: 'Login', icon: Home },
-    { to: '/', label: 'Usuarios', icon: Users, search: { section: 'users' } },
-    { to: '/', label: 'Configuración', icon: Settings, search: { section: 'settings' } },
+    { to: '/users', label: 'Usuarios', icon: Users },
+    { to: '/settings', label: 'Configuración', icon: Settings },
     { to: '/register', label: 'Register', icon: Home },
-  ]
+  ];
 
   const logoutButton = () => {
-    logout()
-    router.navigate({ to: '/login' })
-  }
+    logout();
+    navigate('/login');
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -47,19 +45,17 @@ export function Header() {
               <Link
                 key={index}
                 to={item.to}
-                search={item.search}
-                className="flex"
+                className="flex text-sm font-medium transition-colors hover:text-primary"
               >
-                {/* <item.icon className="h-4 w-4" /> */}
                 {item.label}
               </Link>
             ))}
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <Button variant="ghost" size="sm" className="w-9 px-0" onClick={logoutButton}>
-            <LogOut className="h-4 w-4" />
-            <span className="">Cerrar sesión</span>
+          <Button variant="ghost" size="sm" className="w-auto px-4" onClick={logoutButton}>
+            <LogOut className="h-4 w-4 mr-2" />
+            <span>Cerrar sesión</span>
           </Button>
         </div>
 
@@ -73,10 +69,8 @@ export function Header() {
               <Link
                 key={index}
                 to={item.to}
-                // @ts-ignore
-                search={item.search}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="transition-colors hover:text-foreground/80 text-foreground/60 [&.active]:text-foreground flex items-center gap-2"
+                className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-2"
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
@@ -86,5 +80,5 @@ export function Header() {
         </div>
       )}
     </header>
-  )
+  );
 }

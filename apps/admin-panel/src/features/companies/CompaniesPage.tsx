@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link } from 'react-router-dom';
+
 import { Plus, Search, Pencil, Trash2, Building2, CheckCircle, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCompaniesStore } from '../../stores/companies.store';
@@ -81,8 +82,8 @@ export const CompaniesPage: React.FC = () => {
                 key={f}
                 onClick={() => setFilter(f)}
                 className={`px-6 py-2.5 text-sm font-bold rounded-xl transition-all capitalize ${filter === f
-                    ? 'bg-white/10 text-white shadow-lg'
-                    : 'text-slate-500 hover:text-slate-300'
+                  ? 'bg-white/10 text-white shadow-lg'
+                  : 'text-slate-500 hover:text-slate-300'
                   }`}
               >
                 {f === 'all' ? 'Todas' : f === 'verified' ? 'Verificadas' : 'Sin Verificar'}
@@ -154,11 +155,12 @@ export const CompaniesPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Link to="/companies/$id/edit" params={{ id: company.id }}>
+                  <Link to={`/companies/${company.id}/edit`}>
                     <button className="p-4 rounded-2xl bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all active:scale-90">
                       <Pencil className="h-5 w-5" />
                     </button>
                   </Link>
+
                   <button
                     onClick={() => handleDelete(company.id, company.businessName)}
                     disabled={isLoading}
@@ -190,8 +192,8 @@ export const CompaniesPage: React.FC = () => {
                 key={i + 1}
                 onClick={() => setCurrentPage(i + 1)}
                 className={`h-10 w-10 font-bold rounded-xl transition-all ${currentPage === i + 1
-                    ? 'bg-dashboard-primary text-dashboard-bg font-black'
-                    : 'text-slate-400 hover:text-white'
+                  ? 'bg-dashboard-primary text-dashboard-bg font-black'
+                  : 'text-slate-400 hover:text-white'
                   }`}
               >
                 {i + 1}

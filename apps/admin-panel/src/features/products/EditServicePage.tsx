@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from '@tanstack/react-router';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useServicesStore } from '../../stores/services.store';
 import { useAuthStore } from '../../stores/auth.store';
@@ -7,7 +7,7 @@ import { ServiceWizardForm } from './components/service-form/ServiceWizardForm';
 import type { ServiceFormValues } from './components/service-form/schema';
 
 export const EditServicePage: React.FC = () => {
-  const { id } = useParams({ from: '/_layout/services/$id/edit' });
+  const { id } = useParams<{ id: string }>();
   const { services, fetchMetadata, fetchServices, updateService } = useServicesStore();
   const { user } = useAuthStore();
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export const EditServicePage: React.FC = () => {
   }, [fetchMetadata, fetchServices]);
 
   useEffect(() => {
-    if (services.length > 0) {
+    if (services.length > 0 && id) {
       const service = services.find(s => s.id === id);
       if (service) {
         // Transform slots for the form
@@ -70,7 +70,7 @@ export const EditServicePage: React.FC = () => {
   }, [id, services]);
 
   const onSubmit = async (data: ServiceFormValues) => {
-    if (!user?.id) return;
+    if (!user?.id || !id) return;
 
     try {
       const payload = {
@@ -87,7 +87,7 @@ export const EditServicePage: React.FC = () => {
       };
 
       await updateService(id, payload);
-      navigate({ to: '/services' });
+      navigate('/services');
     } catch (error) {
       console.error('Failed to update service:', error);
     }
@@ -109,7 +109,7 @@ export const EditServicePage: React.FC = () => {
       subtitle="Actualiza los detalles de tu oferta de servicio."
       submitLabel="Actualizar Servicio"
       isEditMode={true}
-      onCancel={() => navigate({ to: '/services' })}
+      onCancel={() => navigate('/services')}
     />
   );
 };

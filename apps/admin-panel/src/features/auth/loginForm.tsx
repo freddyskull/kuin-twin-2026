@@ -1,24 +1,24 @@
-import { Button, cn, useToast, FormInput } from "ui-components"
-import { Link, useRouter } from "@tanstack/react-router"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { useAuthStore } from "../../stores/auth.store"
+import { Button, cn, useToast, FormInput } from "ui-components";
+import { useNavigate, Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useAuthStore } from "../../stores/auth.store";
 
 const loginSchema = z.object({
   email: z.string().email("Correo electrónico inválido"),
   password: z.string().min(1, "La contraseña es requerida"),
-})
+});
 
-type LoginFormValues = z.infer<typeof loginSchema>
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const { toast } = useToast()
-  const router = useRouter()
-  const login = useAuthStore((state) => state.login)
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
 
   const {
     register,
@@ -26,24 +26,24 @@ export function LoginForm({
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema as any),
-  })
+  });
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      await login(data)
+      await login(data);
       toast({
         title: "Bienvenido",
         description: "Has iniciado sesión correctamente"
-      })
-      router.navigate({ to: "/" })
+      });
+      navigate("/");
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error al iniciar sesión",
         description: error.response?.data?.message || "Credenciales incorrectas",
-      })
+      });
     }
-  }
+  };
 
   return (
     <form
@@ -114,5 +114,5 @@ export function LoginForm({
         </div>
       </div>
     </form>
-  )
+  );
 }

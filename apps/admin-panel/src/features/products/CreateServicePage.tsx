@@ -1,7 +1,8 @@
 import React from 'react';
 import { useAuthStore } from '../../stores/auth.store';
 import { useServicesStore } from '../../stores/services.store';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from 'react-router-dom';
+
 import { ServiceWizardForm } from './components/service-form/ServiceWizardForm';
 import type { ServiceFormValues } from './components/service-form/schema';
 
@@ -29,7 +30,7 @@ export const CreateServicePage: React.FC = () => {
       };
 
       await createService(payload);
-      navigate({ to: '/services' });
+      navigate('/services');
     } catch (error) {
       console.error('Failed to create service:', error);
     }

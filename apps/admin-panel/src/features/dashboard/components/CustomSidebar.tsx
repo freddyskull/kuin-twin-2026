@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../../stores/auth.store';
-import { useNavigate, Link, useLocation } from '@tanstack/react-router';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 
 export const Sidebar: React.FC = () => {
@@ -21,8 +21,9 @@ export const Sidebar: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    navigate({ to: '/login' });
+    navigate('/login');
   };
+
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Panel Control', to: '/' },

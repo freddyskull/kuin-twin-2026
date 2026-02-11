@@ -15,10 +15,8 @@ nestjs
 react
 - typescript
 - axios
-- websocket
 - tailwind
 - shadcn
-- TanStack Router
 - TanStack Table
 - TanStack React Query
 - date-fns

@@ -1,23 +1,9 @@
-import { LoginForm } from '@/features/auth/loginForm'
-import { createFileRoute, redirect } from '@tanstack/react-router'
-// import { Button } from 'ui-components'
+import React from 'react';
+import { LoginForm } from '@/features/auth/loginForm';
+import logo from '@assets/logo-kuin-twin.svg';
+import { motion } from 'framer-motion';
 
-import logo from '@assets/logo-kuin-twin.svg'
-import { motion } from 'framer-motion'
-
-export const Route = createFileRoute('/login')({
-  beforeLoad: async () => {
-    const authStore = (await import('../stores/auth.store')).useAuthStore
-    await authStore.getState().checkAuth()
-    const { isAuthenticated } = authStore.getState()
-    if (isAuthenticated) {
-      throw redirect({ to: '/' })
-    }
-  },
-  component: LoginPage,
-})
-
-function LoginPage() {
+export const LoginPage: React.FC = () => {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -51,5 +37,5 @@ function LoginPage() {
         />
       </div>
     </motion.div>
-  )
-}
+  );
+};

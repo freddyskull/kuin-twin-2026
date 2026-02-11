@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link } from 'react-router-dom';
+
 import { Plus, Search, Pencil, Trash2, Star, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useServicesStore } from '../../stores/services.store';
@@ -170,11 +171,12 @@ export const ServicesPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Link to="/services/$id/edit" params={{ id: service.id }}>
+                  <Link to={`/services/${service.id}/edit`}>
                     <button className="p-4 rounded-2xl bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all active:scale-90">
                       <Pencil className="h-5 w-5" />
                     </button>
                   </Link>
+
                   <button
                     onClick={() => handleDelete(service.id, service.title)}
                     disabled={isLoading || service.isActive}

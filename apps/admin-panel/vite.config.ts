@@ -6,12 +6,12 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/admin/',
-  plugins: [TanStackRouterVite(), react()],
+  plugins: [react()],
+
   resolve: {
     alias: {
       '@/lib/utils': path.resolve(__dirname, '../../libs/ui-components/src/lib/utils'),

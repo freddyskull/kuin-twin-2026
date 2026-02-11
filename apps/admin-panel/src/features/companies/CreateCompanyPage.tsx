@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from 'react-router-dom';
+
 import { Building2, FileText, MapPin, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCompaniesStore } from '../../stores/companies.store';
@@ -26,7 +27,8 @@ export const CreateCompanyPage: React.FC = () => {
     e.preventDefault();
     try {
       await createCompany(formData);
-      navigate({ to: '/companies' });
+      navigate('/companies');
+
     } catch (error) {
       console.error('Error al crear empresa:', error);
     }
@@ -264,7 +266,8 @@ export const CreateCompanyPage: React.FC = () => {
         <div className="flex gap-4 justify-end">
           <button
             type="button"
-            onClick={() => navigate({ to: '/companies' })}
+            onClick={() => navigate('/companies')}
+
             className="px-8 py-3.5 rounded-2xl bg-white/5 text-slate-400 font-bold hover:bg-white/10 transition-all"
           >
             Cancelar

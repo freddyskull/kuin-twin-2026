@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from 'react-router-dom';
+
 import { AnimatePresence } from 'framer-motion';
 import { Check, ArrowRight, Loader2 } from 'lucide-react';
 import { useToast } from 'ui-components';
@@ -120,7 +121,8 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     if (onCancel) {
       onCancel();
     } else {
-      navigate({ to: '/services' });
+      navigate('/services');
+
     }
   };
 
