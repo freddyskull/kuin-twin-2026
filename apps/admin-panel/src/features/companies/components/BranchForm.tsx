@@ -67,7 +67,7 @@ export const BranchForm: React.FC<BranchFormProps> = ({ initialData, onSubmit, o
         </div>
 
         <div className="col-span-2">
-          <label className="block text-sm font-bold text-slate-300 mb-2 text-primary flex items-center gap-2">
+          <label className="text-sm font-bold text-slate-300 mb-2 text-primary flex items-center gap-2">
             <MapPin className="h-4 w-4" /> Ubicación Física *
           </label>
           <input
@@ -119,7 +119,7 @@ export const BranchForm: React.FC<BranchFormProps> = ({ initialData, onSubmit, o
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-slate-300 mb-2 text-primary flex items-center gap-2">
+          <label className="text-sm font-bold text-slate-300 mb-2 text-primary flex items-center gap-2">
             <Phone className="h-4 w-4" /> Teléfono
           </label>
           <input
@@ -132,7 +132,7 @@ export const BranchForm: React.FC<BranchFormProps> = ({ initialData, onSubmit, o
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-slate-300 mb-2 text-primary flex items-center gap-2">
+          <label className="text-sm font-bold text-slate-300 mb-2 text-primary flex items-center gap-2">
             <Mail className="h-4 w-4" /> Email de contacto
           </label>
           <input

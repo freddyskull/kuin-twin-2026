@@ -1,24 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-
 import { Plus, Search, Pencil, Trash2, Building2, CheckCircle, XCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useCompaniesStore } from '../../stores/companies.store';
+import type { Company } from '../../stores/companies.store';
+import { DataTable } from 'ui-components';
+import type { ColumnDef } from '@tanstack/react-table';
 
 export const CompaniesPage: React.FC = () => {
   const { companies, fetchCompanies, deleteCompany, error, isLoading } = useCompaniesStore();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filter, setFilter] = React.useState<'all' | 'verified' | 'unverified'>('all');
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const ITEMS_PER_PAGE = 6;
 
   useEffect(() => {
     fetchCompanies();
   }, [fetchCompanies]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filter, searchQuery]);
 
   const handleDelete = async (id: string, name: string) => {
     if (window.confirm(`¿Estás seguro de que deseas eliminar la empresa "${name}"?`)) {
@@ -26,23 +21,93 @@ export const CompaniesPage: React.FC = () => {
     }
   };
 
-  const filteredCompanies = companies.filter(c => {
-    const matchesFilter = filter === 'all' ||
-      (filter === 'verified' ? c.isSatVerified : !c.isSatVerified);
-    const matchesSearch = c.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.rfc.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  const filteredCompanies = useMemo(() => {
+    return companies.filter(c => {
+      const matchesFilter = filter === 'all' ||
+        (filter === 'verified' ? c.isSatVerified : !c.isSatVerified);
+      const matchesSearch = c.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.rfc.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesFilter && matchesSearch;
+    });
+  }, [companies, filter, searchQuery]);
 
-  const totalPages = Math.ceil(filteredCompanies.length / ITEMS_PER_PAGE);
-  const paginatedCompanies = filteredCompanies.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  const columns: ColumnDef<Company>[] = [
+    {
+      accessorKey: 'businessName',
+      header: 'Empresa',
+      cell: ({ row }) => {
+        const company = row.original;
+        return (
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-[#0a0b1e] overflow-hidden flex items-center justify-center border border-white/5 flex-shrink-0">
+              {company.logoUrl ? (
+                <img src={company.logoUrl} alt={company.businessName} className="h-full w-full object-cover" />
+              ) : (
+                <Building2 className="h-5 w-5 text-slate-600" />
+              )}
+            </div>
+            <div>
+              <div className="font-bold text-white">{company.businessName}</div>
+              <div className="text-xs text-slate-500">{company.rfc}</div>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'isSatVerified',
+      header: 'Estado SAT',
+      cell: ({ row }) => {
+        const isVerified = row.getValue('isSatVerified') as boolean;
+        return isVerified ? (
+          <div className="flex items-center gap-1.5 text-green-500 bg-green-500/10 px-2.5 py-1 rounded-full text-[10px] font-black uppercase w-fit">
+            <CheckCircle className="h-3 w-3" />
+            Verificada
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 text-yellow-500 bg-yellow-500/10 px-2.5 py-1 rounded-full text-[10px] font-black uppercase w-fit">
+            <XCircle className="h-3 w-3" />
+            Pendiente
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: '_count.branches',
+      header: 'Sucursales',
+      cell: ({ row }) => (
+        <div className="font-bold text-slate-300">
+          {row.original._count?.branches || 0}
+        </div>
+      ),
+    },
+    {
+      id: 'actions',
+      header: 'Acciones',
+      cell: ({ row }) => {
+        const company = row.original;
+        return (
+          <div className="flex items-center gap-2">
+            <Link to={`/companies/${company.id}/edit`}>
+              <button className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all">
+                <Pencil className="h-4 w-4" />
+              </button>
+            </Link>
+            <button
+              onClick={() => handleDelete(company.id, company.businessName)}
+              disabled={isLoading}
+              className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all disabled:opacity-30"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        );
+      },
+    },
+  ];
 
   return (
     <div className="max-w-[1600px] mx-auto space-y-10 animate-in fade-in duration-700">
-      {/* Header */}
       <div className="flex items-center justify-between mb-12">
         <div>
           <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Empresas</h1>
@@ -60,13 +125,9 @@ export const CompaniesPage: React.FC = () => {
               className="bg-[#1a1c3d]/60 border border-white/5 rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50 w-80 transition-all placeholder:text-slate-500"
             />
           </div>
-          <div className="flex p-[2px] bg-gradient-to-br from-[#1a1c3d] to-dashboard-primary/20 rounded-full h-12 w-12">
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alexandre" className="rounded-full bg-dashboard-sidebar" />
-          </div>
         </div>
       </div>
 
-      {/* Action Bar */}
       <div className="flex items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <Link to="/companies/create">
@@ -91,125 +152,23 @@ export const CompaniesPage: React.FC = () => {
             ))}
           </div>
         </div>
-
-        <div className="text-slate-400 font-bold text-sm">
-          Total: <span className="text-white ml-1">{filteredCompanies.length}</span> Empresas
-        </div>
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-2xl font-bold text-sm animate-in slide-in-from-top-4 duration-300">
+        <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-2xl font-bold text-sm">
           Error: {error}
         </div>
       )}
 
-      {/* Companies List */}
-      <div className="space-y-6">
-        <AnimatePresence mode="popLayout">
-          {paginatedCompanies.map((company) => (
-            <motion.div
-              key={company.id}
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="group flex items-center justify-between p-8 rounded-[2.5rem] bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 hover:border-dashboard-primary/30 transition-all"
-            >
-              <div className="flex items-center gap-8 flex-1">
-                <div className="h-24 w-24 rounded-3xl bg-[#0a0b1e] overflow-hidden flex items-center justify-center border border-white/5">
-                  {company.logoUrl ? (
-                    <img src={company.logoUrl} alt={company.businessName} className="h-full w-full object-cover" />
-                  ) : (
-                    <Building2 className="h-12 w-12 text-slate-600" />
-                  )}
-                </div>
-
-                <div className="flex-1 max-w-2xl">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-xl font-bold text-white tracking-tight">{company.businessName}</h3>
-                    {company.isSatVerified ? (
-                      <div className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase bg-green-500/20 text-green-500">
-                        <CheckCircle className="h-3 w-3" />
-                        Verificada SAT
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase bg-yellow-500/20 text-yellow-500">
-                        <XCircle className="h-3 w-3" />
-                        Sin Verificar
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-slate-400 text-sm font-medium mb-2">
-                    RFC: <span className="text-slate-300 font-bold">{company.rfc}</span>
-                  </p>
-                  <p className="text-slate-500 text-xs font-medium line-clamp-1">
-                    {company.legalName}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-12 pl-12">
-                <div className="text-right">
-                  <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Sucursales</p>
-                  <p className="text-3xl font-black text-white tracking-tighter">{company._count?.branches || 0}</p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <Link to={`/companies/${company.id}/edit`}>
-                    <button className="p-4 rounded-2xl bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all active:scale-90">
-                      <Pencil className="h-5 w-5" />
-                    </button>
-                  </Link>
-
-                  <button
-                    onClick={() => handleDelete(company.id, company.businessName)}
-                    disabled={isLoading}
-                    className="p-4 rounded-2xl bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+      <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden">
+        <DataTable
+          columns={columns}
+          data={filteredCompanies}
+          isLoading={isLoading}
+          emptyMessage="No se encontraron empresas con los criterios seleccionados."
+          className="border-none"
+        />
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-12 pb-12">
-          <div className="flex items-center gap-2 bg-[#1a1c3d]/60 p-2 rounded-2xl border border-white/5">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="p-3 text-slate-500 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              &lt;
-            </button>
-
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`h-10 w-10 font-bold rounded-xl transition-all ${currentPage === i + 1
-                  ? 'bg-dashboard-primary text-dashboard-bg font-black'
-                  : 'text-slate-400 hover:text-white'
-                  }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="p-3 text-slate-500 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              &gt;
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

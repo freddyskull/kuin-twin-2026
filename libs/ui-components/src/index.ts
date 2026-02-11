@@ -7,6 +7,7 @@ export type { ButtonProps } from "./components/ui/button";
 export { Input } from "./components/ui/input";
 export { Label } from "./components/ui/label";
 export { FormInput } from "./components/form-input";
+export { DataTable } from "./components/data-table";
 export {
   Select,
   SelectGroup,
@@ -130,3 +131,14 @@ export {
   TooltipContent,
   TooltipProvider,
 } from "./components/ui/tooltip";
+
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+} from "./components/ui/table";
