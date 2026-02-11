@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from 'api-client';
-import type { Branch } from '../stores/branches.store';
+import type { Branch } from '../../stores/branches.store';
 
 export const branchesKeys = {
   all: (companyId: string) => ['branches', companyId] as const,
@@ -10,7 +10,7 @@ export const useBranches = (companyId: string) => {
   return useQuery({
     queryKey: branchesKeys.all(companyId),
     queryFn: async () => {
-      const { data } = await api.get<Branch[]>(`/branches/company/${companyId}`);
+      const { data } = await api.get<Branch[]>(`/branches?companyId=${companyId}`);
       return data;
     },
     enabled: !!companyId,

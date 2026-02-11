@@ -1,11 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Building2, FileText, MapPin } from 'lucide-react';
+import { Building2, FileText, MapPin, Search, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useCreateCompany } from './companies.hooks';
+import { useCreateCompany, useVerifySat } from './companies.hooks';
+import {
+  CustomForm,
+  FormInput,
+  FormSelect,
+  FormTextarea,
+  FormCheckbox,
+  useToast
+} from 'ui-components';
+import { z } from 'zod';
 
 const companyFormSchema = z.object({
   businessName: z.string().min(1, 'El nombre comercial es obligatorio'),
@@ -19,6 +25,7 @@ const companyFormSchema = z.object({
   taxAddressCity: z.string().min(1, 'La ciudad es obligatoria'),
   taxAddressState: z.string().min(1, 'El estado es obligatorio'),
   taxAddressCounty: z.string().optional(),
+  isSatVerified: z.boolean().optional(),
 });
 
 type CompanyFormValues = z.infer<typeof companyFormSchema>;
@@ -26,33 +33,55 @@ type CompanyFormValues = z.infer<typeof companyFormSchema>;
 export const CreateCompanyPage: React.FC = () => {
   const navigate = useNavigate();
   const createMutation = useCreateCompany();
+  const verifySatMutation = useVerifySat();
+  const { toast } = useToast();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<CompanyFormValues>({
-    resolver: zodResolver(companyFormSchema),
-    defaultValues: {
-      businessName: '',
-      logoUrl: '',
-      description: '',
-      rfc: '',
-      legalName: '',
-      fiscalRegime: '',
-      taxAddress: '',
-      taxAddressZip: '',
-      taxAddressCity: '',
-      taxAddressState: '',
-      taxAddressCounty: '',
+  const handleVerifySat = async (rfc: string, setValue: any) => {
+    if (!rfc || rfc.length < 12) {
+      toast({
+        title: "RFC Inválido",
+        description: "Por favor ingresa un RFC válido antes de verificar.",
+        variant: "destructive"
+      });
+      return;
     }
-  });
+
+    try {
+      const result = await verifySatMutation.mutateAsync(rfc);
+      if (result.isValid) {
+        toast({
+          title: "RFC Verificado",
+          description: result.message,
+          className: "bg-green-500 text-white"
+        });
+        if (result.details) {
+          setValue('legalName', result.details.legalName);
+          setValue('fiscalRegime', result.details.taxRegime.split(' - ')[0]);
+          setValue('taxAddressZip', result.details.zipCode);
+          setValue('isSatVerified', true);
+        }
+      } else {
+        toast({
+          title: "Error de Verificación",
+          description: result.message,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error del Servidor",
+        description: "No se pudo conectar con el servicio de verificación.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const onSubmit = async (data: CompanyFormValues) => {
     try {
-      // Limpiar campos vacíos opcionales antes de enviar
       const payload = { ...data };
-      if (payload.logoUrl === '') delete payload.logoUrl;
+      if (!payload.logoUrl) delete (payload as any).logoUrl;
+      if (!payload.description) delete (payload as any).description;
+      if (!payload.taxAddressCounty) delete (payload as any).taxAddressCounty;
 
       await createMutation.mutateAsync(payload);
       navigate('/companies');
@@ -61,217 +90,179 @@ export const CreateCompanyPage: React.FC = () => {
     }
   };
 
+  const fiscalRegimeOptions = [
+    { value: "601", label: "601 - General de Ley Personas Morales" },
+    { value: "603", label: "603 - Personas Morales con Fines no Lucrativos" },
+    { value: "605", label: "605 - Sueldos y Salarios e Ingresos Asimilados a Salarios" },
+    { value: "606", label: "606 - Arrendamiento" },
+    { value: "612", label: "612 - Personas Físicas con Actividades Empresariales" },
+    { value: "621", label: "621 - Régimen de Incorporación Fiscal" },
+    { value: "625", label: "625 - Régimen de las Actividades Empresariales con ingresos a través de Plataformas" },
+    { value: "626", label: "626 - Régimen Simplificado de Confianza" },
+  ];
+
+  const defaultValues: CompanyFormValues = {
+    businessName: '',
+    logoUrl: '',
+    description: '',
+    rfc: '',
+    legalName: '',
+    fiscalRegime: '',
+    taxAddress: '',
+    taxAddressZip: '',
+    taxAddressCity: '',
+    taxAddressState: '',
+    taxAddressCounty: '',
+    isSatVerified: false,
+  };
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-700">
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-700 pb-20">
       <div className="mb-12">
         <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Registrar Nueva Empresa</h1>
         <p className="text-slate-400 font-medium">Completa la información fiscal y comercial de la empresa.</p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-        {/* Información Comercial */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <Building2 className="h-6 w-6 text-dashboard-primary" />
-            <h2 className="text-2xl font-bold text-white">Información Comercial</h2>
-          </div>
+      <CustomForm
+        schema={companyFormSchema}
+        onSubmit={onSubmit}
+        defaultValues={defaultValues}
+        className="space-y-8"
+      >
+        {({ watch, setValue, formState: { isSubmitting } }) => {
+          const currentRfc = watch('rfc');
+          const isVerified = watch('isSatVerified');
 
-          <div className="grid grid-cols-2 gap-6">
-            <div className="col-span-2">
-              <label className="block text-sm font-bold text-slate-300 mb-2">
-                Nombre Comercial *
-              </label>
-              <input
-                {...register('businessName')}
-                className={`w-full bg-[#0a0b1e]/60 border ${errors.businessName ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50`}
-                placeholder="Ej: Servicios Profesionales SA"
-              />
-              {errors.businessName && <p className="text-red-500 text-xs mt-1">{errors.businessName.message}</p>}
-            </div>
-
-            <div className="col-span-2">
-              <label className="block text-sm font-bold text-slate-300 mb-2">
-                URL del Logo
-              </label>
-              <input
-                {...register('logoUrl')}
-                type="url"
-                className={`w-full bg-[#0a0b1e]/60 border ${errors.logoUrl ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50`}
-                placeholder="https://ejemplo.com/logo.png"
-              />
-              {errors.logoUrl && <p className="text-red-500 text-xs mt-1">{errors.logoUrl.message}</p>}
-            </div>
-
-            <div className="col-span-2">
-              <label className="block text-sm font-bold text-slate-300 mb-2">
-                Descripción
-              </label>
-              <textarea
-                {...register('description')}
-                rows={3}
-                className="w-full bg-[#0a0b1e]/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50"
-                placeholder="Breve descripción de la empresa..."
-              />
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Información Fiscal */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <FileText className="h-6 w-6 text-dashboard-primary" />
-            <h2 className="text-2xl font-bold text-white">Datos Fiscales (SAT)</h2>
-          </div>
-
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-bold text-slate-300 mb-2">
-                RFC *
-              </label>
-              <input
-                {...register('rfc')}
-                className={`w-full bg-[#0a0b1e]/60 border ${errors.rfc ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50 uppercase`}
-                placeholder="ABC123456XYZ"
-              />
-              {errors.rfc && <p className="text-red-500 text-xs mt-1">{errors.rfc.message}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold text-slate-300 mb-2">
-                Régimen Fiscal *
-              </label>
-              <select
-                {...register('fiscalRegime')}
-                className={`w-full bg-[#0a0b1e]/60 border ${errors.fiscalRegime ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50`}
+          return (
+            <>
+              {/* Información Comercial */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
               >
-                <option value="">Seleccionar...</option>
-                <option value="601">601 - General de Ley Personas Morales</option>
-                <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
-                <option value="605">605 - Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
-                <option value="606">606 - Arrendamiento</option>
-                <option value="612">612 - Personas Físicas con Actividades Empresariales</option>
-                <option value="621">621 - Régimen de Incorporación Fiscal</option>
-                <option value="625">625 - Régimen de las Actividades Empresariales con ingresos a través de Plataformas</option>
-                <option value="626">626 - Régimen Simplificado de Confianza</option>
-              </select>
-              {errors.fiscalRegime && <p className="text-red-500 text-xs mt-1">{errors.fiscalRegime.message}</p>}
-            </div>
+                <div className="flex items-center gap-3 mb-6">
+                  <Building2 className="h-6 w-6 text-dashboard-primary" />
+                  <h2 className="text-2xl font-bold text-white">Información Comercial</h2>
+                </div>
 
-            <div className="col-span-2">
-              <label className="block text-sm font-bold text-slate-300 mb-2">
-                Razón Social *
-              </label>
-              <input
-                {...register('legalName')}
-                className={`w-full bg-[#0a0b1e]/60 border ${errors.legalName ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50`}
-                placeholder="Nombre legal completo de la empresa"
-              />
-              {errors.legalName && <p className="text-red-500 text-xs mt-1">{errors.legalName.message}</p>}
-            </div>
-          </div>
-        </motion.div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="col-span-2">
+                    <FormInput name="businessName" label="Nombre Comercial *" placeholder="Ej: Servicios Profesionales SA" />
+                  </div>
 
-        {/* Domicilio Fiscal */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <MapPin className="h-6 w-6 text-dashboard-primary" />
-            <h2 className="text-2xl font-bold text-white">Domicilio Fiscal</h2>
-          </div>
+                  <div className="col-span-2">
+                    <FormInput name="logoUrl" label="URL del Logo" type="url" placeholder="https://ejemplo.com/logo.png" />
+                  </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            <div className="col-span-2">
-              <label className="block text-sm font-bold text-slate-300 mb-2">
-                Dirección *
-              </label>
-              <input
-                {...register('taxAddress')}
-                className={`w-full bg-[#0a0b1e]/60 border ${errors.taxAddress ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50`}
-                placeholder="Calle, número exterior e interior"
-              />
-              {errors.taxAddress && <p className="text-red-500 text-xs mt-1">{errors.taxAddress.message}</p>}
-            </div>
+                  <div className="col-span-2">
+                    <FormTextarea name="description" label="Descripción" rows={3} placeholder="Breve descripción de la empresa..." />
+                  </div>
+                </div>
+              </motion.div>
 
-            <div>
-              <label className="block text-sm font-bold text-slate-300 mb-2">
-                Ciudad *
-              </label>
-              <input
-                {...register('taxAddressCity')}
-                className={`w-full bg-[#0a0b1e]/60 border ${errors.taxAddressCity ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50`}
-                placeholder="Ciudad"
-              />
-              {errors.taxAddressCity && <p className="text-red-500 text-xs mt-1">{errors.taxAddressCity.message}</p>}
-            </div>
+              {/* Información Fiscal */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-6 w-6 text-dashboard-primary" />
+                    <h2 className="text-2xl font-bold text-white">Datos Fiscales (SAT)</h2>
+                  </div>
+                  {isVerified && (
+                    <div className="flex items-center gap-2 bg-green-500/10 text-green-500 px-4 py-1.5 rounded-full text-xs font-bold border border-green-500/20">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Verificado por SAT
+                    </div>
+                  )}
+                </div>
 
-            <div>
-              <label className="block text-sm font-bold text-slate-300 mb-2">
-                Estado *
-              </label>
-              <input
-                {...register('taxAddressState')}
-                className={`w-full bg-[#0a0b1e]/60 border ${errors.taxAddressState ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50`}
-                placeholder="Estado"
-              />
-              {errors.taxAddressState && <p className="text-red-500 text-xs mt-1">{errors.taxAddressState.message}</p>}
-            </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="relative group">
+                    <FormInput
+                      name="rfc"
+                      label="RFC *"
+                      placeholder="ABC123456XYZ"
+                      className="uppercase"
+                      disabled={isVerified}
+                    />
+                    {!isVerified && (
+                      <button
+                        type="button"
+                        onClick={() => handleVerifySat(currentRfc, setValue)}
+                        disabled={verifySatMutation.isPending}
+                        className="absolute right-2 bottom-1.5 p-2 rounded-lg bg-dashboard-primary/10 text-dashboard-primary hover:bg-dashboard-primary hover:text-dashboard-bg transition-all active:scale-95 disabled:opacity-50"
+                        title="Verificar ante el SAT"
+                      >
+                        {verifySatMutation.isPending ? (
+                          <Search className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Search className="h-4 w-4" />
+                        )}
+                      </button>
+                    )}
+                  </div>
 
-            <div>
-              <label className="block text-sm font-bold text-slate-300 mb-2">
-                Municipio/Delegación
-              </label>
-              <input
-                {...register('taxAddressCounty')}
-                className="w-full bg-[#0a0b1e]/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50"
-                placeholder="Municipio o Delegación"
-              />
-            </div>
+                  <FormSelect name="fiscalRegime" label="Régimen Fiscal *" options={fiscalRegimeOptions} />
 
-            <div>
-              <label className="block text-sm font-bold text-slate-300 mb-2">
-                Código Postal *
-              </label>
-              <input
-                {...register('taxAddressZip')}
-                className={`w-full bg-[#0a0b1e]/60 border ${errors.taxAddressZip ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50`}
-                placeholder="00000"
-              />
-              {errors.taxAddressZip && <p className="text-red-500 text-xs mt-1">{errors.taxAddressZip.message}</p>}
-            </div>
-          </div>
-        </motion.div>
+                  <div className="col-span-2">
+                    <FormInput name="legalName" label="Razón Social *" placeholder="Nombre legal completo de la empresa" />
+                  </div>
 
-        {/* Actions */}
-        <div className="flex gap-4 justify-end">
-          <button
-            type="button"
-            onClick={() => navigate('/companies')}
-            className="px-8 py-3.5 rounded-2xl bg-white/5 text-slate-400 font-bold hover:bg-white/10 transition-all"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            disabled={createMutation.isPending}
-            className="px-8 py-3.5 rounded-2xl bg-dashboard-primary text-dashboard-bg font-black shadow-xl shadow-dashboard-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {createMutation.isPending ? 'Guardando...' : 'Registrar Empresa'}
-          </button>
-        </div>
-      </form>
+                  <div className="col-span-2">
+                    <FormCheckbox name="isSatVerified" label="Confirmar Verificación SAT" />
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Domicilio Fiscal */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <MapPin className="h-6 w-6 text-dashboard-primary" />
+                  <h2 className="text-2xl font-bold text-white">Domicilio Fiscal</h2>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="col-span-2">
+                    <FormInput name="taxAddress" label="Dirección *" placeholder="Calle, número exterior e interior" />
+                  </div>
+
+                  <FormInput name="taxAddressCity" label="Ciudad *" placeholder="Ciudad" />
+                  <FormInput name="taxAddressState" label="Estado *" placeholder="Estado" />
+                  <FormInput name="taxAddressCounty" label="Municipio/Delegación" placeholder="Municipio o Delegación" />
+                  <FormInput name="taxAddressZip" label="Código Postal *" placeholder="00000" />
+                </div>
+              </motion.div>
+
+              {/* Actions */}
+              <div className="flex gap-4 justify-end">
+                <button
+                  type="button"
+                  onClick={() => navigate('/companies')}
+                  className="px-8 py-3.5 rounded-2xl bg-white/5 text-slate-400 font-bold hover:bg-white/10 transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={createMutation.isPending || isSubmitting}
+                  className="px-8 py-3.5 rounded-2xl bg-dashboard-primary text-dashboard-bg font-black shadow-xl shadow-dashboard-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {(createMutation.isPending || isSubmitting) ? 'Guardando...' : 'Registrar Empresa'}
+                </button>
+              </div>
+            </>
+          );
+        }}
+      </CustomForm>
     </div>
   );
 };

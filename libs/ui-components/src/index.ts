@@ -7,6 +7,10 @@ export type { ButtonProps } from "./components/ui/button";
 export { Input } from "./components/ui/input";
 export { Label } from "./components/ui/label";
 export { FormInput } from "./components/form-input";
+export { FormSelect } from "./components/form-select";
+export { FormCheckbox } from "./components/form-checkbox";
+export { FormTextarea } from "./components/form-textarea";
+export { CustomForm } from "./components/custom-form";
 export { DataTable } from "./components/data-table";
 export {
   Select,
@@ -20,6 +24,8 @@ export {
   SelectScrollUpButton,
   SelectScrollDownButton,
 } from "./components/ui/select";
+export { Textarea } from "./components/ui/textarea";
+export { Checkbox } from "./components/ui/checkbox";
 
 
 // Export toast components

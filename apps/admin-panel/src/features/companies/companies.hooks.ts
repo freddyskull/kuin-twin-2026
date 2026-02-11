@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from 'api-client';
-import type { Company } from '../stores/companies.store';
+import type { Company } from '../../stores/companies.store';
 
 export const companiesKeys = {
   all: ['companies'] as const,
@@ -63,6 +63,19 @@ export const useDeleteCompany = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: companiesKeys.all });
+    },
+  });
+};
+
+export const useVerifySat = () => {
+  return useMutation({
+    mutationFn: async (rfc: string) => {
+      const { data } = await api.get<{
+        isValid: boolean;
+        message: string;
+        details: any;
+      }>(`/companies/verify-sat/${rfc}`);
+      return data;
     },
   });
 };

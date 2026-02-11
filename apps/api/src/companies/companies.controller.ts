@@ -11,11 +11,21 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
+import { SatService } from './sat.service';
 
 @ApiTags('Companies')
 @Controller('companies')
 export class CompaniesController {
-  constructor(private readonly companiesService: CompaniesService) {}
+  constructor(
+    private readonly companiesService: CompaniesService,
+    private readonly satService: SatService,
+  ) {}
+
+  @Get('verify-sat/:rfc')
+  @ApiOperation({ summary: 'Verificar RFC ante el SAT (Simulado)' })
+  verifySat(@Param('rfc') rfc: string) {
+    return this.satService.verifyRfc(rfc);
+  }
 
   @Post()
   @ApiOperation({ summary: 'Crear empresa' })

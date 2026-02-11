@@ -1,16 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Pencil, Trash2, Building2, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, Building2, CheckCircle, XCircle, Store } from 'lucide-react';
 import { useCompanies, useDeleteCompany } from './companies.hooks';
 import type { Company } from '../../stores/companies.store';
 import { DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
+import { Modal } from '../../components/Modal';
+import { BranchList } from './components/BranchList';
 
 export const CompaniesPage: React.FC = () => {
   const { data: companies = [], isLoading, error } = useCompanies();
   const deleteMutation = useDeleteCompany();
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [filter, setFilter] = React.useState<'all' | 'verified' | 'unverified'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState<'all' | 'verified' | 'unverified'>('all');
+
+  // Estado para el modal de sucursales desde la tabla
+  const [isBranchModalOpen, setIsBranchModalOpen] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState<{ id: string; name: string } | null>(null);
 
   const handleDelete = async (id: string, name: string) => {
     if (window.confirm(`¿Estás seguro de que deseas eliminar la empresa "${name}"?`)) {
@@ -20,6 +26,11 @@ export const CompaniesPage: React.FC = () => {
         console.error('Error al eliminar empresa:', err);
       }
     }
+  };
+
+  const handleManageBranches = (id: string, name: string) => {
+    setSelectedCompany({ id, name });
+    setIsBranchModalOpen(true);
   };
 
   const filteredCompanies = useMemo(() => {
@@ -89,15 +100,29 @@ export const CompaniesPage: React.FC = () => {
         const company = row.original;
         return (
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleManageBranches(company.id, company.businessName)}
+              className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all"
+              title="Gestionar Sucursales"
+              type="button"
+            >
+              <Store className="h-4 w-4" />
+            </button>
             <Link to={`/companies/${company.id}/edit`}>
-              <button className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all">
+              <button
+                type="button"
+                className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all"
+                title="Editar Empresa"
+              >
                 <Pencil className="h-4 w-4" />
               </button>
             </Link>
             <button
+              type="button"
               onClick={() => handleDelete(company.id, company.businessName)}
               disabled={deleteMutation.isPending}
               className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all disabled:opacity-30"
+              title="Eliminar Empresa"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -108,7 +133,7 @@ export const CompaniesPage: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-10 animate-in fade-in duration-700">
+    <div className="max-w-[1600px] mx-auto space-y-10 animate-in fade-in duration-700 pb-20">
       <div className="flex items-center justify-between mb-12">
         <div>
           <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Empresas</h1>
@@ -170,6 +195,18 @@ export const CompaniesPage: React.FC = () => {
           className="border-none"
         />
       </div>
+
+      {/* Modal para gestionar sucursales */}
+      <Modal
+        isOpen={isBranchModalOpen}
+        onClose={() => setIsBranchModalOpen(false)}
+        title={`Sucursales: ${selectedCompany?.name || ''}`}
+        size="lg"
+      >
+        {selectedCompany && (
+          <BranchList companyId={selectedCompany.id} />
+        )}
+      </Modal>
     </div>
   );
 };

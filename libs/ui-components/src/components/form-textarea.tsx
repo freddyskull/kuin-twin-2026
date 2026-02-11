@@ -1,19 +1,17 @@
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { cn } from '../lib/utils';
 
-interface FormInputProps extends React.ComponentProps<'input'> {
+interface FormTextareaProps extends React.ComponentProps<'textarea'> {
   name: string;
   label: string;
-  helperText?: string;
 }
 
-export const FormInput: React.FC<FormInputProps> = ({
+export const FormTextarea: React.FC<FormTextareaProps> = ({
   name,
   label,
-  helperText,
   className,
   ...props
 }) => {
@@ -32,7 +30,7 @@ export const FormInput: React.FC<FormInputProps> = ({
       >
         {label}
       </Label>
-      <Input
+      <Textarea
         id={name}
         {...register(name)}
         {...props}
@@ -44,11 +42,6 @@ export const FormInput: React.FC<FormInputProps> = ({
       {error && (
         <p className="text-xs text-red-500 font-medium">
           {error.message as string}
-        </p>
-      )}
-      {helperText && !error && (
-        <p className="text-xs text-slate-500">
-          {helperText}
         </p>
       )}
     </div>
