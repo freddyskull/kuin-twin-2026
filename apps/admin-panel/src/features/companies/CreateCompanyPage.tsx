@@ -148,7 +148,7 @@ export const CreateCompanyPage: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="col-span-2">
-                    <FormInput name="businessName" label="Nombre Comercial *" placeholder="Ej: Servicios Profesionales SA" />
+                    <FormInput name="businessName" label="Nombre Comercial" required placeholder="Ej: Servicios Profesionales SA" />
                   </div>
 
                   <div className="col-span-2">
@@ -184,7 +184,8 @@ export const CreateCompanyPage: React.FC = () => {
                   <div className="relative group">
                     <FormInput
                       name="rfc"
-                      label="RFC *"
+                      label="RFC"
+                      required
                       placeholder="ABC123456XYZ"
                       className="uppercase"
                       disabled={isVerified}
@@ -206,10 +207,10 @@ export const CreateCompanyPage: React.FC = () => {
                     )}
                   </div>
 
-                  <FormSelect name="fiscalRegime" label="Régimen Fiscal *" options={fiscalRegimeOptions} />
+                  <FormSelect name="fiscalRegime" label="Régimen Fiscal" required options={fiscalRegimeOptions} />
 
                   <div className="col-span-2">
-                    <FormInput name="legalName" label="Razón Social *" placeholder="Nombre legal completo de la empresa" />
+                    <FormInput name="legalName" label="Razón Social" required placeholder="Nombre legal completo de la empresa" />
                   </div>
 
                   <div className="col-span-2">
@@ -232,13 +233,13 @@ export const CreateCompanyPage: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="col-span-2">
-                    <FormInput name="taxAddress" label="Dirección *" placeholder="Calle, número exterior e interior" />
+                    <FormInput name="taxAddress" label="Dirección" required placeholder="Calle, número exterior e interior" />
                   </div>
 
-                  <FormInput name="taxAddressCity" label="Ciudad *" placeholder="Ciudad" />
-                  <FormInput name="taxAddressState" label="Estado *" placeholder="Estado" />
+                  <FormInput name="taxAddressCity" label="Ciudad" required placeholder="Ciudad" />
+                  <FormInput name="taxAddressState" label="Estado" required placeholder="Estado" />
                   <FormInput name="taxAddressCounty" label="Municipio/Delegación" placeholder="Municipio o Delegación" />
-                  <FormInput name="taxAddressZip" label="Código Postal *" placeholder="00000" />
+                  <FormInput name="taxAddressZip" label="Código Postal" required placeholder="00000" />
                 </div>
               </motion.div>
 

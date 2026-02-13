@@ -1,10 +1,13 @@
 import React, { useMemo } from 'react';
+// Updated import to kebab-case
 import { Link } from 'react-router-dom';
 import { Plus, Search, Pencil, Trash2, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useServices, useDeleteService, useToggleServiceStatus } from './services.hooks';
 import { DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
+import { Modal } from '@/components/Modal';
+import { ServiceCompanyManager } from './components/service-company-manager';
 
 export const ServicesPage: React.FC = () => {
   const { data: services = [], isLoading, error } = useServices();
@@ -12,6 +15,7 @@ export const ServicesPage: React.FC = () => {
   const toggleStatusMutation = useToggleServiceStatus();
 
   const [statusConfirm, setStatusConfirm] = React.useState<{ id: string, title: string, nextStatus: boolean } | null>(null);
+  const [selectedServiceForCompanies, setSelectedServiceForCompanies] = React.useState<any | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filter, setFilter] = React.useState<'all' | 'active' | 'inactive'>('all');
 
@@ -123,8 +127,15 @@ export const ServicesPage: React.FC = () => {
         const service = row.original;
         return (
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSelectedServiceForCompanies(service)}
+              className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 transition-all"
+              title="Gestionar Sucursales"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+            </button>
             <Link to={`/services/${service.id}/edit`}>
-              <button className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all">
+              <button className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all" title="Editar Servicio">
                 <Pencil className="h-4 w-4" />
               </button>
             </Link>
@@ -132,6 +143,7 @@ export const ServicesPage: React.FC = () => {
               onClick={() => handleDelete(service.id, service.title)}
               disabled={deleteMutation.isPending || service.isActive}
               className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed"
+              title="Eliminar Servicio"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -247,6 +259,20 @@ export const ServicesPage: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      <Modal
+        isOpen={!!selectedServiceForCompanies}
+        onClose={() => setSelectedServiceForCompanies(null)}
+        title="Asignar Sucursales"
+        size="lg"
+      >
+        {selectedServiceForCompanies && (
+          <ServiceCompanyManager
+            service={selectedServiceForCompanies}
+            onClose={() => setSelectedServiceForCompanies(null)}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

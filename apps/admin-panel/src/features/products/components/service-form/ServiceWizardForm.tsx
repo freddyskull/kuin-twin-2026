@@ -62,11 +62,19 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
       workSchedule: undefined,
       slots: [],
       companyIds: [],
+      branchIds: [],
       ...initialValues
     }
   });
 
-  const { trigger, handleSubmit, formState: { isSubmitting, errors }, setValue, watch } = methods;
+  const { trigger, handleSubmit, formState: { isSubmitting, errors }, setValue, watch, reset } = methods;
+
+  // Reset form when initialValues change (for edit mode)
+  useEffect(() => {
+    if (initialValues && Object.keys(initialValues).length > 0) {
+      reset(initialValues);
+    }
+  }, [initialValues, reset]);
   const watchedCategoryId = watch('categoryId');
   const watchedUnitId = watch('unitId');
 

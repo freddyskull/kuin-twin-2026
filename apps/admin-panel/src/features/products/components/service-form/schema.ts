@@ -41,6 +41,7 @@ export const serviceSchema = z.object({
     }).optional(),
   }).optional(),
   companyIds: z.array(z.string()).min(1, 'Debes seleccionar al menos una empresa'),
+  branchIds: z.array(z.string()).default([]),
 });
 
 export type ServiceFormValues = z.infer<typeof serviceSchema>;

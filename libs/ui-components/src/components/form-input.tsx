@@ -8,6 +8,7 @@ interface FormInputProps extends React.ComponentProps<'input'> {
   name: string;
   label: string;
   helperText?: string;
+  required?: boolean;
 }
 
 export const FormInput: React.FC<FormInputProps> = ({
@@ -15,6 +16,7 @@ export const FormInput: React.FC<FormInputProps> = ({
   label,
   helperText,
   className,
+  required,
   ...props
 }) => {
   const {
@@ -31,6 +33,7 @@ export const FormInput: React.FC<FormInputProps> = ({
         htmlFor={name}
       >
         {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </Label>
       <Input
         id={name}

@@ -16,6 +16,7 @@ interface FormSelectProps {
   options: { label: string; value: string }[];
   placeholder?: string;
   className?: string;
+  required?: boolean;
 }
 
 export const FormSelect: React.FC<FormSelectProps> = ({
@@ -24,6 +25,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
   options,
   placeholder = "Seleccionar...",
   className,
+  required,
 }) => {
   const {
     control,
@@ -39,6 +41,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
         htmlFor={name}
       >
         {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </Label>
       <Controller
         name={name}

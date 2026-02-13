@@ -7,12 +7,14 @@ import { cn } from '../lib/utils';
 interface FormCheckboxProps extends React.ComponentProps<'input'> {
   name: string;
   label: string;
+  required?: boolean;
 }
 
 export const FormCheckbox: React.FC<FormCheckboxProps> = ({
   name,
   label,
   className,
+  required,
   ...props
 }) => {
   const {
@@ -38,6 +40,7 @@ export const FormCheckbox: React.FC<FormCheckboxProps> = ({
         htmlFor={name}
       >
         {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </Label>
       {error && (
         <p className="text-xs text-red-500 font-medium ml-2">

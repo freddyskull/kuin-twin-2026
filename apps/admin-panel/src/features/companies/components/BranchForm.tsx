@@ -74,7 +74,7 @@ export const BranchForm: React.FC<BranchFormProps> = ({
         <>
           <div className="grid grid-cols-2 gap-6">
             <div className="col-span-2">
-              <FormInput name="name" label="Nombre de la Sucursal *" placeholder="Ej: Sucursal Centro" />
+              <FormInput name="name" label="Nombre de la Sucursal" required placeholder="Ej: Sucursal Centro" />
             </div>
 
             <div className="col-span-2">
@@ -83,14 +83,14 @@ export const BranchForm: React.FC<BranchFormProps> = ({
 
             <div className="col-span-2">
               <div className="text-sm font-bold text-dashboard-primary flex items-center gap-2 mb-2">
-                <MapPin className="h-4 w-4" /> Ubicación Física *
+                <MapPin className="h-4 w-4" /> Ubicación Física
               </div>
-              <FormInput name="address" label="Dirección *" placeholder="Calle y número" />
+              <FormInput name="address" label="Dirección" required placeholder="Calle y número" />
             </div>
 
-            <FormInput name="city" label="Ciudad *" />
-            <FormInput name="state" label="Estado *" />
-            <FormInput name="zipCode" label="Código Postal *" maxLength={5} />
+            <FormInput name="city" label="Ciudad" required />
+            <FormInput name="state" label="Estado" required />
+            <FormInput name="zipCode" label="Código Postal" required maxLength={5} />
 
             <div className="col-span-1">
               <div className="text-sm font-bold text-dashboard-primary flex items-center gap-2 mb-2">

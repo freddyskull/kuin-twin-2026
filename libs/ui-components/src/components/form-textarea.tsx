@@ -7,12 +7,14 @@ import { cn } from '../lib/utils';
 interface FormTextareaProps extends React.ComponentProps<'textarea'> {
   name: string;
   label: string;
+  required?: boolean;
 }
 
 export const FormTextarea: React.FC<FormTextareaProps> = ({
   name,
   label,
   className,
+  required,
   ...props
 }) => {
   const {
@@ -29,6 +31,7 @@ export const FormTextarea: React.FC<FormTextareaProps> = ({
         htmlFor={name}
       >
         {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </Label>
       <Textarea
         id={name}

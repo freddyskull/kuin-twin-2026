@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import type { ServiceFormValues } from '../schema';
 import { useServicesStore } from '../../../../../stores/services.store';
 import { CategorySelector } from '../CategorySelector';
-import { CompanySelector } from '../CompanySelector';
+import { CompanySelector } from '../company-selector';
 
 export const ServiceInfoStep: React.FC = () => {
   const { register, control, formState: { errors } } = useFormContext<ServiceFormValues>();
@@ -54,15 +54,23 @@ export const ServiceInfoStep: React.FC = () => {
         </div>
 
         <div className="space-y-4">
-          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Empresas Asociadas</label>
+          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Empresas y Sucursales Asociadas</label>
           <Controller
             name="companyIds"
             control={control}
-            render={({ field }) => (
-              <CompanySelector
-                value={field.value}
-                onChange={field.onChange}
-                error={errors.companyIds?.message}
+            render={({ field: companyField }) => (
+              <Controller
+                name="branchIds"
+                control={control}
+                render={({ field: branchField }) => (
+                  <CompanySelector
+                    selectedCompanyIds={companyField.value}
+                    onCompanyChange={companyField.onChange}
+                    selectedBranchIds={branchField.value || []}
+                    onBranchChange={branchField.onChange}
+                    error={errors.companyIds?.message}
+                  />
+                )}
               />
             )}
           />
