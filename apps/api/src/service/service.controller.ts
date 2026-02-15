@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { ServiceService } from './service.service';
-import { CreateServiceDto, UpdateServiceDto } from './dto/service.dto';
+import { CreateServiceDto, UpdateServiceDto } from './dto';
 
 @ApiTags('Services')
 @Controller('services')

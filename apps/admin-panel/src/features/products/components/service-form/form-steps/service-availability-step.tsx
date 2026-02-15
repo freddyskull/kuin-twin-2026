@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Calendar, Clock, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Label } from 'ui-components';
 import type { ServiceFormValues } from '../schema';
 
 const DAYS = [
@@ -88,7 +89,7 @@ export const ServiceAvailabilityStep: React.FC = () => {
       <div className="space-y-6">
         {/* Weekly Schedule */}
         <div className="space-y-4">
-          <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Agenda Semanal</h3>
+          <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Agenda Semanal</Label>
           <div className="grid gap-3">
             {schedule && schedule.map((item, index) => {
               const dayLabel = DAYS.find(d => d.key === item.day)?.label || item.day;
@@ -135,9 +136,9 @@ export const ServiceAvailabilityStep: React.FC = () => {
         {/* Holidays Configuration */}
         <div className="space-y-4 pt-4 border-t border-white/5">
           <div className="flex items-center justify-between">
-            <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Configuración de Feriados</h3>
+            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Configuración de Feriados</Label>
             <label className="flex items-center gap-2 cursor-pointer group">
-              <span className="text-[10px] font-bold text-slate-400 group-hover:text-white transition-colors">¿TRABAJAR FERIADOS?</span>
+              <Label className="text-[10px] font-bold text-slate-400 group-hover:text-white transition-colors">¿TRABAJAR FERIADOS?</Label>
               <div className="relative">
                 <input
                   type="checkbox"

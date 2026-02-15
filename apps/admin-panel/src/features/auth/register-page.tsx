@@ -1,5 +1,5 @@
 import React from 'react';
-import { RegisterForm } from '@/features/auth/registerForm';
+import { RegisterForm } from '@/features/auth/register-form';
 import logo from '@assets/logo-kuin-twin.svg';
 import { motion } from 'framer-motion';
 

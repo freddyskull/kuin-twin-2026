@@ -69,7 +69,7 @@ export const RegisterForm = ({ className, onSubmit: _onSubmit, ...props }: React
       className={cn("flex relative flex-col gap-6", className)}
       {...props}
     >
-      {({ setValue, watch, formState: { errors, isSubmitting } }) => (
+      {({ setValue, watch, formState: { errors, isSubmitting, isValid, isDirty } }) => (
         <div className="flex flex-col gap-6 ">
           <div className="flex flex-col items-center gap-1 text-center">
             <h1 className="text-xl font-bold uppercase">Regístrate</h1>
@@ -129,7 +129,7 @@ export const RegisterForm = ({ className, onSubmit: _onSubmit, ...props }: React
             )}
           </div>
           <div className="grid gap-2 mt-2">
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !isValid || !isDirty}>
               {isSubmitting ? "Registrando..." : "Registrarse"}
             </Button>
           </div>

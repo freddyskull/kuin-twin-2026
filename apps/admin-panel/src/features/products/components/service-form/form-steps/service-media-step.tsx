@@ -40,12 +40,19 @@ export const ServiceMediaStep: React.FC = () => {
     setIsUploading(true);
     try {
       const media = await uploadMedia(user.id, file);
-      setValue('imageUrl', media.url);
-      toast({
-        variant: "default",
-        title: "Imagen subida",
-        description: "La imagen se ha subido correctamente.",
-      });
+      // Handle different response formats (object with url/path or direct string)
+      const url = media?.url || media?.path || (typeof media === 'string' ? media : undefined);
+
+      if (url) {
+        setValue('imageUrl', url, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+        toast({
+          variant: "default",
+          title: "Imagen subida",
+          description: "La imagen se ha subido correctamente.",
+        });
+      } else {
+        throw new Error("Formato de respuesta de imagen inválido");
+      }
     } catch (error: any) {
       console.error('Failed to upload image:', error);
 
@@ -84,7 +91,7 @@ export const ServiceMediaStep: React.FC = () => {
   };
 
   const removeImage = () => {
-    setValue('imageUrl', '');
+    setValue('imageUrl', '', { shouldDirty: true, shouldTouch: true, shouldValidate: true });
   };
 
   return (

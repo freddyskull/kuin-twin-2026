@@ -9,12 +9,12 @@ import { useToast } from 'ui-components';
 
 import { serviceSchema } from './schema';
 import type { ServiceFormValues } from './schema';
-import { ServiceInfoStep } from './formSteps/ServiceInfoStep';
-import { ServicePriceStep } from './formSteps/ServicePriceStep';
-import { ServiceMediaStep } from './formSteps/ServiceMediaStep';
-import { ServiceAttributesStep } from './formSteps/ServiceAttributesStep';
-import { ServiceAvailabilityStep } from './formSteps/ServiceAvailabilityStep';
-import { ServicePreview } from './ServicePreview';
+import { ServiceInfoStep } from './form-steps/service-info-step';
+import { ServicePriceStep } from './form-steps/service-price-step';
+import { ServiceMediaStep } from './form-steps/service-media-step';
+import { ServiceAttributesStep } from './form-steps/service-attributes-step';
+import { ServiceAvailabilityStep } from './form-steps/service-availability-step';
+import { ServicePreview } from './service-preview';
 import { useCategories, useServiceUnits } from '../../services.hooks';
 
 interface ServiceWizardFormProps {
@@ -53,9 +53,12 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
   const methods = useForm<ServiceFormValues>({
     // @ts-expect-error - Type incompatibility between zod 3.25+ and @hookform/resolvers
     resolver: zodResolver(serviceSchema),
+    mode: 'onChange',
     defaultValues: {
       categoryId: '',
       unitId: '',
+      slug: '',
+      tags: [],
       imageUrl: '',
       metadata: [],
       dynamicAttributes: '',
@@ -67,7 +70,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     }
   });
 
-  const { trigger, handleSubmit, formState: { isSubmitting, errors }, setValue, watch, reset } = methods;
+  const { trigger, handleSubmit, formState: { isSubmitting, errors, isValid, isDirty }, setValue, watch, reset } = methods;
 
   // Reset form when initialValues change (for edit mode)
   useEffect(() => {
@@ -75,6 +78,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
       reset(initialValues);
     }
   }, [initialValues, reset]);
+
   const watchedCategoryId = watch('categoryId');
   const watchedUnitId = watch('unitId');
 
@@ -102,11 +106,11 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     if (currentStep === 2) fieldsToValidate = ['basePrice', 'unitId'];
     if (currentStep === 4) fieldsToValidate = ['metadata', 'dynamicAttributes'];
 
-    const isValid = await trigger(fieldsToValidate);
+    const isStepValid = await trigger(fieldsToValidate as any);
 
-    if (isValid && currentStep < 5) {
+    if (isStepValid && currentStep < 5) {
       setCurrentStep(currentStep + 1);
-    } else if (!isValid) {
+    } else if (!isStepValid) {
       // Show error toast with specific field errors
       const stepErrors = fieldsToValidate.map(field => errors[field as keyof typeof errors]).filter(Boolean);
       if (stepErrors.length > 0) {
@@ -128,7 +132,6 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
       onCancel();
     } else {
       navigate('/services');
-
     }
   };
 
@@ -182,7 +185,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
               {currentStep === 4 && <ServiceAttributesStep />}
               {currentStep === 5 && <ServiceAvailabilityStep />}
             </AnimatePresence>
-            |
+
             <div className="flex items-center justify-between pt-4">
               <button
                 type="button"
@@ -195,8 +198,8 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
               <button
                 type={currentStep === 5 ? "submit" : "button"}
                 onClick={currentStep < 5 ? handleNext : undefined}
-                disabled={isSubmitting}
-                className="flex items-center gap-3 bg-dashboard-primary text-dashboard-bg px-8 py-3 rounded-xl font-bold shadow-lg shadow-dashboard-primary/10 hover:scale-105 transition-all"
+                disabled={isSubmitting || (currentStep === 5 && (!isValid || !isDirty))}
+                className="flex items-center gap-3 bg-dashboard-primary text-dashboard-bg px-8 py-3 rounded-xl font-bold shadow-lg shadow-dashboard-primary/10 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {currentStep === 5 ? (isSubmitting ? (
                   <>

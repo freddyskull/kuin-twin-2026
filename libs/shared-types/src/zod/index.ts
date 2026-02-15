@@ -95,7 +95,7 @@ export const CategoryScalarFieldEnumSchema = z.enum(['id','name','slug','descrip
 
 export const ServiceUnitScalarFieldEnumSchema = z.enum(['id','name','abbreviation']);
 
-export const ServiceScalarFieldEnumSchema = z.enum(['id','vendorId','categoryId','unitId','title','description','imageUrl','basePrice','isActive','dynamicAttributes','workSchedule']);
+export const ServiceScalarFieldEnumSchema = z.enum(['id','vendorId','categoryId','unitId','title','slug','tags','description','imageUrl','basePrice','isActive','dynamicAttributes','workSchedule']);
 
 export const ServiceMetadataScalarFieldEnumSchema = z.enum(['id','serviceId','key','value']);
 
@@ -1083,12 +1083,14 @@ export const ServiceSchema = z.object({
   categoryId: z.string(),
   unitId: z.string(),
   title: z.string(),
+  slug: z.string().nullish(),
+  tags: z.string().array(),
   description: z.string().nullish(),
   imageUrl: z.string().nullish(),
   basePrice: z.instanceof(Prisma.Decimal, { message: "Field 'basePrice' must be a Decimal. Location: ['Models', 'Service']"}),
   isActive: z.boolean(),
   dynamicAttributes: JsonValueSchema.nullable(),
-  workSchedule: z.any().nullish(),
+  workSchedule: JsonValueSchema.nullable(),
 })
 
 export type Service = z.infer<typeof ServiceSchema>
@@ -1106,6 +1108,7 @@ export type ServicePartial = z.infer<typeof ServicePartialSchema>
 
 export const ServiceOptionalDefaultsSchema = ServiceSchema.merge(z.object({
   id: z.string().optional(),
+  tags: z.string().array().optional(),
   isActive: z.boolean().optional(),
 }))
 
@@ -2044,6 +2047,8 @@ export const ServiceSelectSchema: z.ZodType<Prisma.ServiceSelect> = z.object({
   categoryId: z.boolean().optional(),
   unitId: z.boolean().optional(),
   title: z.boolean().optional(),
+  slug: z.boolean().optional(),
+  tags: z.boolean().optional(),
   description: z.boolean().optional(),
   imageUrl: z.boolean().optional(),
   basePrice: z.boolean().optional(),
@@ -3101,6 +3106,8 @@ export const ServiceWhereInputSchema: z.ZodType<Prisma.ServiceWhereInput> = z.st
   categoryId: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   unitId: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   title: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  slug: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  tags: z.lazy(() => StringNullableListFilterSchema).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
   imageUrl: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
   basePrice: z.union([ z.lazy(() => DecimalFilterSchema), z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
@@ -3122,6 +3129,8 @@ export const ServiceOrderByWithRelationInputSchema: z.ZodType<Prisma.ServiceOrde
   categoryId: z.lazy(() => SortOrderSchema).optional(),
   unitId: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
+  slug: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
+  tags: z.lazy(() => SortOrderSchema).optional(),
   description: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
   imageUrl: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
   basePrice: z.lazy(() => SortOrderSchema).optional(),
@@ -3137,11 +3146,38 @@ export const ServiceOrderByWithRelationInputSchema: z.ZodType<Prisma.ServiceOrde
   companies: z.lazy(() => CompanyOrderByRelationAggregateInputSchema).optional(),
 });
 
-export const ServiceWhereUniqueInputSchema: z.ZodType<Prisma.ServiceWhereUniqueInput> = z.object({
-  id: z.string(),
-})
+export const ServiceWhereUniqueInputSchema: z.ZodType<Prisma.ServiceWhereUniqueInput> = z.union([
+  z.object({
+    id: z.string(),
+    slug: z.string(),
+    vendorId_title: z.lazy(() => ServiceVendorIdTitleCompoundUniqueInputSchema),
+  }),
+  z.object({
+    id: z.string(),
+    slug: z.string(),
+  }),
+  z.object({
+    id: z.string(),
+    vendorId_title: z.lazy(() => ServiceVendorIdTitleCompoundUniqueInputSchema),
+  }),
+  z.object({
+    id: z.string(),
+  }),
+  z.object({
+    slug: z.string(),
+    vendorId_title: z.lazy(() => ServiceVendorIdTitleCompoundUniqueInputSchema),
+  }),
+  z.object({
+    slug: z.string(),
+  }),
+  z.object({
+    vendorId_title: z.lazy(() => ServiceVendorIdTitleCompoundUniqueInputSchema),
+  }),
+])
 .and(z.strictObject({
   id: z.string().optional(),
+  slug: z.string().optional(),
+  vendorId_title: z.lazy(() => ServiceVendorIdTitleCompoundUniqueInputSchema).optional(),
   AND: z.union([ z.lazy(() => ServiceWhereInputSchema), z.lazy(() => ServiceWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => ServiceWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => ServiceWhereInputSchema), z.lazy(() => ServiceWhereInputSchema).array() ]).optional(),
@@ -3149,6 +3185,7 @@ export const ServiceWhereUniqueInputSchema: z.ZodType<Prisma.ServiceWhereUniqueI
   categoryId: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   unitId: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   title: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  tags: z.lazy(() => StringNullableListFilterSchema).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
   imageUrl: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
   basePrice: z.union([ z.lazy(() => DecimalFilterSchema), z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
@@ -3170,6 +3207,8 @@ export const ServiceOrderByWithAggregationInputSchema: z.ZodType<Prisma.ServiceO
   categoryId: z.lazy(() => SortOrderSchema).optional(),
   unitId: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
+  slug: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
+  tags: z.lazy(() => SortOrderSchema).optional(),
   description: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
   imageUrl: z.union([ z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema) ]).optional(),
   basePrice: z.lazy(() => SortOrderSchema).optional(),
@@ -3192,6 +3231,8 @@ export const ServiceScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Servi
   categoryId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema), z.string() ]).optional(),
   unitId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema), z.string() ]).optional(),
   title: z.union([ z.lazy(() => StringWithAggregatesFilterSchema), z.string() ]).optional(),
+  slug: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string() ]).optional().nullable(),
+  tags: z.lazy(() => StringNullableListFilterSchema).optional(),
   description: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string() ]).optional().nullable(),
   imageUrl: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string() ]).optional().nullable(),
   basePrice: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema), z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
@@ -4457,6 +4498,8 @@ export const ServiceUnitUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Service
 export const ServiceCreateInputSchema: z.ZodType<Prisma.ServiceCreateInput> = z.strictObject({
   id: z.string().optional(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -4478,6 +4521,8 @@ export const ServiceUncheckedCreateInputSchema: z.ZodType<Prisma.ServiceUnchecke
   categoryId: z.string(),
   unitId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -4493,6 +4538,8 @@ export const ServiceUncheckedCreateInputSchema: z.ZodType<Prisma.ServiceUnchecke
 export const ServiceUpdateInputSchema: z.ZodType<Prisma.ServiceUpdateInput> = z.strictObject({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4514,6 +4561,8 @@ export const ServiceUncheckedUpdateInputSchema: z.ZodType<Prisma.ServiceUnchecke
   categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4532,6 +4581,8 @@ export const ServiceCreateManyInputSchema: z.ZodType<Prisma.ServiceCreateManyInp
   categoryId: z.string(),
   unitId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -4543,6 +4594,8 @@ export const ServiceCreateManyInputSchema: z.ZodType<Prisma.ServiceCreateManyInp
 export const ServiceUpdateManyMutationInputSchema: z.ZodType<Prisma.ServiceUpdateManyMutationInput> = z.strictObject({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4557,6 +4610,8 @@ export const ServiceUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ServiceUnch
   categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5657,12 +5712,19 @@ export const CompanyOrderByRelationAggregateInputSchema: z.ZodType<Prisma.Compan
   _count: z.lazy(() => SortOrderSchema).optional(),
 });
 
+export const ServiceVendorIdTitleCompoundUniqueInputSchema: z.ZodType<Prisma.ServiceVendorIdTitleCompoundUniqueInput> = z.strictObject({
+  vendorId: z.string(),
+  title: z.string(),
+});
+
 export const ServiceCountOrderByAggregateInputSchema: z.ZodType<Prisma.ServiceCountOrderByAggregateInput> = z.strictObject({
   id: z.lazy(() => SortOrderSchema).optional(),
   vendorId: z.lazy(() => SortOrderSchema).optional(),
   categoryId: z.lazy(() => SortOrderSchema).optional(),
   unitId: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
+  slug: z.lazy(() => SortOrderSchema).optional(),
+  tags: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   imageUrl: z.lazy(() => SortOrderSchema).optional(),
   basePrice: z.lazy(() => SortOrderSchema).optional(),
@@ -5681,6 +5743,7 @@ export const ServiceMaxOrderByAggregateInputSchema: z.ZodType<Prisma.ServiceMaxO
   categoryId: z.lazy(() => SortOrderSchema).optional(),
   unitId: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
+  slug: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   imageUrl: z.lazy(() => SortOrderSchema).optional(),
   basePrice: z.lazy(() => SortOrderSchema).optional(),
@@ -5693,6 +5756,7 @@ export const ServiceMinOrderByAggregateInputSchema: z.ZodType<Prisma.ServiceMinO
   categoryId: z.lazy(() => SortOrderSchema).optional(),
   unitId: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
+  slug: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   imageUrl: z.lazy(() => SortOrderSchema).optional(),
   basePrice: z.lazy(() => SortOrderSchema).optional(),
@@ -6645,6 +6709,10 @@ export const ServiceUncheckedUpdateManyWithoutUnitNestedInputSchema: z.ZodType<P
   deleteMany: z.union([ z.lazy(() => ServiceScalarWhereInputSchema), z.lazy(() => ServiceScalarWhereInputSchema).array() ]).optional(),
 });
 
+export const ServiceCreatetagsInputSchema: z.ZodType<Prisma.ServiceCreatetagsInput> = z.strictObject({
+  set: z.string().array(),
+});
+
 export const UserCreateNestedOneWithoutServicesInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutServicesInput> = z.strictObject({
   create: z.union([ z.lazy(() => UserCreateWithoutServicesInputSchema), z.lazy(() => UserUncheckedCreateWithoutServicesInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutServicesInputSchema).optional(),
@@ -6715,6 +6783,11 @@ export const CompanyUncheckedCreateNestedManyWithoutServicesInputSchema: z.ZodTy
   create: z.union([ z.lazy(() => CompanyCreateWithoutServicesInputSchema), z.lazy(() => CompanyCreateWithoutServicesInputSchema).array(), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema), z.lazy(() => CompanyUncheckedCreateWithoutServicesInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => CompanyCreateOrConnectWithoutServicesInputSchema), z.lazy(() => CompanyCreateOrConnectWithoutServicesInputSchema).array() ]).optional(),
   connect: z.union([ z.lazy(() => CompanyWhereUniqueInputSchema), z.lazy(() => CompanyWhereUniqueInputSchema).array() ]).optional(),
+});
+
+export const ServiceUpdatetagsInputSchema: z.ZodType<Prisma.ServiceUpdatetagsInput> = z.strictObject({
+  set: z.string().array().optional(),
+  push: z.union([ z.string(),z.string().array() ]).optional(),
 });
 
 export const UserUpdateOneRequiredWithoutServicesNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutServicesNestedInput> = z.strictObject({
@@ -7407,6 +7480,8 @@ export const ProfileCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.Prof
 export const ServiceCreateWithoutVendorInputSchema: z.ZodType<Prisma.ServiceCreateWithoutVendorInput> = z.strictObject({
   id: z.string().optional(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -7426,6 +7501,8 @@ export const ServiceUncheckedCreateWithoutVendorInputSchema: z.ZodType<Prisma.Se
   categoryId: z.string(),
   unitId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -7646,6 +7723,8 @@ export const ServiceScalarWhereInputSchema: z.ZodType<Prisma.ServiceScalarWhereI
   categoryId: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   unitId: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
   title: z.union([ z.lazy(() => StringFilterSchema), z.string() ]).optional(),
+  slug: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
+  tags: z.lazy(() => StringNullableListFilterSchema).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
   imageUrl: z.union([ z.lazy(() => StringNullableFilterSchema), z.string() ]).optional().nullable(),
   basePrice: z.union([ z.lazy(() => DecimalFilterSchema), z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
@@ -8325,6 +8404,8 @@ export const BranchCreateManyCompanyInputEnvelopeSchema: z.ZodType<Prisma.Branch
 export const ServiceCreateWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceCreateWithoutCompaniesInput> = z.strictObject({
   id: z.string().optional(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -8345,6 +8426,8 @@ export const ServiceUncheckedCreateWithoutCompaniesInputSchema: z.ZodType<Prisma
   categoryId: z.string(),
   unitId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -8748,6 +8831,8 @@ export const CategoryCreateManyParentInputEnvelopeSchema: z.ZodType<Prisma.Categ
 export const ServiceCreateWithoutCategoryInputSchema: z.ZodType<Prisma.ServiceCreateWithoutCategoryInput> = z.strictObject({
   id: z.string().optional(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -8767,6 +8852,8 @@ export const ServiceUncheckedCreateWithoutCategoryInputSchema: z.ZodType<Prisma.
   vendorId: z.string(),
   unitId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -8870,6 +8957,8 @@ export const ServiceUpdateManyWithWhereWithoutCategoryInputSchema: z.ZodType<Pri
 export const ServiceCreateWithoutUnitInputSchema: z.ZodType<Prisma.ServiceCreateWithoutUnitInput> = z.strictObject({
   id: z.string().optional(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -8889,6 +8978,8 @@ export const ServiceUncheckedCreateWithoutUnitInputSchema: z.ZodType<Prisma.Serv
   vendorId: z.string(),
   categoryId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -9347,6 +9438,8 @@ export const CompanyScalarWhereInputSchema: z.ZodType<Prisma.CompanyScalarWhereI
 export const ServiceCreateWithoutMetadataInputSchema: z.ZodType<Prisma.ServiceCreateWithoutMetadataInput> = z.strictObject({
   id: z.string().optional(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -9367,6 +9460,8 @@ export const ServiceUncheckedCreateWithoutMetadataInputSchema: z.ZodType<Prisma.
   categoryId: z.string(),
   unitId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -9397,6 +9492,8 @@ export const ServiceUpdateToOneWithWhereWithoutMetadataInputSchema: z.ZodType<Pr
 export const ServiceUpdateWithoutMetadataInputSchema: z.ZodType<Prisma.ServiceUpdateWithoutMetadataInput> = z.strictObject({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -9417,6 +9514,8 @@ export const ServiceUncheckedUpdateWithoutMetadataInputSchema: z.ZodType<Prisma.
   categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -9464,6 +9563,8 @@ export const UserCreateOrConnectWithoutBookingsInputSchema: z.ZodType<Prisma.Use
 export const ServiceCreateWithoutBookingsInputSchema: z.ZodType<Prisma.ServiceCreateWithoutBookingsInput> = z.strictObject({
   id: z.string().optional(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -9484,6 +9585,8 @@ export const ServiceUncheckedCreateWithoutBookingsInputSchema: z.ZodType<Prisma.
   categoryId: z.string(),
   unitId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -9623,6 +9726,8 @@ export const ServiceUpdateToOneWithWhereWithoutBookingsInputSchema: z.ZodType<Pr
 export const ServiceUpdateWithoutBookingsInputSchema: z.ZodType<Prisma.ServiceUpdateWithoutBookingsInput> = z.strictObject({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -9643,6 +9748,8 @@ export const ServiceUncheckedUpdateWithoutBookingsInputSchema: z.ZodType<Prisma.
   categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -9783,6 +9890,8 @@ export const BookingUncheckedUpdateWithoutDetailsInputSchema: z.ZodType<Prisma.B
 export const ServiceCreateWithoutSlotsInputSchema: z.ZodType<Prisma.ServiceCreateWithoutSlotsInput> = z.strictObject({
   id: z.string().optional(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -9803,6 +9912,8 @@ export const ServiceUncheckedCreateWithoutSlotsInputSchema: z.ZodType<Prisma.Ser
   categoryId: z.string(),
   unitId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -9858,6 +9969,8 @@ export const ServiceUpdateToOneWithWhereWithoutSlotsInputSchema: z.ZodType<Prism
 export const ServiceUpdateWithoutSlotsInputSchema: z.ZodType<Prisma.ServiceUpdateWithoutSlotsInput> = z.strictObject({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -9878,6 +9991,8 @@ export const ServiceUncheckedUpdateWithoutSlotsInputSchema: z.ZodType<Prisma.Ser
   categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -9981,6 +10096,8 @@ export const ServiceCreateManyVendorInputSchema: z.ZodType<Prisma.ServiceCreateM
   categoryId: z.string(),
   unitId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -10026,6 +10143,8 @@ export const MessageCreateManyReceiverInputSchema: z.ZodType<Prisma.MessageCreat
 export const ServiceUpdateWithoutVendorInputSchema: z.ZodType<Prisma.ServiceUpdateWithoutVendorInput> = z.strictObject({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10045,6 +10164,8 @@ export const ServiceUncheckedUpdateWithoutVendorInputSchema: z.ZodType<Prisma.Se
   categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10062,6 +10183,8 @@ export const ServiceUncheckedUpdateManyWithoutVendorInputSchema: z.ZodType<Prism
   categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10395,6 +10518,8 @@ export const BranchUncheckedUpdateManyWithoutCompanyInputSchema: z.ZodType<Prism
 export const ServiceUpdateWithoutCompaniesInputSchema: z.ZodType<Prisma.ServiceUpdateWithoutCompaniesInput> = z.strictObject({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10415,6 +10540,8 @@ export const ServiceUncheckedUpdateWithoutCompaniesInputSchema: z.ZodType<Prisma
   categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10432,6 +10559,8 @@ export const ServiceUncheckedUpdateManyWithoutCompaniesInputSchema: z.ZodType<Pr
   categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10454,6 +10583,8 @@ export const ServiceCreateManyCategoryInputSchema: z.ZodType<Prisma.ServiceCreat
   vendorId: z.string(),
   unitId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -10496,6 +10627,8 @@ export const CategoryUncheckedUpdateManyWithoutParentInputSchema: z.ZodType<Pris
 export const ServiceUpdateWithoutCategoryInputSchema: z.ZodType<Prisma.ServiceUpdateWithoutCategoryInput> = z.strictObject({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10515,6 +10648,8 @@ export const ServiceUncheckedUpdateWithoutCategoryInputSchema: z.ZodType<Prisma.
   vendorId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10532,6 +10667,8 @@ export const ServiceUncheckedUpdateManyWithoutCategoryInputSchema: z.ZodType<Pri
   vendorId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   unitId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10545,6 +10682,8 @@ export const ServiceCreateManyUnitInputSchema: z.ZodType<Prisma.ServiceCreateMan
   vendorId: z.string(),
   categoryId: z.string(),
   title: z.string(),
+  slug: z.string().optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceCreatetagsInputSchema), z.string().array() ]).optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   basePrice: z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
@@ -10556,6 +10695,8 @@ export const ServiceCreateManyUnitInputSchema: z.ZodType<Prisma.ServiceCreateMan
 export const ServiceUpdateWithoutUnitInputSchema: z.ZodType<Prisma.ServiceUpdateWithoutUnitInput> = z.strictObject({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10575,6 +10716,8 @@ export const ServiceUncheckedUpdateWithoutUnitInputSchema: z.ZodType<Prisma.Serv
   vendorId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10592,6 +10735,8 @@ export const ServiceUncheckedUpdateManyWithoutUnitInputSchema: z.ZodType<Prisma.
   vendorId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   categoryId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  tags: z.union([ z.lazy(() => ServiceUpdatetagsInputSchema), z.string().array() ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   basePrice: z.union([ z.union([z.number(),z.string(),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),

@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useAuthStore } from '../../stores/auth.store';
 import { useService, useUpdateService } from './services.hooks';
-import { ServiceWizardForm } from './components/service-form/ServiceWizardForm';
+import { useToast } from 'ui-components';
+import { ServiceWizardForm } from './components/service-form/service-wizard-form';
 import type { ServiceFormValues } from './components/service-form/schema';
 
 export const EditServicePage: React.FC = () => {
@@ -12,6 +13,7 @@ export const EditServicePage: React.FC = () => {
   const updateMutation = useUpdateService();
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const [initialValues, setInitialValues] = useState<Partial<ServiceFormValues>>({});
 
@@ -47,6 +49,8 @@ export const EditServicePage: React.FC = () => {
 
       setInitialValues({
         title: service.title,
+        slug: service.slug || '',
+        tags: service.tags || [],
         description: service.description || '',
         basePrice: Number(service.basePrice),
         categoryId: service.categoryId,
@@ -69,6 +73,8 @@ export const EditServicePage: React.FC = () => {
         categoryId: data.categoryId,
         unitId: data.unitId,
         title: data.title,
+        slug: data.slug,
+        tags: data.tags,
         description: data.description,
         basePrice: data.basePrice,
         imageUrl: data.imageUrl,
@@ -81,8 +87,13 @@ export const EditServicePage: React.FC = () => {
 
       await updateMutation.mutateAsync({ id, data: payload });
       navigate('/services');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update service:', error);
+      toast({
+        variant: "destructive",
+        title: "Error al actualizar servicio",
+        description: error.response?.data?.message || "Ocurrió un error inesperado.",
+      });
     }
   };
 

@@ -2,6 +2,14 @@ import * as z from 'zod';
 
 export const serviceSchema = z.object({
   title: z.string().min(3, 'El título es muy corto'),
+  slug: z.string().optional(),
+  tags: z.union([z.array(z.string()), z.string()])
+    .default([])
+    .transform((val) => {
+      if (Array.isArray(val)) return val;
+      if (!val) return [];
+      return val.split(',').map(tag => tag.trim()).filter(Boolean);
+    }),
   description: z.string().min(10, 'La descripción es muy corta'),
   basePrice: z.coerce.number().min(1, 'El precio debe ser positivo'),
   categoryId: z.string().min(1, 'La categoría es requerida'),

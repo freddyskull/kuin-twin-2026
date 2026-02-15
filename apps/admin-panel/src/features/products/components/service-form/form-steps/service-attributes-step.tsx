@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useFormContext, useFieldArray, useWatch } from 'react-hook-form';
 import { Star, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Label, FormTextarea } from 'ui-components';
 import type { ServiceFormValues } from '../schema';
 
 export const ServiceAttributesStep: React.FC = () => {
@@ -92,7 +93,7 @@ export const ServiceAttributesStep: React.FC = () => {
       <div className="space-y-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Especificaciones Técnicas</label>
+            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Especificaciones Técnicas</Label>
             <button type="button" onClick={() => append({ key: '', value: '' })} className="text-dashboard-primary text-[10px] font-bold uppercase tracking-wider hover:underline">
               + Añadir Spec
             </button>
@@ -117,11 +118,13 @@ export const ServiceAttributesStep: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Atributos JSON</label>
-          <textarea {...register('dynamicAttributes')} rows={3} placeholder='{"clave": "valor"}' className="w-full bg-[#0a0b1e]/40 border border-white/5 rounded-xl py-3 px-4 text-white font-mono text-xs focus:outline-none focus:ring-1 focus:ring-dashboard-primary/30 outline-none placeholder:text-slate-700" />
-          {errors.dynamicAttributes && <p className="text-[10px] text-red-500 font-bold pl-1">{errors.dynamicAttributes.message}</p>}
-        </div>
+        <FormTextarea
+          name="dynamicAttributes"
+          label="Atributos JSON"
+          rows={3}
+          placeholder='{"clave": "valor"}'
+          className="font-mono text-xs"
+        />
       </div>
     </motion.section>
   );

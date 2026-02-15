@@ -3,13 +3,15 @@ import { useAuthStore } from '../../stores/auth.store';
 import { useNavigate } from 'react-router-dom';
 import { useCreateService } from './services.hooks';
 
-import { ServiceWizardForm } from './components/service-form/ServiceWizardForm';
+import { useToast } from 'ui-components';
+import { ServiceWizardForm } from './components/service-form/service-wizard-form';
 import type { ServiceFormValues } from './components/service-form/schema';
 
 export const CreateServicePage: React.FC = () => {
   const createMutation = useCreateService();
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const onSubmit = async (data: ServiceFormValues) => {
     if (!user?.id) return;
@@ -20,6 +22,8 @@ export const CreateServicePage: React.FC = () => {
         categoryId: data.categoryId,
         unitId: data.unitId,
         title: data.title,
+        slug: data.slug,
+        tags: data.tags,
         description: data.description,
         basePrice: data.basePrice,
         imageUrl: data.imageUrl,
@@ -32,8 +36,13 @@ export const CreateServicePage: React.FC = () => {
 
       await createMutation.mutateAsync(payload);
       navigate('/services');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create service:', error);
+      toast({
+        variant: "destructive",
+        title: "Error al crear servicio",
+        description: error.response?.data?.message || "Ocurrió un error inesperado.",
+      });
     }
   };
 

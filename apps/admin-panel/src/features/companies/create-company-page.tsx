@@ -129,7 +129,7 @@ export const CreateCompanyPage: React.FC = () => {
         defaultValues={defaultValues}
         className="space-y-8"
       >
-        {({ watch, setValue, formState: { isSubmitting } }) => {
+        {({ watch, setValue, formState: { isSubmitting, isValid, isDirty } }) => {
           const currentRfc = watch('rfc');
           const isVerified = watch('isSatVerified');
 
@@ -254,7 +254,7 @@ export const CreateCompanyPage: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={createMutation.isPending || isSubmitting}
+                  disabled={createMutation.isPending || isSubmitting || !isValid || !isDirty}
                   className="px-8 py-3.5 rounded-2xl bg-dashboard-primary text-dashboard-bg font-black shadow-xl shadow-dashboard-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {(createMutation.isPending || isSubmitting) ? 'Guardando...' : 'Registrar Empresa'}

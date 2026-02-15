@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useServices, useDeleteService, useToggleServiceStatus } from './services.hooks';
 import { DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Modal } from '@/components/Modal';
+import { Modal } from '@/components/modal';
 import { ServiceCompanyManager } from './components/service-company-manager';
 
 export const ServicesPage: React.FC = () => {

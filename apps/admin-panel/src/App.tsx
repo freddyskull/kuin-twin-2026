@@ -1,8 +1,8 @@
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'ui-components';
-import { ProtectedRoute } from './components/ProtectedRoute';
-import { MainLayout } from './components/MainLayout';
+import { ProtectedRoute } from './components/protected-route';
+import { MainLayout } from './components/main-layout';
 
 // Loading Component
 const PageLoader = () => (
@@ -12,14 +12,14 @@ const PageLoader = () => (
 );
 
 // Auth Pages (Lazy Loading - Rule 11)
-const LoginPage = lazy(() => import('./features/auth/LoginPage').then(m => ({ default: m.LoginPage })));
-const RegisterPage = lazy(() => import('./features/auth/RegisterPage').then(m => ({ default: m.RegisterPage })));
+const LoginPage = lazy(() => import('./features/auth').then(m => ({ default: m.LoginPage })));
+const RegisterPage = lazy(() => import('./features/auth').then(m => ({ default: m.RegisterPage })));
 
 // Feature Pages (Lazy Loading - Rule 11)
-const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage').then(m => ({ default: m.DashboardPage })));
-const ServicesPage = lazy(() => import('./features/products/ServicesPage').then(m => ({ default: m.ServicesPage })));
-const CreateServicePage = lazy(() => import('./features/products/CreateServicePage').then(m => ({ default: m.CreateServicePage })));
-const EditServicePage = lazy(() => import('./features/products/EditServicePage').then(m => ({ default: m.EditServicePage })));
+const DashboardPage = lazy(() => import('./features/dashboard').then(m => ({ default: m.DashboardPage })));
+const ServicesPage = lazy(() => import('./features/products').then(m => ({ default: m.ServicesPage })));
+const CreateServicePage = lazy(() => import('./features/products').then(m => ({ default: m.CreateServicePage })));
+const EditServicePage = lazy(() => import('./features/products').then(m => ({ default: m.EditServicePage })));
 
 // Companies (Lazy Loading - Rule 11)
 const CompaniesPage = lazy(() => import('./features/companies').then(m => ({ default: m.CompaniesPage })));

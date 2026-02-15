@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Building2, FileText, MapPin, CheckCircle2, ShieldAlert, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCompany, useUpdateCompany, useVerifySat } from './companies.hooks';
-import { BranchList } from './components/BranchList';
+import { BranchList } from './components/branch-list';
 import {
   CustomForm,
   FormInput,
@@ -150,7 +150,7 @@ export const EditCompanyPage: React.FC = () => {
         defaultValues={defaultValues}
         className="space-y-8"
       >
-        {({ watch, setValue, formState: { isSubmitting } }) => {
+        {({ watch, setValue, formState: { isSubmitting, isValid, isDirty } }) => {
           const currentRfc = watch('rfc');
           const isVerified = watch('isSatVerified');
 
@@ -169,7 +169,7 @@ export const EditCompanyPage: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="col-span-2">
-                    <FormInput name="businessName" label="Nombre Comercial *" placeholder="Ej: Servicios Profesionales SA" />
+                    <FormInput name="businessName" label="Nombre Comercial" required placeholder="Ej: Servicios Profesionales SA" />
                   </div>
 
                   <div className="col-span-2">
@@ -205,7 +205,8 @@ export const EditCompanyPage: React.FC = () => {
                   <div className="relative group">
                     <FormInput
                       name="rfc"
-                      label="RFC *"
+                      label="RFC"
+                      required
                       placeholder="ABC123456XYZ"
                       className="uppercase"
                       disabled={isVerified}
@@ -227,10 +228,10 @@ export const EditCompanyPage: React.FC = () => {
                     )}
                   </div>
 
-                  <FormSelect name="fiscalRegime" label="Régimen Fiscal *" options={fiscalRegimeOptions} />
+                  <FormSelect name="fiscalRegime" label="Régimen Fiscal" required options={fiscalRegimeOptions} />
 
                   <div className="col-span-2">
-                    <FormInput name="legalName" label="Razón Social *" placeholder="Nombre legal completo de la empresa" />
+                    <FormInput name="legalName" label="Razón Social" required placeholder="Nombre legal completo de la empresa" />
                   </div>
 
                   <div className="col-span-2">
@@ -261,13 +262,13 @@ export const EditCompanyPage: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="col-span-2">
-                    <FormInput name="taxAddress" label="Dirección *" placeholder="Calle, número exterior e interior" />
+                    <FormInput name="taxAddress" label="Dirección" required placeholder="Calle, número exterior e interior" />
                   </div>
 
-                  <FormInput name="taxAddressCity" label="Ciudad *" placeholder="Ciudad" />
-                  <FormInput name="taxAddressState" label="Estado *" placeholder="Estado" />
+                  <FormInput name="taxAddressCity" label="Ciudad" required placeholder="Ciudad" />
+                  <FormInput name="taxAddressState" label="Estado" required placeholder="Estado" />
                   <FormInput name="taxAddressCounty" label="Municipio/Delegación" placeholder="Municipio o Delegación" />
-                  <FormInput name="taxAddressZip" label="Código Postal *" placeholder="00000" />
+                  <FormInput name="taxAddressZip" label="Código Postal" required placeholder="00000" />
                 </div>
               </motion.div>
 
@@ -287,7 +288,7 @@ export const EditCompanyPage: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={updateMutation.isPending || isSubmitting}
+                  disabled={updateMutation.isPending || isSubmitting || !isValid || !isDirty}
                   className="px-8 py-3.5 rounded-2xl bg-dashboard-primary text-dashboard-bg font-black shadow-xl shadow-dashboard-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {(updateMutation.isPending || isSubmitting) ? 'Guardando...' : 'Actualizar Empresa'}

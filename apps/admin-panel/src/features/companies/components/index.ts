@@ -1,2 +1,2 @@
-export * from './BranchForm';
-export * from './BranchList';
+export * from './branch-form';
+export * from './branch-list';

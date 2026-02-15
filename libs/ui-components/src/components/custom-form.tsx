@@ -22,6 +22,7 @@ export function CustomForm<T extends FieldValues>({
   const methods = useForm<T>({
     resolver: zodResolver(schema),
     defaultValues,
+    mode: 'onChange',
   });
 
   return (

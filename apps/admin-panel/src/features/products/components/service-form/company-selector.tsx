@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useCompanies, useBranches } from '../../../companies';
 import { Building2, Check, Store } from 'lucide-react';
 import { cn } from 'ui-components';
@@ -184,6 +184,23 @@ export const CompanySelector: React.FC<CompanySelectorProps> = ({
   if (isLoading) {
     return (
       <div className="h-10 w-full animate-pulse bg-white/5 rounded-xl block" />
+    );
+  }
+
+  if (companies.length === 0) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 p-4 bg-[#0a0b1e]/20 border border-white/5 rounded-[2rem] opacity-50 cursor-not-allowed">
+          <div className="h-10 w-10 rounded-xl bg-[#0a0b1e] border border-white/5 flex items-center justify-center flex-shrink-0">
+            <Building2 className="h-5 w-5 text-slate-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-bold text-slate-500 truncate">Sin empresas disponibles</div>
+            <div className="text-[10px] text-slate-600 font-bold uppercase tracking-wider truncate">Debes registrar una empresa para asociarla a este servicio</div>
+          </div>
+        </div>
+        {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+      </div>
     );
   }
 

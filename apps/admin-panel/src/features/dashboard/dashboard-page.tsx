@@ -1,9 +1,9 @@
 import React from 'react';
-import { DashboardHeader } from './components/DashboardHeader';
-import { BookingsChart } from './components/BookingsChart';
-import { ServiceDistribution } from './components/ServiceDistribution';
-import { NearbyRequests } from './components/NearbyRequests';
-import { RevenueCard, ActiveUsers } from './components/RevenueStats';
+import { DashboardHeader } from './components/dashboard-header';
+import { BookingsChart } from './components/bookings-chart';
+import { ServiceDistribution } from './components/service-distribution';
+import { NearbyRequests } from './components/nearby-requests';
+import { RevenueCard, ActiveUsers } from './components/revenue-stats';
 
 export const DashboardPage: React.FC = () => {
   return (

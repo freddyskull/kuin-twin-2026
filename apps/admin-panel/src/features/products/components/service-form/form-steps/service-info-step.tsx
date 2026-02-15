@@ -2,18 +2,43 @@ import React from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Label, FormInput, FormTextarea, FormChips } from 'ui-components';
 import type { ServiceFormValues } from '../schema';
 import { useServicesStore } from '../../../../../stores/services.store';
-import { CategorySelector } from '../CategorySelector';
+import { CategorySelector } from '../category-selector';
 import { CompanySelector } from '../company-selector';
 
 export const ServiceInfoStep: React.FC = () => {
-  const { register, control, formState: { errors } } = useFormContext<ServiceFormValues>();
+  const { control, watch, setValue, formState: { errors } } = useFormContext<ServiceFormValues>();
   const { fetchMetadata } = useServicesStore();
+
+  const slugify = (text: string) => {
+    return text
+      .toString()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove accents
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]+/g, '')
+      .replace(/--+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '');
+  };
 
   React.useEffect(() => {
     fetchMetadata();
   }, [fetchMetadata]);
+
+  // Sync title with slug
+  React.useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === 'title') {
+        setValue('slug', slugify(value.title || ''), { shouldValidate: true });
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setValue]);
 
   return (
     <motion.section
@@ -26,14 +51,30 @@ export const ServiceInfoStep: React.FC = () => {
       </div>
 
       <div className="space-y-6">
-        <div className="space-y-2">
-          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Título</label>
-          <input {...register('title')} placeholder="ej. Limpieza a Vapor Master" className="w-full bg-transparent border-b border-white/10 py-4 text-xl text-white font-medium focus:outline-none focus:border-dashboard-primary transition-all placeholder:text-slate-700" />
-          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+        <div className="grid grid-cols-2 gap-6">
+          <FormInput
+            name="title"
+            label="Título"
+            required
+            placeholder="ej. Limpieza a Vapor Master"
+          />
+          <FormInput
+            name="slug"
+            label="Slug (URL)"
+            placeholder="ej. limpieza-vapor-master"
+          />
         </div>
 
         <div className="space-y-2">
-          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Categoría</label>
+          <FormChips
+            name="tags"
+            label="Etiquetas (Tags)"
+            placeholder="Escribe una etiqueta y presiona Enter..."
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Categoría</Label>
           <Controller
             name="categoryId"
             control={control}
@@ -47,14 +88,16 @@ export const ServiceInfoStep: React.FC = () => {
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Descripción</label>
-          <textarea {...register('description')} rows={5} placeholder="Describe tu servicio..." className="w-full bg-[#0a0b1e]/40 border border-white/5 rounded-2xl py-4 px-5 text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-dashboard-primary/30 transition-all resize-none placeholder:text-slate-700" />
-          {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
-        </div>
+        <FormTextarea
+          name="description"
+          label="Descripción"
+          required
+          rows={5}
+          placeholder="Describe tu servicio..."
+        />
 
         <div className="space-y-4">
-          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Empresas y Sucursales Asociadas</label>
+          <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Empresas y Sucursales Asociadas</Label>
           <Controller
             name="companyIds"
             control={control}

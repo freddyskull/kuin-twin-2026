@@ -43,7 +43,7 @@ export function LoginForm({
       className={cn("flex relative flex-col gap-6", className)}
       {...props}
     >
-      {({ formState: { isSubmitting } }) => (
+      {({ formState: { isSubmitting, isValid, isDirty } }) => (
         <div className="flex flex-col gap-6 ">
           <div className="flex flex-col items-center gap-1 text-center">
             <h1 className="text-xl font-bold uppercase">Inicia sesión</h1>
@@ -77,7 +77,7 @@ export function LoginForm({
             </div>
           </div>
           <div className="grid gap-2">
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !isValid || !isDirty}>
               {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
             </Button>
           </div>

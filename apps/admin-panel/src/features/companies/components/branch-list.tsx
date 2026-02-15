@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Plus, MapPin, Phone, Mail, Trash2, Pencil, Store } from 'lucide-react';
 import { useBranches, useCreateBranch, useUpdateBranch, useDeleteBranch } from '../branches.hooks';
 import type { Branch } from '../../../stores/branches.store';
-import { Modal } from '../../../components/Modal';
-import { BranchForm } from './BranchForm';
+import { Modal } from '../../../components/modal';
+import { BranchForm } from './branch-form';
 import { DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
 

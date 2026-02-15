@@ -70,7 +70,7 @@ export const BranchForm: React.FC<BranchFormProps> = ({
       defaultValues={defaultValues}
       className="space-y-6"
     >
-      {() => (
+      {({ formState: { isValid, isDirty } }) => (
         <>
           <div className="grid grid-cols-2 gap-6">
             <div className="col-span-2">
@@ -121,8 +121,8 @@ export const BranchForm: React.FC<BranchFormProps> = ({
             </button>
             <button
               type="submit"
-              disabled={isLoading}
-              className="px-6 py-3 rounded-xl bg-dashboard-primary text-dashboard-bg font-black shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+              disabled={isLoading || !isValid || !isDirty}
+              className="px-6 py-3 rounded-xl bg-dashboard-primary text-dashboard-bg font-black shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Guardando...' : initialData ? 'Actualizar Sucursal' : 'Crear Sucursal'}
             </button>

@@ -4,24 +4,6 @@ generator client {
   previewFeatures = ["postgresqlExtensions"]
 }
 
-generator zod {
-  provider                         = "zod-prisma-types"
-  output                           = "../../../libs/shared-types/src/zod"
-  useDecimalJs                     = true
-  prismaJsonNullability            = true
-  createInputTypes                 = true
-  createModelTypes                 = true
-  addInputTypeValidation           = false
-  useDefaultValidators             = false
-  coerceDate                       = true
-  writeNullishInModelTypes         = true
-  createOptionalDefaultValuesTypes = true
-  createRelationValuesTypes        = true
-  createPartialTypes               = true
-  useTypeAssertions                = true
-  writeBarrelFiles                 = false
-}
-
 datasource db {
   provider   = "postgresql"
   extensions = [postgis]
@@ -30,7 +12,6 @@ datasource db {
 // --- IDENTIDAD ---
 
 model User {
-  /// @zod.custom.use(z.string())
   id        String    @id @default(uuid())
   email     String    @unique
   password  String
@@ -47,7 +28,6 @@ model User {
 }
 
 model Message {
-  /// @zod.custom.use(z.string())
   id         String   @id @default(uuid())
   content    String
   senderId   String
@@ -59,7 +39,6 @@ model Message {
 }
 
 model Media {
-  /// @zod.custom.use(z.string())
   id        String   @id @default(uuid())
   url       String
   key       String? // Referencia para almacenamiento (S3, etc)
@@ -79,7 +58,6 @@ enum Role {
 }
 
 model Profile {
-  /// @zod.custom.use(z.string())
   id          String  @id @default(uuid())
   userId      String  @unique
   user        User    @relation(fields: [userId], references: [id])
@@ -117,7 +95,6 @@ model Profile {
 // --- EMPRESAS ---
 
 model Company {
-  /// @zod.custom.use(z.string())
   id String @id @default(uuid())
 
   // Datos visibles al cliente
@@ -153,7 +130,6 @@ model Company {
 }
 
 model Branch {
-  /// @zod.custom.use(z.string())
   id        String  @id @default(uuid())
   companyId String
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -190,7 +166,6 @@ model Branch {
 }
 
 model PortfolioItem {
-  /// @zod.custom.use(z.string())
   id                String   @id @default(uuid())
   profileId         String
   profile           Profile  @relation(fields: [profileId], references: [id])
@@ -203,7 +178,6 @@ model PortfolioItem {
 // --- CATÁLOGO ---
 
 model Category {
-  /// @zod.custom.use(z.string())
   id          String     @id @default(uuid())
   name        String     @unique
   slug        String     @unique
@@ -217,7 +191,6 @@ model Category {
 }
 
 model ServiceUnit {
-  /// @zod.custom.use(z.string())
   id           String    @id @default(uuid())
   name         String    @unique // Ej: "Hora", "Metro Cuadrado"
   abbreviation String    @unique // Ej: "hr", "m2"
@@ -225,32 +198,56 @@ model ServiceUnit {
 }
 
 model Service {
-  /// @zod.custom.use(z.string())
-  id         String      @id @default(uuid())
-  vendorId   String
-  vendor     User        @relation(fields: [vendorId], references: [id])
+  id String @id @default(uuid())
+
+  // Relaciones Principales
+  vendorId String
+  vendor   User   @relation(fields: [vendorId], references: [id])
+
+  // Relación con Empresa (Un servicio pertenece a una empresa o es independiente)
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
   categoryId String
   category   Category    @relation(fields: [categoryId], references: [id])
   unitId     String
   unit       ServiceUnit @relation(fields: [unitId], references: [id])
 
-  title             String
-  description       String?
-  imageUrl          String?
-  basePrice         Decimal @db.Decimal(10, 2)
-  isActive          Boolean @default(true)
-  dynamicAttributes Json? // Configuraciones adicionales
-  /// @zod.custom.use(z.any())
-  workSchedule      Json? // Configuracion de dias y feriados
+  // Información de Negocio
+  title       String
+  slug        String   @unique // Obligatorio para SEO
+  description String?
+  imageUrl    String?
+  tags        String[] @default([])
 
-  metadata  ServiceMetadata[]
-  slots     ServiceSlot[]
-  bookings  Booking[]
-  companies Company[]
+  // Precios y Visibilidad
+  basePrice Decimal @db.Decimal(10, 2)
+  showPrice Boolean @default(true)
+  isActive  Boolean @default(true)
+
+  // Calificación (Stars)
+  starsRate    Decimal @default(0) @db.Decimal(3, 2) // Mantenlo aquí por velocidad
+  reviewsCount Int     @default(0) // Añade esto para calcular promedios
+
+  // Datos Geoespaciales (PostGIS)
+  // Cambiamos Json por geography para búsquedas por cercanía
+  location Unsupported("geography(Point, 4326)")?
+
+  // Flexibilidad
+  dynamicAttributes Json? // Configuraciones extra
+  workSchedule      Json? // Horarios y feriados
+  commentsBox       Json? // Config de comentarios
+
+  // Relaciones de Flujo
+  metadata ServiceMetadata[]
+  slots    ServiceSlot[]
+  bookings Booking[]
+
+  @@unique([vendorId, title])
+  @@index([companyId]) // Índice para rapidez en búsquedas por empresa
 }
 
 model ServiceMetadata {
-  /// @zod.custom.use(z.string())
   id        String  @id @default(uuid())
   serviceId String
   service   Service @relation(fields: [serviceId], references: [id])
@@ -261,7 +258,6 @@ model ServiceMetadata {
 // --- FLUJO DE RESERVAS ---
 
 model Booking {
-  /// @zod.custom.use(z.string())
   id         String  @id @default(uuid())
   customerId String
   customer   User    @relation(fields: [customerId], references: [id])
@@ -284,7 +280,6 @@ enum BookingStatus {
 }
 
 model BookingDetails {
-  /// @zod.custom.use(z.string())
   id        String  @id @default(uuid())
   bookingId String  @unique
   booking   Booking @relation(fields: [bookingId], references: [id])
@@ -297,7 +292,6 @@ model BookingDetails {
 }
 
 model ServiceSlot {
-  /// @zod.custom.use(z.string())
   id        String   @id @default(uuid())
   serviceId String
   service   Service  @relation(fields: [serviceId], references: [id])
@@ -317,7 +311,6 @@ enum SlotStatus {
 }
 
 model Payment {
-  /// @zod.custom.use(z.string())
   id          String  @id @default(uuid())
   bookingId   String  @unique
   booking     Booking @relation(fields: [bookingId], references: [id])

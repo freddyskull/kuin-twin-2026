@@ -1,8 +1,7 @@
-import { IsString, IsUUID, MinLength, IsOptional, IsNumber, IsPositive, IsBoolean, IsArray, ValidateNested, IsObject } from 'class-validator';
+import { IsString, IsUUID, MinLength, IsOptional, IsNumber, IsPositive, IsBoolean, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { PartialType } from '@nestjs/swagger';
 
-class MetadataDto {
+export class MetadataDto {
   @IsString()
   key: string;
 
@@ -10,7 +9,7 @@ class MetadataDto {
   value: string;
 }
 
-class ScheduleDto {
+export class ScheduleDto {
   @IsString()
   day: string;
 
@@ -24,7 +23,7 @@ class ScheduleDto {
   endTime: string;
 }
 
-class HolidayRulesDto {
+export class HolidayRulesDto {
   @IsBoolean()
   workHolidays: boolean;
 
@@ -39,7 +38,7 @@ class HolidayRulesDto {
   blacklist?: string[];
 }
 
-class WorkScheduleDto {
+export class WorkScheduleDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ScheduleDto)
@@ -67,6 +66,15 @@ export class CreateServiceDto {
   title: string;
 
   @IsString()
+  @IsOptional()
+  slug?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  tags?: string[] = [];
+
+  @IsString()
   @MinLength(10, { message: 'La descripción es muy corta' })
   @IsOptional()
   description?: string;
@@ -90,13 +98,20 @@ export class CreateServiceDto {
   @IsOptional()
   metadata?: MetadataDto[] = [];
 
-  @IsArray()
-  @IsUUID('4', { each: true, message: 'ID de empresa inválido' })
+  @IsString()
+  @IsUUID('4', { message: 'ID de empresa inválido' })
   @IsOptional()
-  companyIds?: string[] = [];
+  companyId?: string;
 
   @IsOptional()
   dynamicAttributes?: any;
+
+  @IsOptional()
+  commentsBox?: any;
+
+  @IsBoolean()
+  @IsOptional()
+  showPrice?: boolean = true;
 
   @ValidateNested()
   @Type(() => WorkScheduleDto)
@@ -107,8 +122,3 @@ export class CreateServiceDto {
   @IsOptional()
   slots?: any[] = [];
 }
-
-export class UpdateServiceDto extends PartialType(CreateServiceDto) {}
-
-// Alias for compatibility if needed, though mostly replaced directly
-export type CreateServiceInput = CreateServiceDto;

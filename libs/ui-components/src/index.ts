@@ -11,6 +11,7 @@ export { FormSelect } from "./components/form-select";
 export { FormCheckbox } from "./components/form-checkbox";
 export { FormTextarea } from "./components/form-textarea";
 export { CustomForm } from "./components/custom-form";
+export { FormChips } from "./components/form-chips";
 export { DataTable } from "./components/data-table";
 export {
   Select,

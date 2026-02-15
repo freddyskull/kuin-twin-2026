@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Sidebar } from '../features/dashboard/components/CustomSidebar';
+import { Sidebar } from '../features/dashboard/components/custom-sidebar';
 
 
 export const MainLayout: React.FC = () => {
