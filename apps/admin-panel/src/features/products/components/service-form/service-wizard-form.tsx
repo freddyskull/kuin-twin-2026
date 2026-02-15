@@ -57,14 +57,25 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     defaultValues: {
       categoryId: '',
       unitId: '',
+      basePrice: initialValues?.basePrice || 0,
+      showPrice: initialValues?.showPrice ?? true,
+      address: initialValues?.address || '',
+      latitude: initialValues?.latitude || 0,
+      longitude: initialValues?.longitude || 0,
       slug: '',
       tags: [],
       imageUrl: '',
-      metadata: [],
-      dynamicAttributes: '',
+      metadata: initialValues?.metadata || [
+        { key: 'Garantía', value: '12 meses' },
+        { key: 'Tiempo de respuesta', value: '24 horas' }
+      ],
+      dynamicAttributes: initialValues?.dynamicAttributes || JSON.stringify({
+        "Garantía": "12 meses",
+        "Tiempo de respuesta": "24 horas"
+      }, null, 2),
       workSchedule: undefined,
       slots: [],
-      companyIds: [],
+      companyId: '',
       branchIds: [],
       ...initialValues
     }
@@ -94,6 +105,13 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     }
   }, [categories, units, isEditMode, setValue, watchedCategoryId, watchedUnitId]);
 
+  // Force validation when reaching last step to ensure errors are visible
+  useEffect(() => {
+    if (currentStep === 5) {
+      trigger();
+    }
+  }, [currentStep, trigger]);
+
   const handleNext = async (e?: React.MouseEvent<HTMLButtonElement>) => {
     // Prevent form submission
     if (e) {
@@ -102,7 +120,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     }
 
     let fieldsToValidate: any[] = [];
-    if (currentStep === 1) fieldsToValidate = ['title', 'description', 'categoryId', 'companyIds'];
+    if (currentStep === 1) fieldsToValidate = ['title', 'description', 'categoryId', 'companyId'];
     if (currentStep === 2) fieldsToValidate = ['basePrice', 'unitId'];
     if (currentStep === 4) fieldsToValidate = ['metadata', 'dynamicAttributes'];
 
@@ -131,7 +149,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     if (onCancel) {
       onCancel();
     } else {
-      navigate('/services');
+      navigate('/servicios');
     }
   };
 
@@ -195,21 +213,100 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
               >
                 Atrás
               </button>
-              <button
-                type={currentStep === 5 ? "submit" : "button"}
-                onClick={currentStep < 5 ? handleNext : undefined}
-                disabled={isSubmitting || (currentStep === 5 && (!isValid || !isDirty))}
-                className="flex items-center gap-3 bg-dashboard-primary text-dashboard-bg px-8 py-3 rounded-xl font-bold shadow-lg shadow-dashboard-primary/10 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {currentStep === 5 ? (isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Procesando...
-                  </>
-                ) : submitLabel) : 'Siguiente'}
-                {currentStep < 5 && <ArrowRight className="h-4 w-4" />}
-              </button>
+
+              <div className="flex items-center gap-4">
+                {isEditMode && currentStep < 5 && (
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !isValid || !isDirty}
+                    className="flex items-center gap-3 bg-white/5 border border-white/10 text-white px-8 py-3 rounded-xl font-bold hover:bg-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Check className="h-4 w-4" />
+                    )}
+                    Actualizar Ahora
+                  </button>
+                )}
+
+                <button
+                  type={currentStep === 5 ? "submit" : "button"}
+                  onClick={currentStep < 5 ? handleNext : undefined}
+                  // En modo Create, permitimos enviar aunque no sea dirty (por valores por defecto)
+                  // En modo Edit, exigimos dirty
+                  disabled={isSubmitting || (currentStep === 5 && (!isValid || (isEditMode && !isDirty)))}
+                  className="flex items-center gap-3 bg-dashboard-primary text-dashboard-bg px-8 py-3 rounded-xl font-bold shadow-lg shadow-dashboard-primary/10 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {currentStep === 5 ? (isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Procesando...
+                    </>
+                  ) : submitLabel) : 'Siguiente'}
+                  {currentStep < 5 && <ArrowRight className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
+
+            {/* Diagnóstico de Errores Mejorado */}
+            {currentStep === 5 && (
+              <div className="space-y-4">
+                {/* Caso 1: Hay errores de validación */}
+                {(!isValid) && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 animate-in slide-in-from-bottom-2">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-red-500/20 rounded-lg">
+                        <Loader2 className="h-4 w-4 text-red-500 animate-pulse" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-bold text-red-500">Atención: Faltan datos</h4>
+                        <ul className="list-disc list-inside text-xs text-red-400 font-medium pt-1 space-y-1">
+                          {Object.keys(errors).length === 0 ? (
+                            <li>Revisando validaciones...</li>
+                          ) : (
+                            Object.keys(errors).map((key) => {
+                              const errorObj = (errors as any)[key];
+                              const errorMessage = errorObj?.message || (errorObj?.root?.message) || "Error de validación";
+
+                              // Mapeo amistoso
+                              const fieldName = {
+                                basePrice: 'Precio Base',
+                                unitId: 'Unidad de Medida',
+                                title: 'Título',
+                                categoryId: 'Categoría',
+                                companyId: 'Empresa',
+                                description: 'Descripción',
+                                metadata: 'Atributos'
+                              }[key] || key;
+
+                              return (
+                                <li key={key}>
+                                  <span className="font-bold capitalize text-red-300">{fieldName}:</span> {errorMessage}
+                                </li>
+                              );
+                            })
+                          )}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Caso 2: Formulario válido pero sin cambios (solo para Edit Mode) */}
+                {isValid && !isDirty && isEditMode && (
+                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 animate-in slide-in-from-bottom-2">
+                    <div className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-yellow-500" />
+                      <div>
+                        <h4 className="text-sm font-bold text-yellow-500">Sin cambios detectados</h4>
+                        <p className="text-xs text-yellow-400/80">Realiza alguna modificación para habilitar la actualización.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <ServicePreview currentStep={currentStep} />

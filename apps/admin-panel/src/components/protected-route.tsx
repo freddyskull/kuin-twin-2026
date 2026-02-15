@@ -37,7 +37,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Si requiere auth y no está autenticado
   if (requireAuth && !isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/iniciar-sesion" state={{ from: location }} replace />;
   }
 
   // Si NO requiere auth (ej: login/register) y YA está autenticado

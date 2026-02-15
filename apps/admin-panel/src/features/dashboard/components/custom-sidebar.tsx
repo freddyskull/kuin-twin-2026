@@ -21,18 +21,18 @@ export const Sidebar: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/iniciar-sesion');
   };
 
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Panel Control', to: '/' },
-    { icon: Plus, label: 'Nuevo Servicio', to: '/services/create' },
-    { icon: Briefcase, label: 'Mis Servicios', to: '/services' },
-    { icon: Building2, label: 'Empresas', to: '/companies' },
-    { icon: ShoppingBag, label: 'Pedidos', to: '/orders' },
-    { icon: BarChart3, label: 'Estadísticas', to: '/analytics' },
-    { icon: Settings, label: 'Ajustes', to: '/settings' },
+    { icon: Plus, label: 'Nuevo Servicio', to: '/servicios/crear' },
+    { icon: Briefcase, label: 'Mis Servicios', to: '/servicios' },
+    { icon: Building2, label: 'Empresas', to: '/empresas' },
+    { icon: ShoppingBag, label: 'Pedidos', to: '/pedidos' },
+    { icon: BarChart3, label: 'Estadísticas', to: '/estadisticas' },
+    { icon: Settings, label: 'Ajustes', to: '/ajustes' },
   ];
 
 

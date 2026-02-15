@@ -58,7 +58,7 @@ export class BookingService {
       });
 
       // 3.2 Crear los Detalles (Snapshot)
-      const unitPrice = service.basePrice;
+      const unitPrice = service.basePrice ?? 0;
       const quantityVal = quantity || 1;
       const grandTotal = Number(unitPrice) * quantityVal;
 

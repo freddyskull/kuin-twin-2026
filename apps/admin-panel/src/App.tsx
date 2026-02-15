@@ -33,8 +33,8 @@ const App: React.FC = () => {
         <Routes>
           {/* Public Routes (only accessible if NOT authenticated) */}
           <Route element={<ProtectedRoute requireAuth={false} />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/iniciar-sesion" element={<LoginPage />} />
+            <Route path="/registro" element={<RegisterPage />} />
           </Route>
 
           {/* Private Routes (only accessible if authenticated) */}
@@ -43,14 +43,14 @@ const App: React.FC = () => {
               <Route path="/" element={<DashboardPage />} />
 
               {/* Services */}
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/services/create" element={<CreateServicePage />} />
-              <Route path="/services/:id/edit" element={<EditServicePage />} />
+              <Route path="/servicios" element={<ServicesPage />} />
+              <Route path="/servicios/crear" element={<CreateServicePage />} />
+              <Route path="/servicios/:id/editar" element={<EditServicePage />} />
 
               {/* Companies */}
-              <Route path="/companies" element={<CompaniesPage />} />
-              <Route path="/companies/create" element={<CreateCompanyPage />} />
-              <Route path="/companies/:id/edit" element={<EditCompanyPage />} />
+              <Route path="/empresas" element={<CompaniesPage />} />
+              <Route path="/empresas/crear" element={<CreateCompanyPage />} />
+              <Route path="/empresas/:id/editar" element={<EditCompanyPage />} />
             </Route>
           </Route>
 

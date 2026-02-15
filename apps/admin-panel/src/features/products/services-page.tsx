@@ -1,13 +1,12 @@
-import React, { useMemo } from 'react';
-// Updated import to kebab-case
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Pencil, Trash2, LayoutDashboard } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Pencil, Trash2, LayoutDashboard } from 'lucide-react';
 import { useServices, useDeleteService, useToggleServiceStatus } from './services.hooks';
 import { DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Modal } from '@/components/modal';
 import { ServiceCompanyManager } from './components/service-company-manager';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const ServicesPage: React.FC = () => {
   const { data: services = [], isLoading, error } = useServices();
@@ -16,8 +15,7 @@ export const ServicesPage: React.FC = () => {
 
   const [statusConfirm, setStatusConfirm] = React.useState<{ id: string, title: string, nextStatus: boolean } | null>(null);
   const [selectedServiceForCompanies, setSelectedServiceForCompanies] = React.useState<any | null>(null);
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [filter, setFilter] = React.useState<'all' | 'active' | 'inactive'>('all');
+  const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const handleToggleStatus = (id: string, title: string, currentStatus: boolean) => {
     setStatusConfirm({ id, title, nextStatus: !currentStatus });
@@ -47,11 +45,9 @@ export const ServicesPage: React.FC = () => {
   const filteredServices = useMemo(() => {
     return services.filter((s: any) => {
       const matchesFilter = filter === 'all' || (filter === 'active' ? s.isActive : !s.isActive);
-      const matchesSearch = s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (s.description?.toLowerCase() || '').includes(searchQuery.toLowerCase());
-      return matchesFilter && matchesSearch;
+      return matchesFilter;
     });
-  }, [services, filter, searchQuery]);
+  }, [services, filter]);
 
   const columns: ColumnDef<any>[] = [
     {
@@ -60,7 +56,7 @@ export const ServicesPage: React.FC = () => {
       cell: ({ row }) => {
         const service = row.original;
         return (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4" title={service.title}>
             <div className="h-12 w-12 rounded-xl bg-[#0a0b1e] overflow-hidden flex items-center justify-center border border-white/5 flex-shrink-0">
               {service.imageUrl ? (
                 <img src={service.imageUrl.startsWith('http') ? service.imageUrl : `http://localhost:3001${service.imageUrl}`} alt={service.title} className="h-full w-full object-cover" />
@@ -68,9 +64,9 @@ export const ServicesPage: React.FC = () => {
                 <LayoutDashboard className="h-6 w-6 text-slate-600" />
               )}
             </div>
-            <div>
-              <div className="font-bold text-white tracking-tight">{service.title}</div>
-              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider h-[1.2em] overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px]">
+            <div className="max-w-[200px]">
+              <div className="font-bold text-white tracking-tight truncate">{service.title}</div>
+              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider h-[1.5em] overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px]">
                 {service.category?.name || 'Sin Categoría'}
               </div>
             </div>
@@ -79,19 +75,17 @@ export const ServicesPage: React.FC = () => {
       },
     },
     {
-      accessorKey: 'companies',
-      header: 'Empresas',
+      accessorKey: 'company',
+      header: 'Empresa',
       cell: ({ row }) => {
-        const companies = row.original.companies || [];
-        if (companies.length === 0) return <span className="text-slate-500 italic">Sin empresas</span>;
+        const company = row.original.company;
+        if (!company) return <span className="text-slate-500 italic">Sin empresa</span>;
 
         return (
-          <div className="flex flex-wrap gap-1 max-w-[200px]">
-            {companies.map((c: any) => (
-              <span key={c.id} className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-white/5 text-slate-400 border border-white/5">
-                {c.businessName}
-              </span>
-            ))}
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-white/5 text-slate-400 border border-white/5">
+              {company.businessName}
+            </span>
           </div>
         );
       },
@@ -115,9 +109,15 @@ export const ServicesPage: React.FC = () => {
       accessorKey: 'basePrice',
       header: 'Precio',
       cell: ({ row }) => (
-        <div className="font-bold text-white">
-          ${Number(row.getValue('basePrice')).toFixed(2)}
-        </div>
+        <>
+          {row.original.showPrice ? (
+            <div className="font-bold text-white">
+              ${Number(row.getValue('basePrice')).toFixed(2)}
+            </div>
+          ) : (
+            <span className="text-dashboard-primary font-bold italic">Cotización</span>
+          )}
+        </>
       ),
     },
     {
@@ -134,7 +134,7 @@ export const ServicesPage: React.FC = () => {
             >
               <LayoutDashboard className="h-4 w-4" />
             </button>
-            <Link to={`/services/${service.id}/edit`}>
+            <Link to={`/servicios/${service.id}/editar`}>
               <button className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all" title="Editar Servicio">
                 <Pencil className="h-4 w-4" />
               </button>
@@ -155,29 +155,9 @@ export const ServicesPage: React.FC = () => {
 
   return (
     <div className="max-w-[1600px] mx-auto space-y-10 animate-in fade-in duration-700">
-      <div className="flex items-center justify-between mb-12">
-        <div>
-          <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Mis Servicios</h1>
-          <p className="text-slate-400 font-medium">Gestiona tus ofertas de servicios profesionales y disponibilidad.</p>
-        </div>
-
-        <div className="flex items-center gap-6">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Buscar servicios..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-[#1a1c3d]/60 border border-white/5 rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50 w-80 transition-all placeholder:text-slate-500"
-            />
-          </div>
-        </div>
-      </div>
-
       <div className="flex items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <Link to="/services/create">
+          <Link to="/servicios/crear">
             <button className="flex items-center gap-3 bg-dashboard-primary text-dashboard-bg px-6 py-3.5 rounded-2xl font-black shadow-xl shadow-dashboard-primary/20 hover:scale-105 active:scale-95 transition-all">
               <Plus className="h-5 w-5 stroke-[3]" />
               Añadir Nuevo Servicio
@@ -206,7 +186,7 @@ export const ServicesPage: React.FC = () => {
           Error: {(error as Error).message}
         </div>
       )}
-
+      <p className="text-slate-500  text-sm font-bold italic">para poder borrar servicios primero debes cambiar su estado a inactivo</p>
       <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden">
         <DataTable
           columns={columns}

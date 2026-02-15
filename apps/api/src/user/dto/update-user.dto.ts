@@ -1,7 +1,6 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateUserDto } from './create-user.dto';
+import { createZodDto } from 'nestjs-zod';
+import { UpdateUserSchema } from 'shared-types';
 
-// Schema para actualizar un usuario (todos los campos opcionales)
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+export class UpdateUserDto extends createZodDto(UpdateUserSchema) {}
 
 export type UpdateUserInput = UpdateUserDto;

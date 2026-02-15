@@ -89,7 +89,7 @@ export const EditCompanyPage: React.FC = () => {
       if (!payload.description) delete (payload as any).description;
 
       await updateMutation.mutateAsync({ id: id!, data: payload });
-      navigate('/companies');
+      navigate('/empresas');
     } catch (error) {
       console.error('Error al actualizar empresa:', error);
     }
@@ -281,7 +281,7 @@ export const EditCompanyPage: React.FC = () => {
               <div className="flex gap-4 justify-end pt-8">
                 <button
                   type="button"
-                  onClick={() => navigate('/companies')}
+                  onClick={() => navigate('/empresas')}
                   className="px-8 py-3.5 rounded-2xl bg-white/5 text-slate-400 font-bold hover:bg-white/10 transition-all"
                 >
                   Cancelar

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Pencil, Trash2, Building2, CheckCircle, XCircle, Store } from 'lucide-react';
+import { Plus, Pencil, Trash2, Building2, CheckCircle, XCircle, Store } from 'lucide-react';
 import { useCompanies, useDeleteCompany } from './companies.hooks';
 import type { Company } from '../../stores/companies.store';
 import { DataTable } from 'ui-components';
@@ -11,7 +11,6 @@ import { BranchList } from './components/branch-list';
 export const CompaniesPage: React.FC = () => {
   const { data: companies = [], isLoading, error } = useCompanies();
   const deleteMutation = useDeleteCompany();
-  const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'verified' | 'unverified'>('all');
 
   // Estado para el modal de sucursales desde la tabla
@@ -37,11 +36,9 @@ export const CompaniesPage: React.FC = () => {
     return companies.filter(c => {
       const matchesFilter = filter === 'all' ||
         (filter === 'verified' ? c.isSatVerified : !c.isSatVerified);
-      const matchesSearch = c.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.rfc.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesFilter && matchesSearch;
+      return matchesFilter;
     });
-  }, [companies, filter, searchQuery]);
+  }, [companies, filter]);
 
   const columns: ColumnDef<Company>[] = [
     {
@@ -108,7 +105,7 @@ export const CompaniesPage: React.FC = () => {
             >
               <Store className="h-4 w-4" />
             </button>
-            <Link to={`/companies/${company.id}/edit`}>
+            <Link to={`/empresas/${company.id}/editar`}>
               <button
                 type="button"
                 className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all"
@@ -134,29 +131,9 @@ export const CompaniesPage: React.FC = () => {
 
   return (
     <div className="max-w-[1600px] mx-auto space-y-10 animate-in fade-in duration-700 pb-20">
-      <div className="flex items-center justify-between mb-12">
-        <div>
-          <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Empresas</h1>
-          <p className="text-slate-400 font-medium">Gestiona las empresas registradas y su verificación SAT.</p>
-        </div>
-
-        <div className="flex items-center gap-6">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Buscar por nombre o RFC..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-[#1a1c3d]/60 border border-white/5 rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50 w-80 transition-all placeholder:text-slate-500"
-            />
-          </div>
-        </div>
-      </div>
-
       <div className="flex items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <Link to="/companies/create">
+          <Link to="/empresas/crear">
             <button className="flex items-center gap-3 bg-dashboard-primary text-dashboard-bg px-6 py-3.5 rounded-2xl font-black shadow-xl shadow-dashboard-primary/20 hover:scale-105 active:scale-95 transition-all">
               <Plus className="h-5 w-5 stroke-[3]" />
               Registrar Nueva Empresa

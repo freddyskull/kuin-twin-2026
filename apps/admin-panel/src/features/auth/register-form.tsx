@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn, useToast, Button, FormInput, CustomForm } from 'ui-components';
-import { RoleSchema } from 'shared-types/zod';
+import { RoleSchema } from 'shared-types';
 import * as z from 'zod';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth.store';
@@ -150,7 +150,7 @@ export const RegisterForm = ({ className, onSubmit: _onSubmit, ...props }: React
             </Button>
             <div className="text-center text-sm text-balance">
               ¿Ya tienes una cuenta?{" "}
-              <Link to="/login" className="underline underline-offset-4">
+              <Link to="/iniciar-sesion" className="underline underline-offset-4">
                 Inicia sesión
               </Link>
             </div>

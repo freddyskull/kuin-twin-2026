@@ -1,4 +1,5 @@
-import { defineConfig } from 'vite'
+/// <reference types="vitest" />
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -18,12 +19,12 @@ export default defineConfig({
       '@components': path.resolve(__dirname, '../../libs/ui-components/src/components/'),
       '@': path.resolve(__dirname, './src'),
       '@assets': path.resolve(__dirname, '../../libs/public'),
-      '@shared-types': path.resolve(__dirname, '../../libs/shared-types'),
+      'shared-types': path.resolve(__dirname, '../../libs/shared-types/src/index.ts'),
       'ui-components/styles': path.resolve(__dirname, '../../libs/ui-components/src/styles/globals.css'),
     },
   },
   optimizeDeps: {
-    include: ['shared-types', 'shared-types/zod', '@tanstack/react-table'],
+    include: ['shared-types', 'shared-types/zod', '@tanstack/react-table', 'leaflet', 'react-leaflet'],
   },
   build: {
     commonjsOptions: {
@@ -37,6 +38,12 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
   },
 })
 

@@ -14,7 +14,7 @@ export const ServicePreview: React.FC<ServicePreviewProps> = ({ currentStep }) =
   const { categories, units } = useServicesStore();
 
   return (
-    <div className="col-span-4 space-y-6">
+    <div className="col-span-4 space-y-6 sticky top-24 self-start">
       <div className="space-y-4">
         <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-2">Vista Previa</h3>
         <div className="bg-[#0a0b1e] border border-white/5 rounded-3xl overflow-hidden group shadow-xl">

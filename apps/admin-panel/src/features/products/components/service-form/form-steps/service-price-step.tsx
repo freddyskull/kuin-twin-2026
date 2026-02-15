@@ -2,13 +2,14 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { FormInput, FormSelect } from 'ui-components';
+import { FormInput, FormSelect, FormSwitch } from 'ui-components';
 import type { ServiceFormValues } from '../schema';
 import { useServicesStore } from '../../../../../stores/services.store';
 
 export const ServicePriceStep: React.FC = () => {
-  const { control } = useFormContext<ServiceFormValues>();
+  const { watch } = useFormContext<ServiceFormValues>();
   const { units } = useServicesStore();
+  const showPrice = watch('showPrice');
 
   return (
     <motion.section
@@ -24,21 +25,31 @@ export const ServicePriceStep: React.FC = () => {
         <FormInput
           name="basePrice"
           label="Precio ($)"
-          required
+          required={showPrice}
           type="number"
           step="0.01"
           className="text-xl font-black"
+          disabled={!showPrice}
         />
 
         <FormSelect
           name="unitId"
           label="Unidad"
-          required
+          required={showPrice}
+          disabled={!showPrice}
           options={units.map(u => ({
             value: u.id,
             label: `${u.name} (${u.abbreviation})`
           }))}
         />
+
+        <div className="col-span-2 pt-2">
+          <FormSwitch
+            name="showPrice"
+            label="Mostrar precio en el marketplace"
+            description="Si se desactiva, el precio no será visible para los clientes."
+          />
+        </div>
       </div>
     </motion.section>
   );

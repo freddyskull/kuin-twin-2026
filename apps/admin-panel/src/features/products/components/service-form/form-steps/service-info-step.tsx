@@ -99,7 +99,7 @@ export const ServiceInfoStep: React.FC = () => {
         <div className="space-y-4">
           <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Empresas y Sucursales Asociadas</Label>
           <Controller
-            name="companyIds"
+            name="companyId"
             control={control}
             render={({ field: companyField }) => (
               <Controller
@@ -107,11 +107,11 @@ export const ServiceInfoStep: React.FC = () => {
                 control={control}
                 render={({ field: branchField }) => (
                   <CompanySelector
-                    selectedCompanyIds={companyField.value}
+                    selectedCompanyId={companyField.value}
                     onCompanyChange={companyField.onChange}
                     selectedBranchIds={branchField.value || []}
                     onBranchChange={branchField.onChange}
-                    error={errors.companyIds?.message}
+                    error={errors.companyId?.message}
                   />
                 )}
               />

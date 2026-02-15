@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { useFormContext, useFieldArray, useWatch } from 'react-hook-form';
-import { Star, Trash2 } from 'lucide-react';
+import { Star, Trash2, MapPin, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Label, FormTextarea } from 'ui-components';
+import { Label, FormTextarea, FormInput, MapSelector, geocode, Button } from 'ui-components';
 import type { ServiceFormValues } from '../schema';
 
 export const ServiceAttributesStep: React.FC = () => {
-  const { register, control, formState: { errors }, setValue } = useFormContext<ServiceFormValues>();
+  const { register, control, formState: { errors }, setValue, getValues } = useFormContext<ServiceFormValues>();
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -15,6 +15,8 @@ export const ServiceAttributesStep: React.FC = () => {
 
   const watchedMetadata = useWatch({ control, name: 'metadata' });
   const watchedDynamicAttributes = useWatch({ control, name: 'dynamicAttributes' });
+  const watchedLatitude = useWatch({ control, name: 'latitude' });
+  const watchedLongitude = useWatch({ control, name: 'longitude' });
 
   // Auto-generate JSON when metadata changes
   useEffect(() => {
@@ -80,6 +82,17 @@ export const ServiceAttributesStep: React.FC = () => {
     remove(index);
   };
 
+  const handleSearchAddress = async () => {
+    const address = getValues('address');
+    if (address && address.length > 3) {
+      const coords = await geocode(address);
+      if (coords) {
+        setValue('latitude', coords.lat, { shouldDirty: true });
+        setValue('longitude', coords.lng, { shouldDirty: true });
+      }
+    }
+  };
+
   return (
     <motion.section
       key="step4" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
@@ -91,6 +104,7 @@ export const ServiceAttributesStep: React.FC = () => {
       </div>
 
       <div className="space-y-6">
+
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Especificaciones Técnicas</Label>
@@ -125,6 +139,41 @@ export const ServiceAttributesStep: React.FC = () => {
           placeholder='{"clave": "valor"}'
           className="font-mono text-xs"
         />
+
+        <div className="bg-[#0a0b1e]/40 p-6 rounded-2xl border border-white/5 space-y-4">
+          <div className="flex items-center gap-3 text-dashboard-primary mb-2">
+            <MapPin className="h-4 w-4" />
+            <span className="text-xs font-bold uppercase tracking-widest">Localización</span>
+          </div>
+
+          <div className="flex gap-2 items-end">
+            <FormInput
+              name="address"
+              label="Ubicación física"
+              placeholder="ej. Av. Principal #123, Ciudad"
+              className="flex-1"
+            />
+            <Button
+              type="button"
+              onClick={handleSearchAddress}
+              className="mb-0.5 bg-dashboard-primary/20 hover:bg-dashboard-primary/30 text-dashboard-primary border-dashboard-primary/30 rounded-xl h-[46px] px-4"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <MapSelector
+            initialLatitude={watchedLatitude}
+            initialLongitude={watchedLongitude}
+            onLocationChange={(lat, lng) => {
+              setValue('latitude', lat, { shouldDirty: true });
+              setValue('longitude', lng, { shouldDirty: true });
+            }}
+            onAddressChange={(address) => {
+              setValue('address', address, { shouldDirty: true });
+            }}
+          />
+        </div>
       </div>
     </motion.section>
   );

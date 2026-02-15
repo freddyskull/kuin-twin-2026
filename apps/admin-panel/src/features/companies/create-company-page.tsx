@@ -84,7 +84,7 @@ export const CreateCompanyPage: React.FC = () => {
       if (!payload.taxAddressCounty) delete (payload as any).taxAddressCounty;
 
       await createMutation.mutateAsync(payload);
-      navigate('/companies');
+      navigate('/empresas');
     } catch (error) {
       console.error('Error al crear empresa:', error);
     }
@@ -247,7 +247,7 @@ export const CreateCompanyPage: React.FC = () => {
               <div className="flex gap-4 justify-end">
                 <button
                   type="button"
-                  onClick={() => navigate('/companies')}
+                  onClick={() => navigate('/empresas')}
                   className="px-8 py-3.5 rounded-2xl bg-white/5 text-slate-400 font-bold hover:bg-white/10 transition-all"
                 >
                   Cancelar

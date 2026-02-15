@@ -1,8 +1,8 @@
-import React, { useState, KeyboardEvent } from 'react';
+import React, { useState } from 'react';
+import type { KeyboardEvent } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { X, Tag } from 'lucide-react';
 import { Label } from './ui/label';
-import { Input } from './ui/input';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 

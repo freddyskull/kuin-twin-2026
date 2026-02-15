@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useAuthStore } from '../../stores/auth.store';
 import { useService, useUpdateService } from './services.hooks';
+import { useServicesStore } from '../../stores/services.store';
 import { useToast } from 'ui-components';
 import { ServiceWizardForm } from './components/service-form/service-wizard-form';
 import type { ServiceFormValues } from './components/service-form/schema';
@@ -11,7 +12,9 @@ export const EditServicePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: service, isLoading: isLoadingService } = useService(id!);
   const updateMutation = useUpdateService();
+  const { uploadMedia } = useServicesStore();
   const { user } = useAuthStore();
+
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -53,14 +56,18 @@ export const EditServicePage: React.FC = () => {
         tags: service.tags || [],
         description: service.description || '',
         basePrice: Number(service.basePrice),
+        showPrice: service.showPrice,
         categoryId: service.categoryId,
         unitId: service.unitId,
         imageUrl: service.imageUrl || '',
         metadata: metadata,
         dynamicAttributes: service.dynamicAttributes ? JSON.stringify(service.dynamicAttributes, null, 2) : '',
+        address: (service.dynamicAttributes as any)?.ubicacion || '',
+        latitude: (service.dynamicAttributes as any)?.latitud || 0,
+        longitude: (service.dynamicAttributes as any)?.longitud || 0,
         workSchedule: service.workSchedule as any || undefined,
         slots: loadedSlots,
-        companyIds: service.companies?.map((c: any) => c.id) || []
+        companyId: service.companyId || ''
       });
     }
   }, [service]);
@@ -69,6 +76,18 @@ export const EditServicePage: React.FC = () => {
     if (!user?.id || !id) return;
 
     try {
+      let finalImageUrl = data.imageUrl;
+
+      // Upload image first if a new one was selected
+      if (data.imageFile) {
+        toast({
+          title: "Subiendo imagen...",
+          description: "Por favor espera un momento.",
+        });
+        const media = await uploadMedia(user.id, data.imageFile);
+        finalImageUrl = media?.url || media?.path || (typeof media === 'string' ? media : finalImageUrl);
+      }
+
       const payload = {
         categoryId: data.categoryId,
         unitId: data.unitId,
@@ -77,16 +96,23 @@ export const EditServicePage: React.FC = () => {
         tags: data.tags,
         description: data.description,
         basePrice: data.basePrice,
-        imageUrl: data.imageUrl,
+        showPrice: data.showPrice,
+        imageUrl: finalImageUrl,
         metadata: data.metadata,
-        dynamicAttributes: data.dynamicAttributes ? JSON.parse(data.dynamicAttributes) : {},
+        dynamicAttributes: {
+          ...(data.dynamicAttributes ? JSON.parse(data.dynamicAttributes) : {}),
+          ubicacion: data.address,
+          latitud: data.latitude,
+          longitud: data.longitude
+        },
         workSchedule: data.workSchedule,
         slots: data.slots || [],
-        companyIds: data.companyIds
+        companyId: data.companyId,
+        branchIds: data.branchIds
       };
 
       await updateMutation.mutateAsync({ id, data: payload });
-      navigate('/services');
+      navigate('/servicios');
     } catch (error: any) {
       console.error('Failed to update service:', error);
       toast({
@@ -113,7 +139,7 @@ export const EditServicePage: React.FC = () => {
       subtitle="Actualiza los detalles de tu oferta de servicio."
       submitLabel="Actualizar Servicio"
       isEditMode={true}
-      onCancel={() => navigate('/services')}
+      onCancel={() => navigate('/servicios')}
     />
   );
 };

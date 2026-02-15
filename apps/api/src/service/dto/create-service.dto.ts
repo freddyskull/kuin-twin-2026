@@ -1,5 +1,6 @@
 import { IsString, IsUUID, MinLength, IsOptional, IsNumber, IsPositive, IsBoolean, IsArray, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
+import { sanitizeJsonObject } from 'shared-types';
 
 export class MetadataDto {
   @IsString()
@@ -59,57 +60,59 @@ export class CreateServiceDto {
   categoryId: string;
 
   @IsUUID('4', { message: 'ID de unidad inválido' })
-  unitId: string;
+  @IsOptional()
+  unitId?: string;
 
-  @IsString()
+  @IsString({ message: 'El título debe ser una cadena de texto' })
   @MinLength(3, { message: 'El título debe tener al menos 3 caracteres' })
   title: string;
 
-  @IsString()
+  @IsString({ message: 'El slug debe ser una cadena de texto' })
   @IsOptional()
   slug?: string;
 
-  @IsArray()
-  @IsString({ each: true })
+  @IsArray({ message: 'Las etiquetas deben ser un arreglo' })
+  @IsString({ each: true, message: 'Cada etiqueta debe ser una cadena de texto' })
   @IsOptional()
   tags?: string[] = [];
 
-  @IsString()
-  @MinLength(10, { message: 'La descripción es muy corta' })
+  @IsString({ message: 'La descripción debe ser una cadena de texto' })
+  @MinLength(10, { message: 'La descripción es muy corta (mínimo 10 caracteres)' })
   @IsOptional()
   description?: string;
 
-  @IsString()
+  @IsString({ message: 'La URL de la imagen debe ser una cadena de texto' })
   @IsOptional()
   imageUrl?: string;
 
-  @IsNumber()
-  @IsPositive({ message: 'El precio base debe ser mayor a 0' })
+  @IsNumber({}, { message: 'El precio base debe ser un número' })
+  @IsOptional()
   @Type(() => Number)
-  basePrice: number;
+  basePrice?: number = 0;
 
-  @IsBoolean()
+  @IsBoolean({ message: 'El estado activo debe ser un booleano' })
   @IsOptional()
   isActive?: boolean = true;
 
-  @IsArray()
+  @IsArray({ message: 'Los metadatos deben ser un arreglo' })
   @ValidateNested({ each: true })
   @Type(() => MetadataDto)
   @IsOptional()
   metadata?: MetadataDto[] = [];
 
-  @IsString()
+  @IsString({ message: 'El ID de empresa debe ser una cadena de texto' })
   @IsUUID('4', { message: 'ID de empresa inválido' })
   @IsOptional()
   companyId?: string;
 
   @IsOptional()
+  @Transform(({ value }) => sanitizeJsonObject(value))
   dynamicAttributes?: any;
 
   @IsOptional()
   commentsBox?: any;
 
-  @IsBoolean()
+  @IsBoolean({ message: 'El campo mostrar precio debe ser un booleano' })
   @IsOptional()
   showPrice?: boolean = true;
 
@@ -118,7 +121,12 @@ export class CreateServiceDto {
   @IsOptional()
   workSchedule?: WorkScheduleDto;
 
-  @IsArray()
+  @IsArray({ message: 'Los slots deben ser un arreglo' })
   @IsOptional()
   slots?: any[] = [];
+
+  @IsArray({ message: 'Las sucursales deben ser un arreglo' })
+  @IsUUID('4', { each: true, message: 'ID de sucursal inválido' })
+  @IsOptional()
+  branchIds?: string[] = [];
 }

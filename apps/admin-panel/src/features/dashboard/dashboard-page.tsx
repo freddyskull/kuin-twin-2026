@@ -1,5 +1,4 @@
 import React from 'react';
-import { DashboardHeader } from './components/dashboard-header';
 import { BookingsChart } from './components/bookings-chart';
 import { ServiceDistribution } from './components/service-distribution';
 import { NearbyRequests } from './components/nearby-requests';
@@ -8,7 +7,7 @@ import { RevenueCard, ActiveUsers } from './components/revenue-stats';
 export const DashboardPage: React.FC = () => {
   return (
     <div className="max-w-[1600px] mx-auto space-y-10">
-      <DashboardHeader />
+      {/* El Header global del Layout ya cubre la información bienvenida */}
 
       {/* Top Section: Monthly Bookings & Distribution */}
       <div className="grid grid-cols-12 gap-10">

@@ -98,7 +98,7 @@ export function LoginForm({
             </Button>
             <div className="text-center text-sm text-balance">
               ¿No tienes una cuenta?{" "}
-              <Link to="/register" className="underline underline-offset-4">
+              <Link to="/registro" className="underline underline-offset-4">
                 Regístrate
               </Link>
             </div>

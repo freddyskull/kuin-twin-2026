@@ -1,5 +1,6 @@
 import React from 'react';
-import { useForm, FormProvider, UseFormReturn, FieldValues, DefaultValues } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
+import type { UseFormReturn, FieldValues, DefaultValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 interface CustomFormProps<T extends FieldValues> {

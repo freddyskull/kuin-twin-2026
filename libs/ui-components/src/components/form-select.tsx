@@ -17,6 +17,7 @@ interface FormSelectProps {
   placeholder?: string;
   className?: string;
   required?: boolean;
+  disabled?: boolean;
 }
 
 export const FormSelect: React.FC<FormSelectProps> = ({
@@ -26,6 +27,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
   placeholder = "Seleccionar...",
   className,
   required,
+  disabled,
 }) => {
   const {
     control,
@@ -47,12 +49,13 @@ export const FormSelect: React.FC<FormSelectProps> = ({
         name={name}
         control={control}
         render={({ field }) => (
-          <Select onValueChange={field.onChange} value={field.value}>
+          <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
             <SelectTrigger
               id={name}
               className={cn(
                 "bg-[#0a0b1e]/60 border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dashboard-primary/50",
-                error && "border-red-500 focus:ring-red-500/50"
+                error && "border-red-500 focus:ring-red-500/50",
+                disabled && "opacity-50 cursor-not-allowed"
               )}
             >
               <SelectValue placeholder={placeholder} />

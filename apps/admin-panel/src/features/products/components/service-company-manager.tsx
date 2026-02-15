@@ -15,17 +15,17 @@ export const ServiceCompanyManager: React.FC<ServiceCompanyManagerProps> = ({ se
   const updateMutation = useUpdateService();
   const { toast } = useToast();
 
-  const [companyIds, setCompanyIds] = useState<string[]>([]);
+  const [companyId, setCompanyId] = useState<string>('');
   const [branchIds, setBranchIds] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   // Initialize state from full service data
   useEffect(() => {
     if (fullService) {
-      const initialCompanyIds = fullService.companies?.map((c: any) => String(typeof c === 'object' ? c.id : c)) || [];
+      const initialCompanyId = fullService.companyId || (fullService.company?.id) || '';
       const initialBranchIds = fullService.branches?.map((b: any) => String(typeof b === 'object' ? b.id : b)) || [];
 
-      setCompanyIds(initialCompanyIds);
+      setCompanyId(String(initialCompanyId));
       setBranchIds(initialBranchIds);
     }
   }, [fullService]);
@@ -34,7 +34,7 @@ export const ServiceCompanyManager: React.FC<ServiceCompanyManagerProps> = ({ se
     setIsSaving(true);
     try {
       const payload = {
-        companyIds,
+        companyId,
         branchIds
       };
 
@@ -76,8 +76,8 @@ export const ServiceCompanyManager: React.FC<ServiceCompanyManagerProps> = ({ se
 
       <div className="bg-[#0a0b1e]/40 p-6 rounded-2xl border border-white/5 max-h-[60vh] overflow-y-auto custom-scrollbar">
         <CompanySelector
-          selectedCompanyIds={companyIds}
-          onCompanyChange={setCompanyIds}
+          selectedCompanyId={companyId}
+          onCompanyChange={setCompanyId}
           selectedBranchIds={branchIds}
           onBranchChange={setBranchIds}
         />

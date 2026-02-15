@@ -209,9 +209,9 @@ model Service {
   company   Company? @relation(fields: [companyId], references: [id])
 
   categoryId String
-  category   Category    @relation(fields: [categoryId], references: [id])
-  unitId     String
-  unit       ServiceUnit @relation(fields: [unitId], references: [id])
+  category   Category     @relation(fields: [categoryId], references: [id])
+  unitId     String?
+  unit       ServiceUnit? @relation(fields: [unitId], references: [id])
 
   // Información de Negocio
   title       String
@@ -221,9 +221,9 @@ model Service {
   tags        String[] @default([])
 
   // Precios y Visibilidad
-  basePrice Decimal @db.Decimal(10, 2)
-  showPrice Boolean @default(true)
-  isActive  Boolean @default(true)
+  basePrice Decimal? @db.Decimal(10, 2)
+  showPrice Boolean  @default(true)
+  isActive  Boolean  @default(true)
 
   // Calificación (Stars)
   starsRate    Decimal @default(0) @db.Decimal(3, 2) // Mantenlo aquí por velocidad

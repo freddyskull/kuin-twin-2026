@@ -1,0 +1,135 @@
+﻿
+> api@0.0.1 build
+> nest build
+
+node.exe : [96msrc/companies/companies.servi
+ce.ts[0m:[93m12[0m:[93m7[0m - 
+[91merror[0m[90m TS2322: [0mType 
+'CreateCompanyDto' is not assignable to type 
+'(Without<CompanyCreateInput, 
+CompanyUncheckedCreateInput> & 
+CompanyUncheckedCreateInput) | (Without<...> 
+& CompanyCreateInput)'.
+En C:\Program Files\nodejs\npm.ps1: 29 
+Carácter: 3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   ([96msrc/compan...yCreateInput)'.:Strin  
+  g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+  Type 'CreateCompanyDto' is not assignable 
+to type 
+'Without<CompanyUncheckedCreateInput, 
+CompanyCreateInput> & CompanyCreateInput'.
+    Type 'CreateCompanyDto' is not 
+assignable to type 'CompanyCreateInput'.
+      Types of property 'fiscalRegime' are 
+incompatible.
+        Type 'string | undefined' is not 
+assignable to type 'string'.
+          Type 'undefined' is not assignable 
+to type 'string'.
+
+[7m12[0m       data: createCompanyDto,
+[7m  [0m [91m      ~~~~[0m
+
+  [96m../../node_modules/.prisma/client/inde
+x.d.ts[0m:[93m8335[0m:[93m5[0m
+    [7m8335[0m     data: 
+XOR<CompanyCreateInput, 
+CompanyUncheckedCreateInput>
+    [7m    [0m [96m    ~~~~[0m
+    The expected type comes from property 
+'data' which is declared here on type '{ 
+select?: CompanySelect<DefaultArgs> | null | 
+undefined; omit?: CompanyOmit<DefaultArgs> | 
+null | undefined; include?: 
+CompanyInclude<...> | ... 1 more ... | 
+undefined; data: (Without<...> & 
+CompanyUncheckedCreateInput) | (Without<...> 
+& CompanyCreateInput); }'
+[96msrc/user/user.service.ts[0m:[93m225[0
+m:[93m23[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'password' does not exist on 
+type 'UpdateUserDto'.
+
+[7m225[0m     if (updateUserDto.password) {
+[7m   [0m [91m                      
+~~~~~~~~[0m
+[96msrc/user/user.service.ts[0m:[93m226[0
+m:[93m61[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'password' does not exist on 
+type 'UpdateUserDto'.
+
+[7m226[0m       updateData.password = 
+await bcrypt.hash(updateUserDto.password, 
+10);
+[7m   [0m [91m                            
+                                ~~~~~~~~[0m
+[96msrc/user/dto/create-user.dto.ts[0m:[93
+m4[0m:[93m14[0m - [91merror[0m[90m 
+TS2742: [0mThe inferred type of 
+'CreateUserDto' cannot be named without a 
+reference to 
+'shared-types/node_modules/zod'. This is 
+likely not portable. A type annotation is 
+necessary.
+
+[7m4[0m export class CreateUserDto extends 
+createZodDto(CreateUserSchema) {}
+[7m [0m [91m             ~~~~~~~~~~~~~[0m
+[96msrc/user/dto/update-user.dto.ts[0m:[93
+m4[0m:[93m14[0m - [91merror[0m[90m 
+TS2742: [0mThe inferred type of 
+'UpdateUserDto' cannot be named without a 
+reference to 
+'shared-types/node_modules/zod'. This is 
+likely not portable. A type annotation is 
+necessary.
+
+[7m4[0m export class UpdateUserDto extends 
+createZodDto(UpdateUserSchema) {}
+[7m [0m [91m             ~~~~~~~~~~~~~[0m
+[96msrc/auth/dto/login.dto.ts[0m:[93m4[0m
+:[93m14[0m - [91merror[0m[90m TS2742: 
+[0mThe inferred type of 'LoginDto' cannot 
+be named without a reference to 
+'shared-types/node_modules/zod'. This is 
+likely not portable. A type annotation is 
+necessary.
+
+[7m4[0m export class LoginDto extends 
+createZodDto(LoginSchema) {}
+[7m [0m [91m             ~~~~~~~~[0m
+[96msrc/companies/dto/create-company.dto.ts
+[0m:[93m5[0m:[93m14[0m - 
+[91merror[0m[90m TS2742: [0mThe inferred 
+type of 'CreateCompanyDto' cannot be named 
+without a reference to 
+'shared-types/node_modules/zod'. This is 
+likely not portable. A type annotation is 
+necessary.
+
+[7m5[0m export class CreateCompanyDto 
+extends createZodDto(CompanySchema.omit({ 
+id: true })) {}
+[7m [0m [91m             
+~~~~~~~~~~~~~~~~[0m
+
+Found 7 error(s).
+
+npm error Lifecycle script `build` failed 
+with error:
+npm error code 1
+npm error path E:\Usuario\Documentos\GitHub\k
+uin-twin-2026\apps\api
+npm error workspace api@0.0.1
+npm error location E:\Usuario\Documentos\GitH
+ub\kuin-twin-2026\apps\api
+npm error command failed
+npm error command 
+C:\WINDOWS\system32\cmd.exe /d /s /c nest 
+build

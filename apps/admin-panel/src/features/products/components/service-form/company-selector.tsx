@@ -5,8 +5,8 @@ import { cn } from 'ui-components';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CompanySelectorProps {
-  selectedCompanyIds: string[];
-  onCompanyChange: (ids: string[]) => void;
+  selectedCompanyId?: string;
+  onCompanyChange: (id: string) => void;
   selectedBranchIds: string[];
   onBranchChange: (ids: string[]) => void;
   error?: string;
@@ -21,7 +21,6 @@ const CompanyItem: React.FC<{
 }> = ({ company, isSelected, selectedBranchIds, onToggleCompany, onToggleBranch }) => {
   const { data: branches = [], isLoading: isLoadingBranches } = useBranches(company.id);
 
-  // Calcular si todas las sucursales están seleccionadas
   const companyBranchIds = branches.map(b => b.id);
   const selectedCompanyBranches = companyBranchIds.filter(id => selectedBranchIds.includes(id));
   const areAllSelected = branches.length > 0 && selectedCompanyBranches.length === branches.length;
@@ -29,15 +28,10 @@ const CompanyItem: React.FC<{
   const handleSelectAllBranches = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (areAllSelected) {
-      // Deseleccionar todas
-      companyBranchIds.forEach(id => onToggleBranch(id)); // Esto funcionará si onToggleBranch maneja toggle uno por uno? No, mejor pasar lógica al padre o hacer un loop aquí
-      // Mejor lógica: pasar al padre ids para agregar/quitar
-      // Simplificación: iteramos y llamamos toggle si es necesario
       companyBranchIds.forEach(id => {
         if (selectedBranchIds.includes(id)) onToggleBranch(id);
       });
     } else {
-      // Seleccionar todas
       companyBranchIds.forEach(id => {
         if (!selectedBranchIds.includes(id)) onToggleBranch(id);
       });
@@ -113,7 +107,7 @@ const CompanyItem: React.FC<{
 
               {isLoadingBranches ? (
                 <div className="space-y-2">
-                  {[1, 2].map(i => <div key={i} className="h-8 bg-white/5 rounded-lg animate-pulse" />)}
+                  <div className="h-4 w-full bg-white/5 animate-pulse rounded" />
                 </div>
               ) : branches.length === 0 ? (
                 <div className="text-xs text-slate-600 italic py-2">Sin sucursales registradas</div>
@@ -154,7 +148,7 @@ const CompanyItem: React.FC<{
 };
 
 export const CompanySelector: React.FC<CompanySelectorProps> = ({
-  selectedCompanyIds = [],
+  selectedCompanyId,
   onCompanyChange,
   selectedBranchIds = [],
   onBranchChange,
@@ -163,13 +157,12 @@ export const CompanySelector: React.FC<CompanySelectorProps> = ({
   const { data: companies = [], isLoading } = useCompanies();
 
   const toggleCompany = (id: string) => {
-    if (selectedCompanyIds.includes(id)) {
-      onCompanyChange(selectedCompanyIds.filter(v => v !== id));
-      // Opcional: Limpiar sucursales de esta empresa al deseleccionarla
-      // Para hacer esto bien necesitaríamos saber qué sucursales pertenecen a esta empresa ID sin el hook
-      // Como no tenemos las sucursales aquí, lo dejamos. El backend debería ignorar sucursales huerfanas o en el frontend filtramos al enviar.
+    if (selectedCompanyId === id) {
+      onCompanyChange('');
+      onBranchChange([]); // Limpiar sucursales al deseleccionar empresa
     } else {
-      onCompanyChange([...selectedCompanyIds, id]);
+      onCompanyChange(id);
+      onBranchChange([]); // Limpiar sucursales anteriores al cambiar de empresa
     }
   };
 
@@ -183,21 +176,18 @@ export const CompanySelector: React.FC<CompanySelectorProps> = ({
 
   if (isLoading) {
     return (
-      <div className="h-10 w-full animate-pulse bg-white/5 rounded-xl block" />
+      <div className="grid grid-cols-1 gap-3">
+        {[1, 2].map(i => <div key={i} className="h-20 w-full animate-pulse bg-white/5 rounded-2xl block" />)}
+      </div>
     );
   }
 
   if (companies.length === 0) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center gap-3 p-4 bg-[#0a0b1e]/20 border border-white/5 rounded-[2rem] opacity-50 cursor-not-allowed">
-          <div className="h-10 w-10 rounded-xl bg-[#0a0b1e] border border-white/5 flex items-center justify-center flex-shrink-0">
-            <Building2 className="h-5 w-5 text-slate-600" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-bold text-slate-500 truncate">Sin empresas disponibles</div>
-            <div className="text-[10px] text-slate-600 font-bold uppercase tracking-wider truncate">Debes registrar una empresa para asociarla a este servicio</div>
-          </div>
+        <div className="p-4 bg-[#0a0b1e]/20 border border-white/5 rounded-2xl opacity-50 flex items-center gap-3">
+          <Building2 className="h-5 w-5 text-slate-600" />
+          <div className="text-sm font-bold text-slate-500">Sin empresas disponibles</div>
         </div>
         {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
       </div>
@@ -211,7 +201,7 @@ export const CompanySelector: React.FC<CompanySelectorProps> = ({
           <CompanyItem
             key={company.id}
             company={company}
-            isSelected={selectedCompanyIds.includes(company.id)}
+            isSelected={selectedCompanyId === company.id}
             selectedBranchIds={selectedBranchIds}
             onToggleCompany={toggleCompany}
             onToggleBranch={toggleBranch}

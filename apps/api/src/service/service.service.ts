@@ -14,7 +14,7 @@ export class ServiceService {
   ) {}
 
   async create(createDto: CreateServiceDto): Promise<Service> {
-    const { vendorId, categoryId, unitId, companyId, metadata, slots, workSchedule, tags, ...rest } = createDto;
+    const { vendorId, categoryId, unitId, companyId, metadata, slots, workSchedule, tags, branchIds, ...rest } = createDto;
 
     const slug = createDto.slug || slugify(createDto.title);
 
@@ -94,7 +94,7 @@ export class ServiceService {
       if (duplicate) throw new ForbiddenException(`Ya tienes otro servicio registrado con el título "${updateDto.title}"`);
     }
 
-    const { metadata, slots, workSchedule, companyId, tags, ...rest } = updateDto;
+    const { metadata, slots, workSchedule, companyId, tags, branchIds, ...rest } = updateDto;
     const updateData: any = { ...rest };
 
     if (tags) updateData.tags = tags;

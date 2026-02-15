@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import { Calendar, Clock, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Label } from 'ui-components';
+import { Label, Switch } from 'ui-components';
 import type { ServiceFormValues } from '../schema';
 
 const DAYS = [
@@ -23,7 +23,7 @@ const MOCK_HOLIDAYS = [
 ];
 
 export const ServiceAvailabilityStep: React.FC = () => {
-  const { register, watch, setValue } = useFormContext<ServiceFormValues>();
+  const { register, watch, setValue, control } = useFormContext<ServiceFormValues>();
 
   // Initialize schedule if empty
   const schedule = watch('workSchedule.schedule');
@@ -50,14 +50,14 @@ export const ServiceAvailabilityStep: React.FC = () => {
     if (workHolidays) {
       // If working holidays, list contains EXCEPTIONS (blacklist)
       if (currentBlacklist.includes(date)) {
-        setValue('workSchedule.holidayRules.blacklist', currentBlacklist.filter(d => d !== date));
+        setValue('workSchedule.holidayRules.blacklist', currentBlacklist.filter((d: string) => d !== date));
       } else {
         setValue('workSchedule.holidayRules.blacklist', [...currentBlacklist, date]);
       }
     } else {
       // If NOT working holidays, list contains EXCEPTIONS (whitelist)
       if (currentWhitelist.includes(date)) {
-        setValue('workSchedule.holidayRules.whitelist', currentWhitelist.filter(d => d !== date));
+        setValue('workSchedule.holidayRules.whitelist', currentWhitelist.filter((d: string) => d !== date));
       } else {
         setValue('workSchedule.holidayRules.whitelist', [...currentWhitelist, date]);
       }
@@ -91,16 +91,21 @@ export const ServiceAvailabilityStep: React.FC = () => {
         <div className="space-y-4">
           <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Agenda Semanal</Label>
           <div className="grid gap-3">
-            {schedule && schedule.map((item, index) => {
+            {schedule && schedule.map((item: any, index: number) => {
               const dayLabel = DAYS.find(d => d.key === item.day)?.label || item.day;
               return (
                 <div key={item.day} className={`p-4 rounded-xl border transition-all ${item.enabled ? 'bg-[#0a0b1e]/60 border-dashboard-primary/30' : 'bg-[#0a0b1e]/20 border-white/5 opacity-60'}`}>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-3 w-32">
-                      <input
-                        type="checkbox"
-                        {...register(`workSchedule.schedule.${index}.enabled`)}
-                        className="w-5 h-5 rounded border-white/10 bg-white/5 text-dashboard-primary focus:ring-offset-0 focus:ring-1"
+                      <Controller
+                        name={`workSchedule.schedule.${index}.enabled`}
+                        control={control}
+                        render={({ field }) => (
+                          <Switch
+                            checked={field.value}
+                            onChange={field.onChange}
+                          />
+                        )}
                       />
                       <span className={`text-sm font-bold ${item.enabled ? 'text-white' : 'text-slate-500'}`}>{dayLabel}</span>
                     </div>
@@ -135,19 +140,21 @@ export const ServiceAvailabilityStep: React.FC = () => {
 
         {/* Holidays Configuration */}
         <div className="space-y-4 pt-4 border-t border-white/5">
-          <div className="flex items-center justify-between">
-            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Configuración de Feriados</Label>
-            <label className="flex items-center gap-2 cursor-pointer group">
-              <Label className="text-[10px] font-bold text-slate-400 group-hover:text-white transition-colors">¿TRABAJAR FERIADOS?</Label>
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  {...register('workSchedule.holidayRules.workHolidays')}
-                  className="sr-only peer"
-                />
-                <div className="w-10 h-5 bg-[#0a0b1e] border border-white/10 rounded-full peer peer-checked:bg-dashboard-primary/20 peer-checked:border-dashboard-primary peer-checked:after:translate-x-full peer-checked:after:bg-dashboard-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-500 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
-              </div>
-            </label>
+          <div className="flex items-center justify-between px-1">
+            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Configuración de Feriados</Label>
+            <div className="flex items-center gap-4">
+              <Label className="text-[10px] font-bold text-slate-400">¿TRABAJAR FERIADOS?</Label>
+              <Controller
+                name="workSchedule.holidayRules.workHolidays"
+                control={control}
+                render={({ field }) => (
+                  <Switch
+                    checked={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
