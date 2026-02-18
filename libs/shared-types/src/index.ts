@@ -4,3 +4,5 @@ export * from './features/companies';
 export * from './features/profiles';
 export * from './common';
 export * from './security';
+export * from './features/services';
+export * from './features/chat';

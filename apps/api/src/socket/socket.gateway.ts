@@ -29,6 +29,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (userId) {
       this.connectedUsers.set(userId, client.id);
       this.logger.log(`Client connected: ${userId} (${client.id})`);
+      
+      // Notify others that this user is online
+      this.broadcast('user_status_changed', { userId, status: 'online' });
     }
   }
 
@@ -37,9 +40,26 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (socketId === client.id) {
         this.connectedUsers.delete(userId);
         this.logger.log(`Client disconnected: ${userId}`);
+        
+        // Notify others that this user is offline
+        this.broadcast('user_status_changed', { userId, status: 'offline' });
         break;
       }
     }
+  }
+
+  /**
+   * Verificar si un usuario está en línea
+   */
+  isUserOnline(userId: string): boolean {
+    return this.connectedUsers.has(userId);
+  }
+
+  /**
+   * Obtener todos los IDs de usuarios conectados
+   */
+  getConnectedUserIds(): string[] {
+    return Array.from(this.connectedUsers.keys());
   }
 
   /**

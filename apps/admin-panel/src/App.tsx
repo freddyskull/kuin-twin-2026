@@ -21,10 +21,12 @@ const ServicesPage = lazy(() => import('./features/products').then(m => ({ defau
 const CreateServicePage = lazy(() => import('./features/products').then(m => ({ default: m.CreateServicePage })));
 const EditServicePage = lazy(() => import('./features/products').then(m => ({ default: m.EditServicePage })));
 
-// Companies (Lazy Loading - Rule 11)
+// Companies
 const CompaniesPage = lazy(() => import('./features/companies').then(m => ({ default: m.CompaniesPage })));
 const CreateCompanyPage = lazy(() => import('./features/companies').then(m => ({ default: m.CreateCompanyPage })));
 const EditCompanyPage = lazy(() => import('./features/companies').then(m => ({ default: m.EditCompanyPage })));
+const ProfilePage = lazy(() => import('./features/profile').then(m => ({ default: m.ProfilePage })));
+const MessagesPage = lazy(() => import('./features/messages').then(m => ({ default: m.MessagesList })));
 
 const App: React.FC = () => {
   return (
@@ -51,6 +53,12 @@ const App: React.FC = () => {
               <Route path="/empresas" element={<CompaniesPage />} />
               <Route path="/empresas/crear" element={<CreateCompanyPage />} />
               <Route path="/empresas/:id/editar" element={<EditCompanyPage />} />
+
+              {/* Messages (Admin Only usually, but let's allow both for now) */}
+              <Route path="/mensajes" element={<MessagesPage />} />
+
+              {/* Profile */}
+              <Route path="/perfil" element={<ProfilePage />} />
             </Route>
           </Route>
 

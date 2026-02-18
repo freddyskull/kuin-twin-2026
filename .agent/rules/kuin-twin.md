@@ -47,4 +47,10 @@ Este documento define las reglas técnicas y de arquitectura exclusivas para el 
 23. **Vitest como Runner:** Uso obligatorio de Vitest por su velocidad y compatibilidad.
 24. **Mocks de API:** Uso de MSW en el frontend para tests de componentes.
 
+## 🌐 Storefront / Parte Pública (Cliente)
+25. **Framework:** Uso de Next.js para la parte pública por beneficios de SEO y SSR.
+26. **SEO Optimization:** Cada página de servicio debe usar metadatos dinámicos basados en el `title` y `description` del modelo.
+27. **Performance:** Imágenes optimizadas obligatoriamente mediante el componente `<Image />` de Next.js.
+28. **Mobile First:** El diseño debe ser 100% responsivo, priorizando la experiencia en celulares.
+
 **Instrucción para el Agente:** *Gemini, utiliza este archivo como la guía definitiva para Kuin-Twin. Aplica la fragmentación de archivos y la atomización de esquemas de Zod de forma estricta.*

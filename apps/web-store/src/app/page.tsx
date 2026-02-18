@@ -1,0 +1,154 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { Button } from '@/components/ui';
+import { ArrowRight, Star, MapPin, Search } from "lucide-react";
+import Link from "next/link";
+import { useServices, ServiceCard } from "@/features/services";
+import { useAuthStore } from "@/features/auth/auth.store";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui";
+
+export default function Home() {
+  const { data: services, isLoading, isError } = useServices();
+  const { user, logout } = useAuthStore();
+
+  return (
+    <div className="relative min-h-screen bg-background overflow-hidden">
+      {/* Background Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Navigation */}
+      <nav className="relative z-10 flex items-center justify-between px-6 py-4 md:px-12 backdrop-blur-md border-b border-border/40">
+        <div className="text-2xl font-bold tracking-tighter text-primary">
+          KUIN<span className="text-foreground">TWIN</span>
+        </div>
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+          <Link href="/" className="hover:text-primary transition-colors font-bold text-foreground">Inicio</Link>
+          <Link href="/chat" className="hover:text-primary transition-colors">Mensajes</Link>
+          <Link href="#" className="hover:text-primary transition-colors">Explorar</Link>
+        </div>
+        <div className="flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-3">
+              <div className="text-right hidden sm:block">
+                <p className="text-xs font-bold text-foreground line-clamp-1">{user.displayName || user.email}</p>
+                <button onClick={logout} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors uppercase tracking-widest font-black">Cerrar Sesión</button>
+              </div>
+              <Avatar className="h-10 w-10 border-2 border-primary/20 ring-2 ring-primary/5">
+                <AvatarImage src={user.avatarUrl} />
+                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold font-mono">
+                  {(user.displayName || user.email).substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="ghost" className="hidden sm:inline-flex rounded-full">Iniciar Sesión</Button>
+              </Link>
+              <Link href="/registro">
+                <Button className="rounded-full px-6 shadow-lg shadow-primary/20">Empezar</Button>
+              </Link>
+            </>
+          )}
+        </div>
+      </nav>
+
+      <main className="relative z-10 px-6 pt-20 pb-32 md:px-12 flex flex-col items-center text-center">
+        {/* Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-8 border border-primary/20"
+        >
+          <Star className="w-3 h-3 fill-primary" />
+          <span>LO MEJOR DE 2026 EN SERVICIOS LOCALES</span>
+        </motion.div>
+
+        {/* Hero Title */}
+        <motion.h1
+          className="text-5xl md:text-7xl font-bold tracking-tight mb-6 max-w-4xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          Encuentra la <span className="text-primary italic font-serif">excelencia</span> a la vuelta de la esquina.
+        </motion.h1>
+
+        {/* Subtitle */}
+        <motion.p
+          className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          Kuin-Twin conecta a los mejores profesionales con personas que buscan un servicio impecable. Rápido, seguro y cerca de ti.
+        </motion.p>
+
+        {/* Search Bar Premium */}
+        <motion.div
+          className="w-full max-w-3xl p-2 bg-card border border-border shadow-2xl rounded-2xl md:rounded-full flex flex-col md:flex-row items-center gap-2"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <div className="flex-1 flex items-center gap-3 px-4 w-full">
+            <Search className="w-5 h-5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="¿Qué servicio necesitas hoy?"
+              className="bg-transparent border-none outline-none w-full text-base py-3"
+            />
+          </div>
+          <div className="h-4 w-px bg-border hidden md:block" />
+          <div className="flex-1 flex items-center gap-3 px-4 w-full">
+            <MapPin className="w-5 h-5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Ubicación"
+              className="bg-transparent border-none outline-none w-full text-base py-3"
+            />
+          </div>
+          <Button className="w-full md:w-auto rounded-full py-6 px-8 text-lg gap-2 shadow-lg shadow-primary/20">
+            Buscar
+          </Button>
+        </motion.div>
+
+        {/* Featured Cards - Dynamic Content */}
+        <div className="mt-20 w-full max-w-7xl text-left">
+          <h2 className="text-2xl font-bold mb-8 pl-2 border-l-4 border-primary">Populares cerca de ti</h2>
+
+          {isLoading && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-64 rounded-xl bg-card border animate-pulse" />
+              ))}
+            </div>
+          )}
+
+          {isError && (
+            <div className="text-center py-20 bg-destructive/10 rounded-xl border border-destructive/20 text-destructive">
+              <p>Hubo un error al cargar los servicios. Por favor intenta más tarde.</p>
+            </div>
+          )}
+
+          {!isLoading && !isError && services && services.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {services.map((service, i) => (
+                <ServiceCard key={service.id} service={service} />
+              ))}
+            </div>
+          )}
+
+          {!isLoading && !isError && (!services || services.length === 0) && (
+            <div className="text-center py-20 opacity-60">
+              <p>No se encontraron servicios disponibles en este momento.</p>
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}

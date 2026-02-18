@@ -88,7 +88,7 @@ export class UserService {
    * Crear o actualizar perfil para un usuario existente
    */
   async createProfile(userId: string, profileDto: CreateProfileInput): Promise<Profile> {
-    const { displayName, bio, avatarUrl, serviceRadiusKm, businessHours } = profileDto;
+    const { latitude, longitude, ...data } = profileDto;
 
     // Verificar si el usuario existe
     const user = await this.prisma.user.findUnique({
@@ -99,25 +99,38 @@ export class UserService {
       throw new NotFoundException(`Usuario con ID ${userId} no encontrado`);
     }
 
-    return this.prisma.profile.upsert({
+    const profile = await this.prisma.profile.upsert({
       where: { userId },
       update: {
-        displayName,
-        bio,
-        avatarUrl,
-        serviceRadiusKm,
-        businessHours: businessHours as any, // Cast because of Prisma JsonValue vs Zod
+        ...data,
+        businessHours: data.businessHours ?? undefined, // Cast implicit
       },
       create: {
+        ...data,
         userId,
-        displayName,
-        bio,
-        avatarUrl,
-        serviceRadiusKm,
-        businessHours: businessHours as any,
+        businessHours: data.businessHours ?? undefined,
       },
     });
+
+    // Actualizar ubicación si se proporcionan coordenadas
+    if (latitude !== undefined && longitude !== undefined) {
+      await this.updateLocation(profile.id, latitude, longitude);
+    }
+
+    return this.prisma.profile.findUnique({ where: { id: profile.id } }) as Promise<Profile>;
   }
+
+  /**
+   * Actualiza el campo location usando PostGIS raw query
+   */
+  private async updateLocation(profileId: string, lat: number, lng: number) {
+    await this.prisma.$executeRaw`
+      UPDATE "Profile"
+      SET location = ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)
+      WHERE id = ${profileId}
+    `;
+  }
+
 
   /**
    * Obtener todos los usuarios

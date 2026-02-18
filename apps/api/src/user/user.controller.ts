@@ -1,4 +1,3 @@
-// apps/api/src/user/user.controller.ts
 import {
   Controller,
   Get,
@@ -9,8 +8,11 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto, UserResponseDto, RegisterUserNestedDto, CreateProfileDto } from './dto';
 
@@ -43,9 +45,24 @@ export class UserController {
     return this.userService.registerNested(registerDto);
   }
 
+
+  /**
+   * POST /api/users/me/profile
+   * Crear o actualizar mi perfil (Usuario Actual)
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @Post('me/profile')
+  async createMyProfile(
+    @Request() req: any,
+    @Body() profileDto: CreateProfileDto,
+  ) {
+    return this.userService.createProfile(req.user.userId, profileDto);
+  }
+
   /**
    * POST /api/users/:id/profile
-   * Crear o actualizar el perfil de un usuario
+   * Crear o actualizar el perfil de un usuario (Admin o uso interno)
    */
   @Post(':id/profile')
   async createProfile(

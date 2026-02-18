@@ -32,11 +32,17 @@ export class ChatService {
         sender: {
           select: { id: true, email: true, profile: { select: { displayName: true, avatarUrl: true } } },
         },
+        receiver: {
+          select: { id: true, email: true, profile: { select: { displayName: true, avatarUrl: true } } },
+        },
       },
     });
 
     // 3. Notificar vía WebSocket en tiempo real
     this.socketGateway.sendToUser(receiverId, 'new_message', message);
+    
+    // 4. Notificar a administradores (broadcast global para monitoreo)
+    this.socketGateway.broadcast('admin_new_message', message);
 
     return message;
   }
@@ -86,6 +92,31 @@ export class ChatService {
     });
 
     return Array.from(conversations.values());
+  }
+
+  /**
+   * Obtener todos los mensajes del sistema (Solo para Admin)
+   */
+  async getAdminAllMessages(limit: number = 100, skip: number = 0) {
+    return this.prisma.message.findMany({
+      include: {
+        sender: { select: { id: true, email: true, profile: { select: { displayName: true } } } },
+        receiver: { select: { id: true, email: true, profile: { select: { displayName: true } } } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: skip,
+    });
+  }
+
+  /**
+   * Verificar si un usuario está en línea
+   */
+  getOnlineStatus(userId: string) {
+    return {
+      userId,
+      isOnline: this.socketGateway.isUserOnline(userId),
+    };
   }
 
   /**

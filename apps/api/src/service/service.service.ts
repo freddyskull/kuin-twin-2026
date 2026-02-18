@@ -63,13 +63,19 @@ export class ServiceService {
     return services;
   }
 
-  async findOne(id: string): Promise<Service> {
-    const cacheKey = `service:${id}`;
+  async findOne(term: string): Promise<Service> {
+    const cacheKey = `service:${term}`;
     const cached = await this.cacheManager.get<Service>(cacheKey);
     if (cached) return cached;
 
-    const service = await this.prisma.service.findUnique({
-      where: { id },
+    // Try to find by ID or Slug
+    const service = await this.prisma.service.findFirst({
+      where: {
+        OR: [
+          { id: term },
+          { slug: term }
+        ]
+      },
       include: {
         category: true, unit: true, company: true,
         vendor: { include: { profile: true } },
@@ -78,7 +84,7 @@ export class ServiceService {
       },
     });
 
-    if (!service) throw new NotFoundException(`Servicio con ID ${id} no encontrado`);
+    if (!service) throw new NotFoundException(`Servicio no encontrado: ${term}`);
     await this.cacheManager.set(cacheKey, service, 600000);
     return service;
   }

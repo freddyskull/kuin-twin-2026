@@ -24,7 +24,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['shared-types', 'shared-types/zod', '@tanstack/react-table', 'leaflet', 'react-leaflet'],
+    include: ['@tanstack/react-table', 'leaflet', 'react-leaflet'],
   },
   build: {
     commonjsOptions: {

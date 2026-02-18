@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { SendMessageDto } from './dto/chat.dto';
@@ -40,5 +41,21 @@ export class ChatController {
     @Param('senderId') senderId: string,
   ) {
     return this.chatService.markAsRead(userId, senderId);
+  }
+
+  @Get('admin/all-messages')
+  async getAdminMessages(
+    @Query('limit') limit?: string,
+    @Query('skip') skip?: string,
+  ) {
+    return this.chatService.getAdminAllMessages(
+      limit ? parseInt(limit) : 100,
+      skip ? parseInt(skip) : 0
+    );
+  }
+
+  @Get('status/:userId')
+  async getOnlineStatus(@Param('userId') userId: string) {
+    return this.chatService.getOnlineStatus(userId);
   }
 }

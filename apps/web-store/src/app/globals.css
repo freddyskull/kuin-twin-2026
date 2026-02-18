@@ -1,0 +1,173 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+/* @import "shadcn/tailwind.css"; Removed specific shaImport if causing issues, standard importing is better */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+@layer base {
+  :root {
+    --background: hsl(226 49% 10%);
+    --foreground: hsl(226 49% 10%); /* Note: Admin had same fg/bg in light mode? Checking... Admin uses variables that might expect dark mode default. Let's force dark mode values as default for "premium" look if requested, or respect light/dark. The Admin CSS shows :root having dark values? No, :root has light-ish values but bg is very dark (226 49% 10% is dark blue). Wait, Admin :root --background is 226, 49%, 10% which is DARK. So Admin uses dark theme by default in :root. */
+    --card: hsl(224 45% 10%); /* Using sidebar bg as card for consistency or plain white if strict port? Admin :root has --card: 0 0% 100%. Let's stick to Admin values exactly but wrapped. */
+    
+    /* Correcting to Admin Panel :root values */
+    --background: hsl(226 49% 10%);
+    --foreground: hsl(0 0% 100%); /* Admin :root --foreground was 226... wait, let's look at the file I read. 
+       Step 919: 
+       :root { --background: 226, 49%, 10%; --foreground: 226, 49%, 10%; ... } -> This looks like blue text on blue bg?
+       Step 917 (Admin local index.css): :root { --background: 240 40% 5%; --foreground: 0 0% 100%; } -> This overrides it!
+       
+       So Admin Panel effectively uses the local index.css overrides. I should use THOSE values combined with the libs values. 
+       The user wants the "Admin Panel" look.
+    */
+    
+    /* Using Admin Panel Effective Values (Dark Blue Theme) */
+    --background: hsl(240 40% 5%);
+    --foreground: hsl(0 0% 100%);
+    
+    --card: hsl(224 45% 10%); /* Sidebar bg from shared lib */
+    --card-foreground: hsl(0 0% 100%);
+    
+    --popover: hsl(224 45% 10%);
+    --popover-foreground: hsl(0 0% 100%);
+    
+    --primary: hsl(43 96% 56%); /* Gold */
+    --primary-foreground: hsl(0 0% 0%);
+    
+    --secondary: hsl(217 45% 11%);
+    --secondary-foreground: hsl(0 0% 100%);
+    
+    --muted: hsl(217 45% 11%);
+    --muted-foreground: hsl(215 20% 65%);
+    
+    --accent: hsl(199 89% 48%); /* Blue accent from shared lib */
+    --accent-foreground: hsl(0 0% 100%);
+    
+    --destructive: hsl(0 84.2% 60.2%);
+    --destructive-foreground: hsl(0 0% 98%);
+    
+    --border: hsl(217 45% 11%);
+    --input: hsl(217 45% 11%);
+    --ring: hsl(43 96% 56%);
+    
+    --radius: 0.5rem;
+    
+    --sidebar-background: hsl(224 45% 10%);
+    --sidebar-foreground: hsl(0 0% 100%);
+    --sidebar-primary: hsl(43 96% 56%);
+    --sidebar-primary-foreground: hsl(0 0% 0%);
+    --sidebar-accent: hsl(199 89% 48%);
+    --sidebar-accent-foreground: hsl(0 0% 100%);
+    --sidebar-border: hsl(217 45% 11%);
+    --sidebar-ring: hsl(217 45% 11%);
+  }
+
+  /* Force Dark mode styles even in :root if we want that look always, 
+     or just define .dark class. 
+     The Admin Panel effectively runs in dark mode mostly. */
+  .dark {
+    --background: hsl(240 40% 5%);
+    --foreground: hsl(0 0% 100%);
+    --card: hsl(224 45% 10%);
+    --card-foreground: hsl(0 0% 100%);
+    --popover: hsl(224 45% 10%);
+    --popover-foreground: hsl(0 0% 100%);
+    --primary: hsl(43 96% 56%);
+    --primary-foreground: hsl(0 0% 0%);
+    --secondary: hsl(217 45% 11%);
+    --secondary-foreground: hsl(0 0% 100%);
+    --muted: hsl(217 45% 11%);
+    --muted-foreground: hsl(215 20% 65%);
+    --accent: hsl(199 89% 48%);
+    --accent-foreground: hsl(0 0% 100%);
+    --destructive: hsl(0 62.8% 30.6%);
+    --destructive-foreground: hsl(0 0% 98%);
+    --border: hsl(217 45% 11%);
+    --input: hsl(217 45% 11%);
+    --ring: hsl(43 96% 56%);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* Starfield Background ported from shared css */
+    background-image: 
+      radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0);
+    background-size: 24px 24px;
+    background-position: 0 0;
+  }
+}
+
+@layer components {
+  /* Sidebar gradient background with grain effect */
+  [data-sidebar="sidebar"] {
+    background: 
+      repeating-conic-gradient(from 0deg at 50% 50%, 
+        rgba(255, 255, 255, 0.03) 0deg, 
+        transparent 0.5deg, 
+        transparent 1deg, 
+        rgba(0, 0, 0, 0.03) 1.5deg),
+      linear-gradient(180deg, hsl(223, 47%, 24%) 0%, hsl(223, 50%, 9%) 100%);
+    position: relative;
+  }
+
+  /* Galaxy-style starfield background for Main content */
+  main.bg-background,
+  [data-sidebar="inset"] {
+    background-color: hsl(240 40% 5%) !important;
+    background-image: 
+      radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.15), transparent),
+      radial-gradient(1px 1px at 60% 70%, rgba(255, 255, 255, 0.12), transparent),
+      radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.18), transparent) !important;
+    background-size: 200px 200px !important;
+  }
+  
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+  
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-2xl border border-white/5;
+  }
+}

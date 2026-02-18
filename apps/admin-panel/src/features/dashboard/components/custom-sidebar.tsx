@@ -7,7 +7,8 @@ import {
   Settings,
   LogOut,
   Plus,
-  Building2
+  Building2,
+  MessageSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../../stores/auth.store';
@@ -30,6 +31,7 @@ export const Sidebar: React.FC = () => {
     { icon: Plus, label: 'Nuevo Servicio', to: '/servicios/crear' },
     { icon: Briefcase, label: 'Mis Servicios', to: '/servicios' },
     { icon: Building2, label: 'Empresas', to: '/empresas' },
+    { icon: MessageSquare, label: 'Mensajes', to: '/mensajes' },
     { icon: ShoppingBag, label: 'Pedidos', to: '/pedidos' },
     { icon: BarChart3, label: 'Estadísticas', to: '/estadisticas' },
     { icon: Settings, label: 'Ajustes', to: '/ajustes' },
