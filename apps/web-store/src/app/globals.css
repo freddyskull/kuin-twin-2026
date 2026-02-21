@@ -44,21 +44,9 @@
 @layer base {
   :root {
     --background: hsl(226 49% 10%);
-    --foreground: hsl(226 49% 10%); /* Note: Admin had same fg/bg in light mode? Checking... Admin uses variables that might expect dark mode default. Let's force dark mode values as default for "premium" look if requested, or respect light/dark. The Admin CSS shows :root having dark values? No, :root has light-ish values but bg is very dark (226 49% 10% is dark blue). Wait, Admin :root --background is 226, 49%, 10% which is DARK. So Admin uses dark theme by default in :root. */
-    --card: hsl(224 45% 10%); /* Using sidebar bg as card for consistency or plain white if strict port? Admin :root has --card: 0 0% 100%. Let's stick to Admin values exactly but wrapped. */
+    --foreground: hsl(226 49% 10%);
+    --card: hsl(224 45% 10%);
     
-    /* Correcting to Admin Panel :root values */
-    --background: hsl(226 49% 10%);
-    --foreground: hsl(0 0% 100%); /* Admin :root --foreground was 226... wait, let's look at the file I read. 
-       Step 919: 
-       :root { --background: 226, 49%, 10%; --foreground: 226, 49%, 10%; ... } -> This looks like blue text on blue bg?
-       Step 917 (Admin local index.css): :root { --background: 240 40% 5%; --foreground: 0 0% 100%; } -> This overrides it!
-       
-       So Admin Panel effectively uses the local index.css overrides. I should use THOSE values combined with the libs values. 
-       The user wants the "Admin Panel" look.
-    */
-    
-    /* Using Admin Panel Effective Values (Dark Blue Theme) */
     --background: hsl(240 40% 5%);
     --foreground: hsl(0 0% 100%);
     
@@ -109,7 +97,7 @@
     --card-foreground: hsl(0 0% 100%);
     --popover: hsl(224 45% 10%);
     --popover-foreground: hsl(0 0% 100%);
-    --primary: hsl(43 96% 56%);
+    --primary: #F4C025 ;
     --primary-foreground: hsl(0 0% 0%);
     --secondary: hsl(217 45% 11%);
     --secondary-foreground: hsl(0 0% 100%);

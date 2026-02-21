@@ -15,6 +15,7 @@ export { CustomForm } from "./components/custom-form";
 export { MapSelector, geocode } from "./components/map-selector";
 export { FormChips } from "./components/form-chips";
 export { DataTable } from "./components/data-table";
+export { SmartSubmitButton } from "./components/smart-submit-button";
 export {
   Select,
   SelectGroup,

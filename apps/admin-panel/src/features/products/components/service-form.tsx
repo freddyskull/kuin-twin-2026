@@ -110,7 +110,7 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({ onClose, onSubmit, ini
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-dashboard-primary text-dashboard-bg py-4 rounded-2xl font-black shadow-xl shadow-dashboard-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+              className="flex-1 bg-dashboard-primary text-primary py-4 rounded-2xl font-black shadow-xl shadow-dashboard-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
             >
               {isSubmitting ? 'Guardando...' : 'Guardar Servicio'}
             </button>

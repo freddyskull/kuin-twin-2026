@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma.service';
 import { CreateServiceDto, UpdateServiceDto } from './dto';
 import { Service, Role } from '@prisma/client';
 import { slugify, transformSlots } from './service-mapper.utils';
+import { mapCreateServiceData, mapUpdateServiceData } from './service.mapper';
 
 @Injectable()
 export class ServiceService {
@@ -14,37 +15,29 @@ export class ServiceService {
   ) {}
 
   async create(createDto: CreateServiceDto): Promise<Service> {
-    const { vendorId, categoryId, unitId, companyId, metadata, slots, workSchedule, tags, branchIds, ...rest } = createDto;
-
     const slug = createDto.slug || slugify(createDto.title);
-
-    const vendor = await this.prisma.user.findUnique({ where: { id: vendorId } });
+    const vendor = await this.prisma.user.findUnique({ where: { id: createDto.vendorId } });
+    
     if (!vendor || (vendor.role !== Role.VENDOR && vendor.role !== Role.ADMIN)) {
       throw new ForbiddenException('Solo los usuarios con rol VENDOR pueden crear servicios');
     }
 
-    const existingService = await this.prisma.service.findFirst({
-      where: { vendorId, title: { equals: createDto.title, mode: 'insensitive' } }
+    const existing = await this.prisma.service.findFirst({
+      where: { vendorId: createDto.vendorId, title: { equals: createDto.title, mode: 'insensitive' } }
     });
-    if (existingService) throw new ForbiddenException(`Ya tienes un servicio registrado con el título "${createDto.title}"`);
+    if (existing) throw new ForbiddenException(`Ya tienes un servicio registrado con el título "${createDto.title}"`);
 
+    const data = mapCreateServiceData(createDto, slug);
     const service = await this.prisma.service.create({
       data: {
-        ...rest,
-        slug,
-        vendorId,
-        categoryId,
-        unitId,
-        companyId: companyId || null,
-        tags: tags || [],
-        metadata: { create: metadata || [] },
-        workSchedule: workSchedule as any,
-        slots: { create: transformSlots(slots || []) }
+        ...data,
+        metadata: { create: createDto.metadata || [] },
+        slots: { create: transformSlots(createDto.slots || []) }
       },
       include: { metadata: true, slots: true }
     });
 
-    await this.clearServiceCache(vendorId, categoryId);
+    await this.clearServiceCache(createDto.vendorId, createDto.categoryId);
     return service;
   }
 
@@ -64,18 +57,11 @@ export class ServiceService {
   }
 
   async findOne(term: string): Promise<Service> {
-    const cacheKey = `service:${term}`;
-    const cached = await this.cacheManager.get<Service>(cacheKey);
+    const cached = await this.cacheManager.get<Service>(`service:${term}`);
     if (cached) return cached;
 
-    // Try to find by ID or Slug
     const service = await this.prisma.service.findFirst({
-      where: {
-        OR: [
-          { id: term },
-          { slug: term }
-        ]
-      },
+      where: { OR: [{ id: term }, { slug: term }] },
       include: {
         category: true, unit: true, company: true,
         vendor: { include: { profile: true } },
@@ -85,7 +71,7 @@ export class ServiceService {
     });
 
     if (!service) throw new NotFoundException(`Servicio no encontrado: ${term}`);
-    await this.cacheManager.set(cacheKey, service, 600000);
+    await this.cacheManager.set(`service:${term}`, service, 600000);
     return service;
   }
 
@@ -100,14 +86,9 @@ export class ServiceService {
       if (duplicate) throw new ForbiddenException(`Ya tienes otro servicio registrado con el título "${updateDto.title}"`);
     }
 
-    const { metadata, slots, workSchedule, companyId, tags, branchIds, ...rest } = updateDto;
-    const updateData: any = { ...rest };
-
-    if (tags) updateData.tags = tags;
-    if (workSchedule) updateData.workSchedule = workSchedule;
-    if (companyId !== undefined) updateData.companyId = companyId;
-    if (metadata) updateData.metadata = { deleteMany: {}, create: metadata };
-    if (slots) updateData.slots = { deleteMany: {}, create: transformSlots(slots) };
+    const updateData = mapUpdateServiceData(updateDto);
+    if (updateDto.metadata) updateData.metadata = { deleteMany: {}, create: updateDto.metadata };
+    if (updateDto.slots) updateData.slots = { deleteMany: {}, create: transformSlots(updateDto.slots) };
 
     const updated = await this.prisma.service.update({
       where: { id },
@@ -139,11 +120,11 @@ export class ServiceService {
     ]);
   }
 
-  private async clearServiceCache(vendorId: string, categoryId: string, serviceId?: string) {
-    if (serviceId) await this.cacheManager.del(`service:${serviceId}`);
+  private async clearServiceCache(vId: string, cId: string, sId?: string) {
+    if (sId) await this.cacheManager.del(`service:${sId}`);
     await this.cacheManager.del('services:all');
-    await this.cacheManager.del(`services:vendor:${vendorId}`);
-    await this.cacheManager.del(`services:category:${categoryId}`);
+    await this.cacheManager.del(`services:vendor:${vId}`);
+    await this.cacheManager.del(`services:category:${cId}`);
   }
 
   private async deletePhysicalImage(imageUrl: string) {
@@ -158,4 +139,5 @@ export class ServiceService {
     }
   }
 }
+
 

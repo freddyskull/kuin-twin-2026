@@ -6,3 +6,4 @@ export * from './common';
 export * from './security';
 export * from './features/services';
 export * from './features/chat';
+export * from './features/categories/category.schema';

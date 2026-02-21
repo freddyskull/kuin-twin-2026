@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Building2, CheckCircle, XCircle, Store } from 'lucide-react';
 import { useCompanies, useDeleteCompany } from './companies.hooks';
 import type { Company } from '../../stores/companies.store';
-import { DataTable } from 'ui-components';
+import { Button, DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Modal } from '../../components/modal';
 import { BranchList } from './components/branch-list';
@@ -134,10 +134,10 @@ export const CompaniesPage: React.FC = () => {
       <div className="flex items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <Link to="/empresas/crear">
-            <button className="flex items-center gap-3 bg-dashboard-primary text-dashboard-bg px-6 py-3.5 rounded-2xl font-black shadow-xl shadow-dashboard-primary/20 hover:scale-105 active:scale-95 transition-all">
+            <Button>
               <Plus className="h-5 w-5 stroke-[3]" />
               Registrar Nueva Empresa
-            </button>
+            </Button>
           </Link>
 
           <div className="flex bg-[#1a1c3d]/60 p-1.5 rounded-2xl border border-white/5">

@@ -1,70 +1,124 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+@source "../components/**/*.tsx";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  
+  /* Admin Panel specific extensions */
+  --color-dashboard-bg: hsl(240 40% 5%);
+  --color-dashboard-card: hsl(224 45% 10%);
+  --color-dashboard-primary: hsl(43 96% 56%);
+  --color-gold: hsl(43 96% 56%);
+}
 
 @layer base {
   :root {
-    --background: 226, 49%, 10%;
-    --foreground: 226, 49%, 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: #E5C068;
-    --primary-foreground: #000000;
-
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
+    /* Unified Dark Blue Theme */
+    --background: #0A0F25;
+    --foreground: hsl(0 0% 100%);
+    
+    --card: #1a1c3d;
+    --card-foreground: hsl(0 0% 100%);
+    
+    --popover: #1a1c3d;
+    --popover-foreground: hsl(0 0% 100%);
+    
+    --primary: hsl(43 96% 56%); /* Gold */
+    --primary-foreground: hsl(0 0% 0%);
+    
+    --secondary: hsl(217 45% 11%);
+    --secondary-foreground: hsl(0 0% 100%);
+    
+    --muted: hsl(217 45% 11%);
+    --muted-foreground: hsl(215 20% 65%);
+    
     --accent: #1a1c3d;
-    --accent-foreground: #fff;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --accent-foreground: hsl(0 0% 100%);
+    
+    --destructive: hsl(0 84.2% 60.2%);
+    --destructive-foreground: hsl(0 0% 98%);
+    
+    --border: hsl(217 45% 11%);
+    --input: hsl(217 45% 11%);
+    --ring: hsl(43 96% 56%);
+    
     --radius: 0.5rem;
-    --sidebar-background: 224, 45%, 10%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 43 96% 56%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 199 89% 48%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 217 45% 11%;
-    --sidebar-ring: 217 45% 11%;
-    --radius: 0.8rem;
+    
+    --sidebar-background: hsl(224 45% 10%);
+    --sidebar-foreground: hsl(0 0% 100%);
+    --sidebar-primary: hsl(43 96% 56%);
+    --sidebar-primary-foreground: hsl(0 0% 0%);
+    --sidebar-accent: hsl(199 89% 48%);
+    --sidebar-accent-foreground: hsl(0 0% 100%);
+    --sidebar-border: hsl(217 45% 11%);
+    --sidebar-ring: hsl(217 45% 11%);
   }
 
   .dark {
-    --background: 228, 48%, 13%;
-    --foreground: 0, 0%, 100%;
-    --card: 223, 42%, 13%;
-    --card-foreground: 0 0% 98%;
-    --popover: 223, 42%, 13%;
-    --popover-foreground: 0 0% 88%;
-    --primary: 34, 81%, 78%;
-    --primary-foreground: 0, 0%, 100%;
-    --secondary: 53, 47%, 96%;
-    --secondary-foreground: 0 0% 8%;
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 80%;
-    --accent: 34, 81%, 78%;
-    --accent-foreground: 0 0% 10%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --sidebar-background: 223, 47%, 24%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 43 96% 56%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 34, 81%, 78%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 45%;
-    --sidebar-ring: 0 0% 100%;
-    --radius: 0.8rem;
+    --background: #0A0F25;
+    --foreground: hsl(0 0% 100%);
+    --card: #1a1c3d;
+    --card-foreground: hsl(0 0% 100%);
+    --popover: #1a1c3d;
+    --popover-foreground: hsl(0 0% 100%);
+    --primary: #F4C025 ;
+    --primary-foreground: hsl(0 0% 0%);
+    --secondary: hsl(217 45% 11%);
+    --secondary-foreground: hsl(0 0% 100%);
+    --muted: hsl(217 45% 11%);
+    --muted-foreground: hsl(215 20% 65%);
+    --accent: #1a1c3d;
+    --accent-foreground: hsl(0 0% 100%);
+    --destructive: hsl(0 62.8% 30.6%);
+    --destructive-foreground: hsl(0 0% 98%);
+    --border: hsl(217 45% 11%);
+    --input: hsl(217 45% 11%);
+    --ring: hsl(43 96% 56%);
+
+    --sidebar-background: #1a1c3d;
+    --sidebar-foreground: hsl(0 0% 100%);
+    --sidebar-primary: hsl(43 96% 56%);
+    --sidebar-primary-foreground: hsl(0 0% 0%);
+    --sidebar-accent: hsl(199 89% 48%);
+    --sidebar-accent-foreground: hsl(0 0% 100%);
+    --sidebar-border: hsl(217 45% 11%);
+    --sidebar-ring: hsl(217 45% 11%);
   }
 }
 
@@ -73,8 +127,8 @@
     @apply border-border;
   }
   body {
-    @apply text-foreground;
-    background-color: hsl(228, 48%, 13%);
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background-image: 
       radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0);
     background-size: 24px 24px;
@@ -83,7 +137,7 @@
 }
 
 @layer components {
-  /* Sidebar gradient background with grain effect */
+  /* Sidebar gradient */
   [data-sidebar="sidebar"] {
     background: 
       repeating-conic-gradient(from 0deg at 50% 50%, 
@@ -95,77 +149,26 @@
     position: relative;
   }
 
-  /* Alternative grain using CSS filter */
-  [data-sidebar="sidebar"]::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-      radial-gradient(circle at 20% 50%, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%),
-      radial-gradient(circle at 80% 50%, transparent 0%, rgba(0, 0, 0, 0.03) 50%, transparent 100%),
-      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.015) 2px, rgba(255, 255, 255, 0.015) 4px),
-      repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, 0.015) 2px, rgba(0, 0, 0, 0.015) 4px);
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0.8;
-  }
-
-  /* Ensure content is above grain */
-  [data-sidebar="sidebar"] > * {
-    position: relative;
-    z-index: 2;
-  }
-
-  /* Gold gradient hover effect for sidebar items */
-  [data-sidebar="menu-button"]:hover,
-  [data-sidebar="menu-sub-button"]:hover {
-    background: linear-gradient(10deg, hsl(40, 70%, 65%) 0%, hsl(35, 75%, 55%) 50%, hsl(40, 70%, 65%) 100%);
-    color: hsl(220, 40%, 15%);
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Active state with gold gradient */
-  [data-sidebar="menu-button"][data-active="true"] {
-    background: linear-gradient(10deg, hsl(40, 70%, 65%) 0%, hsl(35, 75%, 55%) 50%, hsl(40, 70%, 65%) 100%);
-    color: hsl(220, 40%, 15%);
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Galaxy-style starfield background */
+  /* Starfield */
   main.bg-background,
-  [data-sidebar="inset"],
-  .group-data-\[collapsible\=icon\]\:hidden ~ main {
-    background-color: hsl(228, 48%, 13%) !important;
+  [data-sidebar="inset"] {
+    background-color: hsl(240 40% 5%) !important;
     background-image: 
-      /* Tiny stars layer 1 - very subtle */
       radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.15), transparent),
       radial-gradient(1px 1px at 60% 70%, rgba(255, 255, 255, 0.12), transparent),
-      radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.18), transparent),
-      radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.1), transparent),
-      radial-gradient(1px 1px at 90% 60%, rgba(255, 255, 255, 0.14), transparent),
-      radial-gradient(1px 1px at 30% 80%, rgba(255, 255, 255, 0.11), transparent),
-      radial-gradient(1px 1px at 15% 10%, rgba(255, 255, 255, 0.16), transparent),
-      radial-gradient(1px 1px at 40% 40%, rgba(255, 255, 255, 0.13), transparent),
-      /* Tiny stars layer 2 */
-      radial-gradient(1px 1px at 70% 25%, rgba(255, 255, 255, 0.08), transparent),
-      radial-gradient(1px 1px at 25% 60%, rgba(255, 255, 255, 0.09), transparent),
-      radial-gradient(1px 1px at 85% 85%, rgba(255, 255, 255, 0.07), transparent),
-      radial-gradient(1px 1px at 45% 15%, rgba(255, 255, 255, 0.1), transparent),
-      radial-gradient(1px 1px at 10% 45%, rgba(255, 255, 255, 0.08), transparent),
-      /* Medium stars with blur effect */
-      radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.12) 1px, transparent 3px),
-      radial-gradient(circle at 75% 55%, rgba(255, 255, 255, 0.1) 1px, transparent 3px),
-      radial-gradient(circle at 55% 85%, rgba(255, 255, 255, 0.11) 1px, transparent 3px),
-      /* Larger glowing stars - barely visible */
-      radial-gradient(circle at 15% 65%, rgba(255, 255, 255, 0.15) 1.5px, rgba(255, 255, 255, 0.03) 4px, transparent 6px),
-      radial-gradient(circle at 65% 20%, rgba(255, 255, 255, 0.12) 1.5px, rgba(255, 255, 255, 0.03) 4px, transparent 6px),
-      radial-gradient(circle at 95% 40%, rgba(255, 255, 255, 0.14) 1.5px, rgba(255, 255, 255, 0.03) 4px, transparent 6px) !important;
+      radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.18), transparent) !important;
     background-size: 200px 200px !important;
-    background-position: 0 0, 50px 50px, 100px 100px !important;
+  }
+  
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+  
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-2xl border border-white/5;
+  }
+
+  .text-shadow-gold {
+     text-shadow: 0 0 10px rgba(245, 192, 106, 0.5);
   }
 }

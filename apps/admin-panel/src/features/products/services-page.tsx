@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, LayoutDashboard } from 'lucide-react';
 import { useServices, useDeleteService, useToggleServiceStatus } from './services.hooks';
-import { DataTable } from 'ui-components';
+import { Button, DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Modal } from '@/components/modal';
 import { ServiceCompanyManager } from './components/service-company-manager';
@@ -158,10 +158,10 @@ export const ServicesPage: React.FC = () => {
       <div className="flex items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <Link to="/servicios/crear">
-            <button className="flex items-center gap-3 bg-dashboard-primary text-dashboard-bg px-6 py-3.5 rounded-2xl font-black shadow-xl shadow-dashboard-primary/20 hover:scale-105 active:scale-95 transition-all">
+            <Button>
               <Plus className="h-5 w-5 stroke-[3]" />
               Añadir Nuevo Servicio
-            </button>
+            </Button>
           </Link>
 
           <div className="flex bg-[#1a1c3d]/60 p-1.5 rounded-2xl border border-white/5">
@@ -230,7 +230,7 @@ export const ServicesPage: React.FC = () => {
                 </button>
                 <button
                   onClick={confirmToggleStatus}
-                  className={`flex-1 px-6 py-3.5 rounded-xl font-bold text-dashboard-bg shadow-lg transition-all text-sm ${statusConfirm.nextStatus ? 'bg-green-500 shadow-green-500/20' : 'bg-red-500 shadow-red-500/20'}`}
+                  className={`flex-1 px-6 py-3.5 rounded-xl font-bold text-primary shadow-lg transition-all text-sm ${statusConfirm.nextStatus ? 'bg-green-500 shadow-green-500/20' : 'bg-red-500 shadow-red-500/20'}`}
                 >
                   Confirmar Cambio
                 </button>

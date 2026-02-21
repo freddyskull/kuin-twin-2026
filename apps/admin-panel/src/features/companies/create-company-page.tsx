@@ -195,7 +195,7 @@ export const CreateCompanyPage: React.FC = () => {
                         type="button"
                         onClick={() => handleVerifySat(currentRfc, setValue)}
                         disabled={verifySatMutation.isPending}
-                        className="absolute right-2 bottom-1.5 p-2 rounded-lg bg-dashboard-primary/10 text-dashboard-primary hover:bg-dashboard-primary hover:text-dashboard-bg transition-all active:scale-95 disabled:opacity-50"
+                        className="absolute right-2 bottom-1.5 p-2 rounded-lg bg-dashboard-primary/10 text-dashboard-primary hover:bg-dashboard-primary hover:text-primary transition-all active:scale-95 disabled:opacity-50"
                         title="Verificar ante el SAT"
                       >
                         {verifySatMutation.isPending ? (
@@ -255,7 +255,7 @@ export const CreateCompanyPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={createMutation.isPending || isSubmitting || !isValid || !isDirty}
-                  className="px-8 py-3.5 rounded-2xl bg-dashboard-primary text-dashboard-bg font-black shadow-xl shadow-dashboard-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-8 py-3.5 rounded-2xl bg-dashboard-primary text-primary font-black shadow-xl shadow-dashboard-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {(createMutation.isPending || isSubmitting) ? 'Guardando...' : 'Registrar Empresa'}
                 </button>

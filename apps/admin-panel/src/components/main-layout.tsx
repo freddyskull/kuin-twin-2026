@@ -5,7 +5,7 @@ import { Header } from './header';
 
 export const MainLayout: React.FC = () => {
   return (
-    <div className="flex bg-dashboard-bg min-h-screen relative">
+    <div className="flex bg-background min-h-screen relative">
       {/* Fixed Sidebar */}
       <Sidebar />
 

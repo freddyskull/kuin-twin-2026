@@ -56,7 +56,8 @@ const config: Config = {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
-  			}
+  			},
+  			'dashboard-primary': 'hsl(43 96% 56%)',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

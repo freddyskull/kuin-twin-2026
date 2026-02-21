@@ -14,12 +14,12 @@ const data = [
 
 export const BookingsChart: React.FC = () => {
   return (
-    <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-[500px] flex flex-col relative overflow-hidden group">
+    <div className="bg-accent/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-[500px] flex flex-col relative overflow-hidden group">
       <div className="flex justify-between items-center mb-10 z-10">
         <h2 className="text-2xl font-bold text-white tracking-tight">Reservas en el Tiempo</h2>
         <div className="flex bg-[#0a0b1e]/60 p-1.5 rounded-xl border border-white/5">
           <button className="px-5 py-2 text-sm text-slate-500 font-bold rounded-lg transition-all hover:text-slate-300">Semana</button>
-          <button className="px-5 py-2 text-sm text-white bg-dashboard-primary/20 rounded-lg transition-all font-bold">Mes</button>
+          <button className="px-5 py-2 text-sm text-white bg-primary/20 rounded-lg transition-all font-bold">Mes</button>
         </div>
       </div>
 
@@ -66,7 +66,7 @@ export const BookingsChart: React.FC = () => {
       </div>
 
       {/* Background Glow */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-dashboard-primary/5 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none" />
     </div>
   );
 };

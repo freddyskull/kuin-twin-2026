@@ -56,7 +56,7 @@ export const FormSwitch: React.FC<FormSwitchProps> = ({
           <Switch
             id={name}
             checked={field.value}
-            onChange={field.onChange}
+            onCheckedChange={field.onChange}
             disabled={disabled}
             className={cn(disabled && "opacity-50 cursor-not-allowed")}
           />

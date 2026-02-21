@@ -145,7 +145,7 @@ export const BranchList: React.FC<BranchListProps> = ({ companyId }) => {
         <button
           type="button"
           onClick={handleCreate}
-          className="flex items-center gap-2 bg-dashboard-primary/10 text-dashboard-primary px-4 py-2 rounded-xl text-sm font-bold hover:bg-dashboard-primary hover:text-dashboard-bg transition-all"
+          className="flex items-center gap-2 bg-dashboard-primary/10 text-dashboard-primary px-4 py-2 rounded-xl text-sm font-bold hover:bg-dashboard-primary hover:text-primary transition-all"
         >
           <Plus className="h-4 w-4 stroke-[3]" />
           Nueva Sucursal

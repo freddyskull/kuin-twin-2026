@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'ui-components';
 import { ProtectedRoute } from './components/protected-route';
 import { MainLayout } from './components/main-layout';
+import { SocketListener } from './components/socket-listener';
 
 // Loading Component
 const PageLoader = () => (
@@ -31,6 +32,7 @@ const MessagesPage = lazy(() => import('./features/messages').then(m => ({ defau
 const App: React.FC = () => {
   return (
     <>
+      <SocketListener />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Public Routes (only accessible if NOT authenticated) */}

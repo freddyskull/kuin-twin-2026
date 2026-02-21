@@ -32,6 +32,7 @@
       "@components/*": ["../../libs/ui-components/src/components/*"],
       "@assets": ["../../libs/public"],
       "@shared-types": ["../../libs/shared-types"],
+      "ui-components/styles": ["../../libs/ui-components/src/styles/globals.css"],
       "@/*": ["./src/*"]
     }
   },

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ConflictException, Inject } from '@nestj
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma.service';
-import { CreateCategoryInput, UpdateCategoryDto } from './dto/category.dto';
+import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { Category } from '@prisma/client';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class CategoryService {
   /**
    * Crear una nueva categoría
    */
-  async create(createDto: CreateCategoryInput): Promise<Category> {
+  async create(createDto: CreateCategoryDto): Promise<Category> {
     // Verificar si el slug ya existe
     const existing = await this.prisma.category.findUnique({
       where: { slug: createDto.slug },

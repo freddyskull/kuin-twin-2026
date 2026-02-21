@@ -34,10 +34,10 @@ const requests = [
 
 export const NearbyRequests: React.FC = () => {
   return (
-    <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full overflow-hidden">
+    <div className="bg-card backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full overflow-hidden">
       <div className="flex justify-between items-center mb-10">
         <h2 className="text-2xl font-bold text-white tracking-tight">Solicitudes Profesionales Cercanas</h2>
-        <button className="text-sm font-bold text-dashboard-primary hover:text-dashboard-primary/80 transition-all uppercase tracking-widest">Ver Todo</button>
+        <button className="text-sm font-bold text-primary hover:text-primary/80 transition-all uppercase tracking-widest">Ver Todo</button>
       </div>
 
       <div className="space-y-6">
@@ -45,10 +45,10 @@ export const NearbyRequests: React.FC = () => {
           <motion.div
             key={req.id}
             whileHover={{ scale: 1.01 }}
-            className="group flex items-center justify-between p-6 rounded-3xl bg-[#0a0b1e]/40 border border-white/5 hover:border-dashboard-primary/30 transition-all"
+            className="group flex items-center justify-between p-6 rounded-3xl bg-background/40 border border-white/5 hover:border-primary/30 transition-all"
           >
             <div className="flex items-center gap-6">
-              <div className="h-16 w-16 rounded-2xl bg-[#1a1c3d] flex items-center justify-center text-dashboard-primary shadow-lg border border-white/5 group-hover:bg-dashboard-primary/10 transition-colors">
+              <div className="h-16 w-16 rounded-2xl bg-card flex items-center justify-center text-primary shadow-lg border border-white/5 group-hover:bg-primary/10 transition-colors">
                 <req.icon className="h-7 w-7" />
               </div>
               <div>
@@ -64,7 +64,7 @@ export const NearbyRequests: React.FC = () => {
                 <p className="text-xl font-black text-white mb-1 tracking-tight">{req.price}</p>
                 <p className={`text-[11px] font-black tracking-[0.2em] ${req.status === 'URGENTE' ? 'text-red-500' : 'text-slate-500'} uppercase`}>{req.status}</p>
               </div>
-              <button className="bg-dashboard-primary hover:bg-dashboard-primary/90 text-dashboard-bg px-8 py-3.5 rounded-2xl text-sm font-black shadow-xl shadow-dashboard-primary/20 transition-all active:scale-95">
+              <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3.5 rounded-2xl text-sm font-black shadow-xl shadow-primary/20 transition-all active:scale-95">
                 Aceptar
               </button>
             </div>

@@ -4,8 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 
 import { AnimatePresence } from 'framer-motion';
-import { Check, ArrowRight, Loader2 } from 'lucide-react';
-import { useToast } from 'ui-components';
+import { Check, ArrowRight } from 'lucide-react';
+import { useToast, SmartSubmitButton, Button } from 'ui-components';
 
 import { serviceSchema } from './schema';
 import type { ServiceFormValues } from './schema';
@@ -81,7 +81,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     }
   });
 
-  const { trigger, handleSubmit, formState: { isSubmitting, errors, isValid, isDirty }, setValue, watch, reset } = methods;
+  const { trigger, handleSubmit, formState: { errors }, setValue, watch, reset } = methods;
 
   // Reset form when initialValues change (for edit mode)
   useEffect(() => {
@@ -162,13 +162,13 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
             <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">{title}</h1>
             <p className="text-slate-400 font-medium">{subtitle}</p>
           </div>
-          <button
+          <Button
             type="button"
             onClick={handleCancel}
-            className="bg-white/5 border border-white/10 text-slate-400 px-6 py-2.5 rounded-xl font-bold hover:bg-white/10 transition-all text-sm"
+            variant="outline"
           >
             Cancelar
-          </button>
+          </Button>
         </div>
 
         {/* Stepper */}
@@ -180,13 +180,13 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
               onClick={() => setCurrentStep(step.id)}
               className="relative z-10 flex flex-col items-center gap-2 cursor-pointer group"
             >
-              <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-bold text-sm transition-all duration-300 ${currentStep >= step.id
-                ? 'bg-dashboard-primary text-dashboard-bg shadow-lg shadow-dashboard-primary/20'
-                : 'bg-[#11122d] text-slate-600 border border-white/5 group-hover:border-dashboard-primary/50 group-hover:text-dashboard-primary'
+              <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${currentStep >= step.id
+                ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                : 'bg-accent text-slate-600 border border-white/5 group-hover:border-primary/50 group-hover:text-primary'
                 }`}>
                 {currentStep > step.id ? <Check className="h-5 w-5" /> : step.id}
               </div>
-              <span className={`text-[9px] font-bold tracking-wider uppercase transition-colors ${currentStep >= step.id ? 'text-dashboard-primary' : 'text-slate-600 group-hover:text-dashboard-primary/70'
+              <span className={`text-[9px] font-bold tracking-wider uppercase transition-colors ${currentStep >= step.id ? 'text-primary' : 'text-slate-600 group-hover:text-primary/70'
                 }`}>
                 {step.label}
               </span>
@@ -205,111 +205,47 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
             </AnimatePresence>
 
             <div className="flex items-center justify-between pt-4">
-              <button
+              <Button
                 type="button"
                 onClick={handleBack}
                 disabled={currentStep === 1}
-                className="px-8 py-3 rounded-xl border border-white/5 text-slate-500 font-bold uppercase text-xs hover:bg-white/5 transition-all disabled:opacity-0"
+                variant="outline"
               >
                 Atrás
-              </button>
+              </Button>
 
               <div className="flex items-center gap-4">
                 {isEditMode && currentStep < 5 && (
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || !isValid || !isDirty}
+                  <SmartSubmitButton
+                    loadingLabel="Actualizando..."
                     className="flex items-center gap-3 bg-white/5 border border-white/10 text-white px-8 py-3 rounded-xl font-bold hover:bg-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isSubmitting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Check className="h-4 w-4" />
-                    )}
                     Actualizar Ahora
-                  </button>
+                  </SmartSubmitButton>
                 )}
 
-                <button
-                  type={currentStep === 5 ? "submit" : "button"}
-                  onClick={currentStep < 5 ? handleNext : undefined}
-                  // En modo Create, permitimos enviar aunque no sea dirty (por valores por defecto)
-                  // En modo Edit, exigimos dirty
-                  disabled={isSubmitting || (currentStep === 5 && (!isValid || (isEditMode && !isDirty)))}
-                  className="flex items-center gap-3 bg-dashboard-primary text-dashboard-bg px-8 py-3 rounded-xl font-bold shadow-lg shadow-dashboard-primary/10 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {currentStep === 5 ? (isSubmitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Procesando...
-                    </>
-                  ) : submitLabel) : 'Siguiente'}
-                  {currentStep < 5 && <ArrowRight className="h-4 w-4" />}
-                </button>
+                {currentStep === 5 ? (
+                  <SmartSubmitButton
+                    loadingLabel="Procesando..."
+                    className="flex items-center gap-3 bg-dashboard-primary text-primary px-8 py-3 rounded-xl font-bold shadow-lg shadow-dashboard-primary/10 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {submitLabel}
+                  </SmartSubmitButton>
+                ) : (
+                  <Button
+                    type="button"
+                    onClick={handleNext}
+                    variant="default"
+                  >
+                    Siguiente
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </div>
-
-            {/* Diagnóstico de Errores Mejorado */}
-            {currentStep === 5 && (
-              <div className="space-y-4">
-                {/* Caso 1: Hay errores de validación */}
-                {(!isValid) && (
-                  <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 animate-in slide-in-from-bottom-2">
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 bg-red-500/20 rounded-lg">
-                        <Loader2 className="h-4 w-4 text-red-500 animate-pulse" />
-                      </div>
-                      <div className="space-y-1">
-                        <h4 className="text-sm font-bold text-red-500">Atención: Faltan datos</h4>
-                        <ul className="list-disc list-inside text-xs text-red-400 font-medium pt-1 space-y-1">
-                          {Object.keys(errors).length === 0 ? (
-                            <li>Revisando validaciones...</li>
-                          ) : (
-                            Object.keys(errors).map((key) => {
-                              const errorObj = (errors as any)[key];
-                              const errorMessage = errorObj?.message || (errorObj?.root?.message) || "Error de validación";
-
-                              // Mapeo amistoso
-                              const fieldName = {
-                                basePrice: 'Precio Base',
-                                unitId: 'Unidad de Medida',
-                                title: 'Título',
-                                categoryId: 'Categoría',
-                                companyId: 'Empresa',
-                                description: 'Descripción',
-                                metadata: 'Atributos'
-                              }[key] || key;
-
-                              return (
-                                <li key={key}>
-                                  <span className="font-bold capitalize text-red-300">{fieldName}:</span> {errorMessage}
-                                </li>
-                              );
-                            })
-                          )}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Caso 2: Formulario válido pero sin cambios (solo para Edit Mode) */}
-                {isValid && !isDirty && isEditMode && (
-                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 animate-in slide-in-from-bottom-2">
-                    <div className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-yellow-500" />
-                      <div>
-                        <h4 className="text-sm font-bold text-yellow-500">Sin cambios detectados</h4>
-                        <p className="text-xs text-yellow-400/80">Realiza alguna modificación para habilitar la actualización.</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
-          <ServicePreview currentStep={currentStep} />
+          <ServicePreview currentStep={currentStep} isEditMode={isEditMode} />
         </form>
       </div>
     </FormProvider>

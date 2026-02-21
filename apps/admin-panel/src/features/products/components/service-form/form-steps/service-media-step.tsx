@@ -67,7 +67,7 @@ export const ServiceMediaStep: React.FC = () => {
   return (
     <motion.section
       key="step3" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
-      className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-3xl p-8 space-y-8"
+      className="bg-accent/40 backdrop-blur-2xl border border-white/5 rounded-3xl p-8 space-y-8"
     >
       <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
 

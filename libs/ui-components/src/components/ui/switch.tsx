@@ -1,31 +1,30 @@
+"use client"
+
 import * as React from "react"
+import * as SwitchPrimitives from "@radix-ui/react-switch"
+
 import { cn } from "../../lib/utils"
 
-export interface SwitchProps
-  extends React.InputHTMLAttributes<HTMLInputElement> { }
-
-const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <div className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dashboard-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 has-[:checked]:bg-dashboard-primary bg-white/10 group">
-        <input
-          type="checkbox"
-          className={cn(
-            "peer absolute h-full w-full opacity-0 cursor-pointer z-10",
-            className
-          )}
-          ref={ref}
-          {...props}
-        />
-        <span
-          className={cn(
-            "pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform translate-x-0.5 peer-checked:translate-x-[22px] ml-0"
-          )}
-        />
-      </div>
-    )
-  }
-)
-Switch.displayName = "Switch"
+const Switch = React.forwardRef<
+  React.ElementRef<typeof SwitchPrimitives.Root>,
+  React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>
+>(({ className, ...props }, ref) => (
+  <SwitchPrimitives.Root
+    className={cn(
+      "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
+      "data-[state=checked]:bg-primary/80 data-[state=unchecked]:bg-slate-600",
+      className
+    )}
+    {...props}
+    ref={ref}
+  >
+    <SwitchPrimitives.Thumb
+      className={cn(
+        "pointer-events-none block h-5 w-5 rounded-full bg-white border border-slate-200 shadow-[0_2px_4px_rgba(0,0,0,0.4)] ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+      )}
+    />
+  </SwitchPrimitives.Root>
+))
+Switch.displayName = SwitchPrimitives.Root.displayName
 
 export { Switch }

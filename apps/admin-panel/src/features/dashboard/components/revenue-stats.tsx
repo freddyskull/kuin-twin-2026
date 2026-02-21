@@ -29,13 +29,13 @@ export const RevenueCard: React.FC = () => {
 
 export const ActiveUsers: React.FC = () => {
   const stats = [
-    { label: 'Reservas Activas', value: '2,147', color: 'bg-dashboard-primary' },
+    { label: 'Reservas Activas', value: '2,147', color: 'bg-primary' },
     { label: 'Solicitudes Pendientes', value: '0,792', color: 'bg-slate-700' },
     { label: 'Completado Hoy', value: '1,318', color: 'bg-slate-700' },
   ];
 
   return (
-    <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full">
+    <div className="bg-accent/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full">
       <h2 className="text-2xl font-bold text-white mb-10 tracking-tight">Actividad de Usuarios</h2>
 
       <div className="space-y-10">

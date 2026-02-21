@@ -79,7 +79,7 @@ export const ServiceAvailabilityStep: React.FC = () => {
   return (
     <motion.section
       key="step5" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
-      className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-3xl p-8 space-y-8"
+      className="bg-accent/40 backdrop-blur-2xl border border-white/5 rounded-3xl p-8 space-y-8"
     >
       <div className="flex items-center gap-3">
         <Calendar className="h-5 w-5 text-dashboard-primary" />
@@ -103,7 +103,7 @@ export const ServiceAvailabilityStep: React.FC = () => {
                         render={({ field }) => (
                           <Switch
                             checked={field.value}
-                            onChange={field.onChange}
+                            onCheckedChange={field.onChange}
                           />
                         )}
                       />
@@ -150,7 +150,7 @@ export const ServiceAvailabilityStep: React.FC = () => {
                 render={({ field }) => (
                   <Switch
                     checked={field.value}
-                    onChange={field.onChange}
+                    onCheckedChange={field.onChange}
                   />
                 )}
               />
@@ -170,7 +170,7 @@ export const ServiceAvailabilityStep: React.FC = () => {
                     <span className={`text-xs font-bold ${worked ? 'text-white' : 'text-slate-500'}`}>{holiday.name}</span>
                     <span className="text-[10px] text-slate-600">{holiday.date}</span>
                   </div>
-                  <div className={`h-6 w-6 rounded-lg flex items-center justify-center border transition-all ${worked ? 'bg-dashboard-primary text-dashboard-bg border-dashboard-primary' : 'bg-transparent border-white/10 text-transparent'}`}>
+                  <div className={`h-6 w-6 rounded-lg flex items-center justify-center border transition-all ${worked ? 'bg-dashboard-primary text-primary border-dashboard-primary' : 'bg-transparent border-white/10 text-transparent'}`}>
                     <Check className="h-3.5 w-3.5" />
                   </div>
                 </div>

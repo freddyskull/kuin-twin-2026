@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/features/auth/auth.store";
 import { Loader2, UserPlus, LogIn } from "lucide-react";
 import { Button } from "@/components/ui";
+import Link from "next/link";
 
 function NewChatContent() {
   const { user, setAuth } = useAuthStore();
@@ -24,17 +25,6 @@ function NewChatContent() {
     }
   }, [isReady, user, vendorId, router]);
 
-  const handleDemoLogin = () => {
-    // Dummy vendor to talk to
-    const demoUser = {
-      id: "550e8400-e29b-41d4-a716-446655440000", // Fix a UUID for demo
-      email: "demo@kuin-twin.com",
-      role: 'CUSTOMER' as const,
-      displayName: "Comprador Demo"
-    };
-    setAuth(demoUser, "fake-jwt-token");
-  };
-
   if (!isReady) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -53,12 +43,13 @@ function NewChatContent() {
         <p className="text-muted-foreground max-w-sm mb-8">
           Para contactar con los vendedores y solicitar cotizaciones, necesitas tener una cuenta.
         </p>
-
         <div className="flex flex-col gap-3 w-full max-w-xs">
-          <Button onClick={handleDemoLogin} className="rounded-full shadow-lg shadow-primary/20 gap-2 h-12">
-            <UserPlus className="w-5 h-5" />
-            Entrar como Invitado (Demo)
-          </Button>
+          <Link href="/login" className="w-full">
+            <Button className="rounded-full shadow-lg shadow-primary/20 gap-2 h-12 w-full">
+              <LogIn className="w-5 h-5" />
+              Iniciar Sesión
+            </Button>
+          </Link>
           <Button variant="outline" onClick={() => router.push('/')} className="rounded-full h-12">
             Volver al inicio
           </Button>

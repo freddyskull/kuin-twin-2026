@@ -75,7 +75,7 @@ const CompanyItem: React.FC<{
         <div className={cn(
           "h-5 w-5 rounded-full border flex items-center justify-center transition-all",
           isSelected
-            ? "bg-dashboard-primary border-dashboard-primary text-dashboard-bg"
+            ? "bg-dashboard-primary border-dashboard-primary text-primary"
             : "border-white/10"
         )}>
           {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
@@ -128,7 +128,7 @@ const CompanyItem: React.FC<{
                           "w-4 h-4 rounded border flex items-center justify-center transition-all",
                           isBranchSelected ? "bg-dashboard-primary border-dashboard-primary" : "border-white/20"
                         )}>
-                          {isBranchSelected && <Check className="h-3 w-3 text-dashboard-bg stroke-[3]" />}
+                          {isBranchSelected && <Check className="h-3 w-3 text-primary stroke-[3]" />}
                         </div>
                         <span className="text-xs font-medium truncate">{branch.name}</span>
                         {branch.isMain && (

@@ -17,15 +17,6 @@ export default function ChatInboxPage() {
     setIsReady(true);
   }, []);
 
-  const handleDemoLogin = () => {
-    setAuth({
-      id: "550e8400-e29b-41d4-a716-446655440000",
-      email: "demo@kuin-twin.com",
-      role: 'CUSTOMER',
-      displayName: "Comprador Demo"
-    }, "fake-jwt-token");
-  };
-
   if (!isReady) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -38,12 +29,14 @@ export default function ChatInboxPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center bg-background">
         <MessageSquare className="w-16 h-16 text-primary mb-6 opacity-20" />
-        <h2 className="text-2xl font-bold mb-2">Tus mensajes tinen que esperar</h2>
-        <p className="text-muted-foreground mb-8 max-w-sm">Inicia sesión o entra como invitado para ver tus conversaciones activas.</p>
+        <h2 className="text-2xl font-bold mb-2">Tus mensajes tienen que esperar</h2>
+        <p className="text-muted-foreground mb-8 max-w-sm">Inicia sesión para ver tus conversaciones activas.</p>
         <div className="flex flex-col gap-3 w-full max-w-xs">
-          <Button onClick={handleDemoLogin} className="rounded-full h-12 gap-2 shadow-lg shadow-primary/20">
-            Entrar como Invitado (Demo)
-          </Button>
+          <Link href="/login">
+            <Button className="rounded-full w-full h-12 gap-2 shadow-lg shadow-primary/20">
+              Iniciar Sesión
+            </Button>
+          </Link>
           <Link href="/">
             <Button variant="outline" className="rounded-full w-full h-12">Volver al inicio</Button>
           </Link>

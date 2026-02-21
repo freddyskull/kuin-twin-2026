@@ -8,7 +8,7 @@ const data = [
 
 export const ServiceDistribution: React.FC = () => {
   return (
-    <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full flex flex-col">
+    <div className="bg-card backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full flex flex-col">
       <h2 className="text-2xl font-bold text-white mb-10 tracking-tight">Distribución de Servicios</h2>
 
       <div className="flex-1 relative min-h-[280px]">
