@@ -12,7 +12,23 @@ const __dirname = path.dirname(__filename)
 // https://vite.dev/config/
 export default defineConfig({
   base: '/admin/',
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    {
+      name: 'redirect-admin',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url === '/admin') {
+            res.writeHead(301, { Location: '/admin/' });
+            res.end();
+          } else {
+            next();
+          }
+        });
+      },
+    },
+  ],
 
   resolve: {
     alias: {
@@ -20,7 +36,7 @@ export default defineConfig({
       '@components': path.resolve(__dirname, '../../libs/ui-components/src/components/'),
       '@': path.resolve(__dirname, './src'),
       '@assets': path.resolve(__dirname, '../../libs/public'),
-      'shared-types': path.resolve(__dirname, '../../libs/shared-types/src/index.ts'),
+      'shared-types': path.resolve(__dirname, '../../libs/shared-types/src'),
       'ui-components/styles': path.resolve(__dirname, '../../libs/ui-components/src/styles/globals.css'),
     },
   },
