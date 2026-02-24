@@ -16,7 +16,7 @@ export class PaymentService {
 
     const booking = await this.prisma.booking.findUnique({ 
       where: { id: bookingId },
-      include: { customer: true }
+      include: { customer: { select: { id: true, email: true } } }
     });
     if (!booking) throw new NotFoundException('Reserva no encontrada');
 

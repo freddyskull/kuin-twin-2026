@@ -71,7 +71,14 @@ export class ServiceService {
       where: { OR: [{ id: term }, { slug: term }] },
       include: {
         category: true, unit: true, company: true, branches: true,
-        vendor: { include: { profile: true } },
+        vendor: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+            profile: true,
+          }
+        },
         metadata: true,
         slots: { where: { status: 'AVAILABLE' }, take: 10 },
       },
