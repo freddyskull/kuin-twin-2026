@@ -7,3 +7,5 @@ export * from "./input";
 export * from "./label";
 export * from "./sheet";
 export * from "./avatar";
+export * from "./badge";
+export * from "./textarea";

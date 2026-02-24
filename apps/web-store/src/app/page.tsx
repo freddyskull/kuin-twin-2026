@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useServices, ServiceCard } from "@/features/services";
 import { useAuthStore } from "@/features/auth/auth.store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui";
+import { Navbar } from "@/components/navbar";
 
 export default function Home() {
   const { data: services, isLoading, isError } = useServices();
@@ -18,42 +19,7 @@ export default function Home() {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* Navigation */}
-      <nav className="relative z-10 flex items-center justify-between px-6 py-4 md:px-12 backdrop-blur-md border-b border-border/40">
-        <div className="text-2xl font-bold tracking-tighter text-primary">
-          KUIN<span className="text-foreground">TWIN</span>
-        </div>
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          <Link href="/" className="hover:text-primary transition-colors font-bold text-foreground">Inicio</Link>
-          <Link href="/chat" className="hover:text-primary transition-colors">Mensajes</Link>
-          <Link href="#" className="hover:text-primary transition-colors">Explorar</Link>
-        </div>
-        <div className="flex items-center gap-4">
-          {user ? (
-            <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold text-foreground line-clamp-1">{user.displayName || user.email}</p>
-                <button onClick={logout} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors uppercase tracking-widest font-black">Cerrar Sesión</button>
-              </div>
-              <Avatar className="h-10 w-10 border-2 border-primary/20 ring-2 ring-primary/5">
-                <AvatarImage src={user.avatarUrl} />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold font-mono">
-                  {(user.displayName || user.email).substring(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-          ) : (
-            <>
-              <Link href="/login">
-                <Button variant="ghost" className="hidden sm:inline-flex rounded-full">Iniciar Sesión</Button>
-              </Link>
-              <Link href="/registro">
-                <Button className="rounded-full px-6 shadow-lg shadow-primary/20">Empezar</Button>
-              </Link>
-            </>
-          )}
-        </div>
-      </nav>
+      <Navbar transparent />
 
       <main className="relative z-10 px-6 pt-20 pb-32 md:px-12 flex flex-col items-center text-center">
         {/* Badge */}

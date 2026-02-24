@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   ParseFilePipeBuilder,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MediaService } from './media.service';
@@ -30,13 +31,22 @@ export class MediaController {
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
-          fileType: /(jpg|jpeg|png|webp)$/,
+          fileType: /(jpg|jpeg|png|webp|avif)$/,
         })
         .addMaxSizeValidator({
           maxSize: 2 * 1024 * 1024, // 2MB
         })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          exceptionFactory: (error) => {
+            if (error.includes('file type')) {
+              return new BadRequestException('El formato de imagen no es válido. Usa JPG, PNG, WEBP o AVIF.');
+            }
+            if (error.includes('max size')) {
+              return new BadRequestException('La imagen es demasiado grande. El límite es de 2MB.');
+            }
+            return new BadRequestException('Error al validar el archivo: ' + error);
+          },
         }),
     )
     file: Express.Multer.File,

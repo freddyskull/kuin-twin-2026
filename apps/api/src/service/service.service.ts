@@ -34,21 +34,28 @@ export class ServiceService {
         metadata: { create: createDto.metadata || [] },
         slots: { create: transformSlots(createDto.slots || []) }
       },
-      include: { metadata: true, slots: true }
+      include: { metadata: true, slots: true, branches: true }
     });
 
+    await this.updateGisLocation(service.id, createDto.latitude, createDto.longitude);
+    
     await this.clearServiceCache(createDto.vendorId, createDto.categoryId);
     return service;
   }
 
   async findAll(filters?: { vendorId?: string; categoryId?: string; isActive?: boolean }): Promise<Service[]> {
-    const cacheKey = filters?.vendorId ? `services:vendor:${filters.vendorId}` : filters?.categoryId ? `services:category:${filters.categoryId}` : 'services:all';
+    const parts = ['services'];
+    if (filters?.vendorId) parts.push(`vendor:${filters.vendorId}`);
+    if (filters?.categoryId) parts.push(`category:${filters.categoryId}`);
+    if (filters?.isActive !== undefined) parts.push(`active:${filters.isActive}`);
+    
+    const cacheKey = parts.length > 1 ? parts.join(':') : 'services:all';
     const cached = await this.cacheManager.get<Service[]>(cacheKey);
     if (cached) return cached;
 
     const services = await this.prisma.service.findMany({
       where: { vendorId: filters?.vendorId, categoryId: filters?.categoryId, isActive: filters?.isActive },
-      include: { category: true, unit: true, company: true, vendor: { select: { id: true, email: true, profile: true } } },
+      include: { category: true, unit: true, company: true, branches: true, metadata: true, vendor: { select: { id: true, email: true, profile: true } } },
       orderBy: { title: 'asc' },
     });
 
@@ -63,7 +70,7 @@ export class ServiceService {
     const service = await this.prisma.service.findFirst({
       where: { OR: [{ id: term }, { slug: term }] },
       include: {
-        category: true, unit: true, company: true,
+        category: true, unit: true, company: true, branches: true,
         vendor: { include: { profile: true } },
         metadata: true,
         slots: { where: { status: 'AVAILABLE' }, take: 10 },
@@ -93,11 +100,24 @@ export class ServiceService {
     const updated = await this.prisma.service.update({
       where: { id },
       data: updateData,
-      include: { metadata: true, slots: true }
+      include: { metadata: true, slots: true, branches: true }
     });
 
+    await this.updateGisLocation(id, updateDto.latitude, updateDto.longitude);
+    
     await this.clearServiceCache(service.vendorId, service.categoryId, id);
     return updated;
+  }
+
+  async updateGisLocation(id: string, lat?: number, lng?: number) {
+    if (lat === undefined || lng === undefined) return;
+    
+    // Usamos raw SQL para PostGIS ya que Prisma no soporta geography(Point) nativamente
+    await this.prisma.$executeRaw`
+      UPDATE "Service" 
+      SET location = ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326) 
+      WHERE id = ${id}
+    `;
   }
 
   async remove(id: string): Promise<void> {
@@ -122,9 +142,18 @@ export class ServiceService {
 
   private async clearServiceCache(vId: string, cId: string, sId?: string) {
     if (sId) await this.cacheManager.del(`service:${sId}`);
-    await this.cacheManager.del('services:all');
-    await this.cacheManager.del(`services:vendor:${vId}`);
-    await this.cacheManager.del(`services:category:${cId}`);
+    // Limpiar variantes de caché incluyendo filtros de isActive
+    await Promise.all([
+      this.cacheManager.del('services:all'),
+      this.cacheManager.del('services:active:true'),
+      this.cacheManager.del('services:active:false'),
+      this.cacheManager.del(`services:vendor:${vId}`),
+      this.cacheManager.del(`services:vendor:${vId}:active:true`),
+      this.cacheManager.del(`services:vendor:${vId}:active:false`),
+      this.cacheManager.del(`services:category:${cId}`),
+      this.cacheManager.del(`services:category:${cId}:active:true`),
+      this.cacheManager.del(`services:category:${cId}:active:false`),
+    ]);
   }
 
   private async deletePhysicalImage(imageUrl: string) {

@@ -60,6 +60,7 @@ export const EditServicePage: React.FC = () => {
         categoryId: service.categoryId,
         unitId: service.unitId,
         imageUrl: service.imageUrl || '',
+        imageGallery: service.imageGallery || [],
         metadata: metadata,
         dynamicAttributes: service.dynamicAttributes ? JSON.stringify(service.dynamicAttributes, null, 2) : '',
         address: (service.dynamicAttributes as any)?.ubicacion || '',
@@ -77,15 +78,28 @@ export const EditServicePage: React.FC = () => {
 
     try {
       let finalImageUrl = data.imageUrl;
+      let finalImageGallery = [...(data.imageGallery || [])];
 
-      // Upload image first if a new one was selected
+      // Upload main image first if a new one was selected
       if (data.imageFile) {
-        toast({
-          title: "Subiendo imagen...",
-          description: "Por favor espera un momento.",
-        });
+        toast({ title: "Actualizando imagen principal...", description: "Por favor espera." });
         const media = await uploadMedia(user.id, data.imageFile);
         finalImageUrl = media?.url || media?.path || (typeof media === 'string' ? media : finalImageUrl);
+      }
+
+      // Upload new gallery images
+      if (data.imageGalleryFiles && data.imageGalleryFiles.length > 0) {
+        toast({ title: `Subiendo ${data.imageGalleryFiles.length} nuevas imágenes a la galería...`, description: "Por favor espera." });
+
+        for (const file of data.imageGalleryFiles) {
+          try {
+            const media = await uploadMedia(user.id, file);
+            const url = media?.url || media?.path || (typeof media === 'string' ? media : null);
+            if (url) finalImageGallery.push(url);
+          } catch (err) {
+            console.error('Failed to upload gallery image:', err);
+          }
+        }
       }
 
       const payload = {
@@ -98,17 +112,16 @@ export const EditServicePage: React.FC = () => {
         basePrice: data.basePrice,
         showPrice: data.showPrice,
         imageUrl: finalImageUrl,
+        imageGallery: finalImageGallery,
         metadata: data.metadata,
-        dynamicAttributes: {
-          ...(data.dynamicAttributes ? JSON.parse(data.dynamicAttributes) : {}),
-          ubicacion: data.address,
-          latitud: data.latitude,
-          longitud: data.longitude
-        },
+        dynamicAttributes: data.dynamicAttributes ? JSON.parse(data.dynamicAttributes) : {},
         workSchedule: data.workSchedule,
         slots: data.slots || [],
         companyId: data.companyId,
-        branchIds: data.branchIds
+        branchIds: data.branchIds,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        address: data.address
       };
 
       await updateMutation.mutateAsync({ id, data: payload });

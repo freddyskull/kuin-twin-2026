@@ -17,8 +17,11 @@ export const ServicePreview: React.FC<ServicePreviewProps> = ({ currentStep, isE
   const [localPreview, setLocalPreview] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (watchedValues.imageFile instanceof File) {
-      const url = URL.createObjectURL(watchedValues.imageFile);
+    const file = watchedValues.imageFile;
+    const isFile = file && typeof file === 'object' && ('name' in file || file instanceof File);
+
+    if (isFile) {
+      const url = URL.createObjectURL(file as File);
       setLocalPreview(url);
       return () => URL.revokeObjectURL(url);
     } else {
@@ -53,6 +56,15 @@ export const ServicePreview: React.FC<ServicePreviewProps> = ({ currentStep, isE
                 {categories.find(c => c.id === watchedValues.categoryId)?.name || 'Category'}
               </p>
             </div>
+
+            {((watchedValues.imageGallery?.length || 0) + (watchedValues.imageGalleryFiles?.length || 0)) > 0 && (
+              <div className="flex items-center gap-1.5 pt-1.5">
+                <div className="h-1.5 w-1.5 rounded-full bg-dashboard-primary animate-pulse" />
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                  +{(watchedValues.imageGallery?.length || 0) + (watchedValues.imageGalleryFiles?.length || 0)} Fotos en Galería
+                </span>
+              </div>
+            )}
 
             <div className="flex items-baseline gap-1 pt-2 border-t border-white/5">
               {(watchedValues.metadata || []).find((m: any) => m.key === 'Precio') ? (

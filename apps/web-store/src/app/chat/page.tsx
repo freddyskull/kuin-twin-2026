@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
+import { Navbar } from "@/components/navbar";
 
 export default function ChatInboxPage() {
   const { user, setAuth } = useAuthStore();
@@ -46,37 +47,45 @@ export default function ChatInboxPage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] max-w-5xl mx-auto p-4 md:p-8">
-      <div className="flex items-center gap-4 mb-8">
-        <Link href="/">
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        </Link>
-        <h1 className="text-3xl font-bold tracking-tight">Mensajes</h1>
-      </div>
+    <div className="relative min-h-screen bg-background">
+      {/* Background Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 overflow-hidden">
-        {/* Sidebar: Lista de conversaciones */}
-        <div className="lg:col-span-1 bg-card/30 backdrop-blur-md rounded-2xl border border-border/50 p-4 flex flex-col overflow-hidden shadow-xl">
-          <h3 className="text-xs font-bold text-muted-foreground mb-4 px-2 uppercase tracking-widest">Conversaciones Recientes</h3>
-          <div className="flex-1 overflow-y-auto custom-scrollbar">
-            <ConversationList
-              userId={user.id}
-              onSelect={(id) => router.push(`/chat/${id}`)}
-            />
-          </div>
+      <Navbar />
+
+      <div className="relative z-10 flex flex-col h-[calc(100vh-80px)] max-w-5xl mx-auto p-4 md:p-8">
+        <div className="flex items-center gap-4 mb-8">
+          <Link href="/">
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-bold tracking-tight">Mensajes</h1>
         </div>
 
-        {/* Content: Área de chat vacía */}
-        <div className="hidden lg:flex lg:col-span-2 bg-muted/20 border border-dashed border-border/50 rounded-2xl items-center justify-center flex-col text-center p-12">
-          <div className="w-20 h-20 rounded-full bg-primary/5 flex items-center justify-center mb-6">
-            <MessageSquare className="w-10 h-10 text-primary opacity-40" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 overflow-hidden">
+          {/* Sidebar: Lista de conversaciones */}
+          <div className="lg:col-span-1 bg-card/30 backdrop-blur-md rounded-2xl border border-border/50 p-4 flex flex-col overflow-hidden shadow-xl">
+            <h3 className="text-xs font-bold text-muted-foreground mb-4 px-2 uppercase tracking-widest">Conversaciones Recientes</h3>
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
+              <ConversationList
+                userId={user.id}
+                onSelect={(id) => router.push(`/chat/${id}`)}
+              />
+            </div>
           </div>
-          <h3 className="text-lg font-bold mb-2">Tus conversaciones</h3>
-          <p className="text-sm text-muted-foreground max-w-xs">
-            Selecciona un chat de la lista para ver los mensajes. Puedes contactar a un vendedor desde la página de su servicio.
-          </p>
+
+          {/* Content: Área de chat vacía */}
+          <div className="hidden lg:flex lg:col-span-2 bg-muted/20 border border-dashed border-border/50 rounded-2xl items-center justify-center flex-col text-center p-12">
+            <div className="w-20 h-20 rounded-full bg-primary/5 flex items-center justify-center mb-6">
+              <MessageSquare className="w-10 h-10 text-primary opacity-40" />
+            </div>
+            <h3 className="text-lg font-bold mb-2">Tus conversaciones</h3>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Selecciona un chat de la lista para ver los mensajes. Puedes contactar a un vendedor desde la página de su servicio.
+            </p>
+          </div>
         </div>
       </div>
     </div>

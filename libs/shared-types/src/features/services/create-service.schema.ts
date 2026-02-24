@@ -12,6 +12,7 @@ export const CreateServiceSchema = z.object({
   slug: z.string().min(3).nullish(),
   description: z.string().min(10, 'La descripción es muy corta').nullish(),
   imageUrl: z.string().nullish(), // No forzamos URL por si es path local
+  imageGallery: z.array(z.string()).default([]),
   tags: z.array(z.string()).default([]),
   
   basePrice: z.number().nonnegative().default(0).nullish(),
@@ -25,6 +26,11 @@ export const CreateServiceSchema = z.object({
   
   slots: z.array(ServiceSlotSchema).default([]),
   branchIds: z.array(z.string().uuid()).default([]),
+  
+  // Coordenadas PostGIS
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  address: z.string().optional(),
 });
 
 export type CreateServiceDto = z.infer<typeof CreateServiceSchema>;

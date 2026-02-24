@@ -77,6 +77,8 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
       slots: [],
       companyId: '',
       branchIds: [],
+      imageGallery: [],
+      imageGalleryFiles: [],
       ...initialValues
     }
   });
@@ -218,7 +220,6 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
                 {isEditMode && currentStep < 5 && (
                   <SmartSubmitButton
                     loadingLabel="Actualizando..."
-                    className="flex items-center gap-3 bg-white/5 border border-white/10 text-white px-8 py-3 rounded-xl font-bold hover:bg-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Actualizar Ahora
                   </SmartSubmitButton>
@@ -227,7 +228,6 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
                 {currentStep === 5 ? (
                   <SmartSubmitButton
                     loadingLabel="Procesando..."
-                    className="flex items-center gap-3 bg-dashboard-primary text-primary px-8 py-3 rounded-xl font-bold shadow-lg shadow-dashboard-primary/10 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submitLabel}
                   </SmartSubmitButton>

@@ -21,6 +21,8 @@ export const serviceSchema = z.object({
   longitude: z.number().optional(),
   imageUrl: z.string().optional(),
   imageFile: z.any().optional(),
+  imageGallery: z.array(z.string()).default([]),
+  imageGalleryFiles: z.array(z.any()).default([]),
   metadata: z.array(z.object({
     key: z.string(),
     value: z.string(),

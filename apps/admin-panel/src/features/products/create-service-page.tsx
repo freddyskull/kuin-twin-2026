@@ -20,15 +20,28 @@ export const CreateServicePage: React.FC = () => {
 
     try {
       let finalImageUrl = data.imageUrl;
+      let finalImageGallery = [...(data.imageGallery || [])];
 
-      // Upload image first if a new one was selected
+      // Upload main image first if a new one was selected
       if (data.imageFile) {
-        toast({
-          title: "Subiendo imagen...",
-          description: "Por favor espera un momento.",
-        });
+        toast({ title: "Subiendo imagen principal...", description: "Por favor espera." });
         const media = await uploadMedia(user.id, data.imageFile);
         finalImageUrl = media?.url || media?.path || (typeof media === 'string' ? media : finalImageUrl);
+      }
+
+      // Upload gallery images
+      if (data.imageGalleryFiles && data.imageGalleryFiles.length > 0) {
+        toast({ title: `Subiendo galería (${data.imageGalleryFiles.length} imágenes)...`, description: "Esto puede tardar un momento." });
+
+        for (const file of data.imageGalleryFiles) {
+          try {
+            const media = await uploadMedia(user.id, file);
+            const url = media?.url || media?.path || (typeof media === 'string' ? media : null);
+            if (url) finalImageGallery.push(url);
+          } catch (err) {
+            console.error('Failed to upload a gallery image:', err);
+          }
+        }
       }
 
       const payload = {
@@ -42,17 +55,16 @@ export const CreateServicePage: React.FC = () => {
         basePrice: data.basePrice,
         showPrice: data.showPrice,
         imageUrl: finalImageUrl,
+        imageGallery: finalImageGallery,
         metadata: data.metadata,
-        dynamicAttributes: {
-          ...(data.dynamicAttributes ? JSON.parse(data.dynamicAttributes) : {}),
-          ubicacion: data.address,
-          latitud: data.latitude,
-          longitud: data.longitude
-        },
+        dynamicAttributes: data.dynamicAttributes ? JSON.parse(data.dynamicAttributes) : {},
         workSchedule: data.workSchedule,
         slots: data.slots || [],
         companyId: data.companyId,
-        branchIds: data.branchIds
+        branchIds: data.branchIds,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        address: data.address
       };
 
 

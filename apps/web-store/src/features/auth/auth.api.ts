@@ -9,7 +9,7 @@ export interface AuthResponse {
     displayName?: string;
     avatarUrl?: string;
   };
-  token: string;
+  access_token: string;
 }
 
 export const login = async (data: LoginDto): Promise<AuthResponse> => {

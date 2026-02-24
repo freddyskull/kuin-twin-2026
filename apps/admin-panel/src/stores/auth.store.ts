@@ -37,13 +37,19 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null })
         try {
           const response = await api.post('/auth/login', credentials)
-          const { access_token } = response.data
+          const { access_token, user } = response.data
           localStorage.setItem('token', access_token)
+          
+          // Ensure we don't store password if backend sent it
+          const safeUser = user ? { ...user } : null;
+          if (safeUser) delete safeUser.password;
+
           set({ 
             token: access_token, 
+            user: safeUser,
             isAuthenticated: true, 
             isLoading: false 
-          })
+            });
         } catch (error: any) {
           const message = error.response?.data?.message || error.message || 'Error al iniciar sesión'
           set({ error: message, isLoading: false })

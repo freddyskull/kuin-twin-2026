@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { getServices, getServiceBySlug } from './services.api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getServices, getServiceBySlug, getReviews, createReview } from './services.api';
+import { CreateReviewDto } from 'shared-types';
 
 export const useServices = () => {
   return useQuery({
@@ -13,5 +14,26 @@ export const useServiceBySlug = (slug: string) => {
     queryKey: ['services', slug],
     queryFn: () => getServiceBySlug(slug),
     enabled: !!slug,
+  });
+};
+
+export const useReviews = (serviceId: string) => {
+  return useQuery({
+    queryKey: ['reviews', serviceId],
+    queryFn: () => getReviews(serviceId),
+    enabled: !!serviceId,
+  });
+};
+
+export const useCreateReview = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (review: CreateReviewDto) => createReview(review),
+    onSuccess: (_, variables) => {
+      // Invalidar reviews del servicio y el detalle del servicio para actualizar el promedio
+      queryClient.invalidateQueries({ queryKey: ['reviews', variables.serviceId] });
+      queryClient.invalidateQueries({ queryKey: ['services'] });
+    },
   });
 };

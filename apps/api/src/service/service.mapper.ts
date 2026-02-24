@@ -5,11 +5,11 @@ export function mapCreateServiceData(createDto: CreateServiceDto, slug: string) 
     vendorId, categoryId, unitId, companyId, 
     metadata, slots, workSchedule, tags, 
     dynamicAttributes, commentsBox,
-    branchIds, // Excluir porque no existe en Prisma aún
+    branchIds, latitude, longitude, address,
     ...rest 
   } = createDto;
 
-  return {
+  const data: any = {
     ...rest,
     slug,
     vendorId,
@@ -20,14 +20,25 @@ export function mapCreateServiceData(createDto: CreateServiceDto, slug: string) 
     dynamicAttributes: dynamicAttributes ?? undefined,
     workSchedule: workSchedule ?? undefined,
     commentsBox: commentsBox ?? undefined,
+    latitude,
+    longitude,
+    address,
   };
+
+  if (branchIds && branchIds.length > 0) {
+    data.branches = {
+      connect: branchIds.map(id => ({ id }))
+    };
+  }
+
+  return data;
 }
 
 export function mapUpdateServiceData(updateDto: UpdateServiceDto) {
   const { 
     metadata, slots, workSchedule, companyId, 
     tags, dynamicAttributes, commentsBox,
-    branchIds, // Excluir porque no existe en Prisma aún
+    branchIds, latitude, longitude, address,
     ...rest 
   } = updateDto;
 
@@ -38,6 +49,15 @@ export function mapUpdateServiceData(updateDto: UpdateServiceDto) {
   if (workSchedule !== undefined) data.workSchedule = workSchedule ?? undefined;
   if (dynamicAttributes !== undefined) data.dynamicAttributes = dynamicAttributes ?? undefined;
   if (commentsBox !== undefined) data.commentsBox = commentsBox ?? undefined;
+  if (latitude !== undefined) data.latitude = latitude;
+  if (longitude !== undefined) data.longitude = longitude;
+  if (address !== undefined) data.address = address;
+
+  if (branchIds !== undefined) {
+    data.branches = {
+      set: branchIds.map(id => ({ id }))
+    };
+  }
 
   return data;
 }

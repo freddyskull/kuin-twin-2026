@@ -11,7 +11,7 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (data: LoginDto) => login(data),
     onSuccess: (response: AuthResponse) => {
-      setAuth(response.user, response.token);
+      setAuth(response.user, response.access_token);
       router.push('/');
     },
   });
@@ -24,7 +24,7 @@ export const useRegister = () => {
   return useMutation({
     mutationFn: (data: RegisterDto) => register(data),
     onSuccess: (response: AuthResponse) => {
-      setAuth(response.user, response.token);
+      setAuth(response.user, response.access_token);
       router.push('/');
     },
   });

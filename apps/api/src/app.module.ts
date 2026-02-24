@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -21,6 +21,8 @@ import { redisStore } from 'cache-manager-redis-yet';
 import { ChatModule } from './chat/chat.module';
 import { CompaniesModule } from './companies/companies.module';
 import { BranchesModule } from './branches/branches.module';
+import { ReviewModule } from './review/review.module';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 
 @Module({
@@ -31,12 +33,32 @@ import { BranchesModule } from './branches/branches.module';
     }),
     CacheModule.registerAsync({
       isGlobal: true,
-      useFactory: async (configService: ConfigService) => ({
-        store: await redisStore({
-          url: configService.get('REDIS_URL') || 'redis://localhost:6379',
-          ttl: 600 * 1000, // 10 minutes default
-        }),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        try {
+          const store = await redisStore({
+            url: configService.get('REDIS_URL') || 'redis://localhost:6379',
+            ttl: 600 * 1000, 
+            socket: {
+              reconnectStrategy: (retries) => {
+                const delay = Math.min(retries * 500, 5000);
+                console.warn(`[Redis] 🔄 Reintentando conexión... Intento: ${retries} (esperando ${delay}ms)`);
+                return delay;
+              },
+            },
+          });
+
+          // Capturar errores del cliente para evitar que la app crashee en caliente
+          // @ts-ignore
+          store.client.on('error', (err) => {
+            console.error('[Redis] ❌ Error en el cliente:', err.message);
+          });
+
+          return { store };
+        } catch (error) {
+          console.error('[Redis] 💥 Falló la conexión inicial. Usando almacenamiento en memoria como respaldo.');
+          return { store: 'memory' };
+        }
+      },
       inject: [ConfigService],
     }),
     PrismaModule,
@@ -54,10 +76,10 @@ import { BranchesModule } from './branches/branches.module';
     ChatModule,
     CompaniesModule,
     BranchesModule,
+    ReviewModule,
 
     // Servir archivos estáticos
     ServeStaticModule.forRoot(
-      // 1. API uploads - prioridad alta
       {
         rootPath: join(process.cwd(), 'uploads'),
         serveRoot: '/uploads',
@@ -65,7 +87,6 @@ import { BranchesModule } from './branches/branches.module';
           index: false,
         },
       },
-      // 2. Admin Panel - prioridad media
       {
         rootPath: join(process.cwd(), 'apps/admin-panel/dist'),
         serveRoot: '/admin',
@@ -73,7 +94,6 @@ import { BranchesModule } from './branches/branches.module';
           index: ['index.html'],
         },
       },
-      // 3. Web Store - prioridad baja (fallback)
       {
         rootPath: join(process.cwd(), 'apps/web-store/out'),
         exclude: ['/api/*path', '/admin/*path', '/uploads/*path'],
@@ -87,4 +107,10 @@ import { BranchesModule } from './branches/branches.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*');
+  }
+}

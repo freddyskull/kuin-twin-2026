@@ -5,9 +5,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Button, Card } from '@/components/ui';
-import { ArrowLeft, Star, MapPin, Calendar, MessageCircle, Share2, Heart, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Star, MapPin, Calendar, MessageCircle, Share2, Heart, ShieldCheck, Clock } from 'lucide-react';
 import { ServiceDto } from 'shared-types';
 import { StatusIndicator } from '@/features/chat/components';
+import { ServiceGallery, CompanySection, ReviewForm, ReviewList } from '@/features/services';
 
 interface PageProps {
   params: { slug: string };
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   try {
     const service = await getServiceBySlug(slug);
-    if (!service) return {};
+    if (!service || !service.isActive) return {};
 
     return {
       title: `${service.title} | Kuin-Twin`,
@@ -51,11 +52,17 @@ export default async function ServicePage({ params }: PageProps) {
 
   try {
     service = await getServiceBySlug(slug);
+    // Si el servicio no está activo, no mostrarlo en la tienda web
+    if (!service.isActive) {
+      notFound();
+    }
   } catch (error) {
     notFound();
   }
 
   const imageUrl = getAbsoluteUrl(service.imageUrl);
+
+  console.log(service)
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -82,134 +89,245 @@ export default async function ServicePage({ params }: PageProps) {
       <div className="relative pt-24 px-6 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row gap-8 lg:gap-12 z-10">
 
         {/* Left Column: Image Gallery */}
-        <div className="w-full md:w-1/2 lg:w-3/5 space-y-4">
-          <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-border/50 shadow-2xl bg-muted">
-            {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={service.title}
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-700"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                priority
-                unoptimized // Fix for localhost images
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center text-muted-foreground bg-secondary/30">
-                <span className="text-6xl">🛠️</span>
-              </div>
-            )}
-            <div className="absolute bottom-4 left-4 flex gap-2">
-              <div className="bg-background/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold border border-border/50 flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3 text-green-500" />
-                Garantía Kuin-Twin
-              </div>
-            </div>
-          </div>
+        <div className="w-full md:w-1/2 lg:w-3/5">
+          <ServiceGallery
+            mainImage={service.imageUrl ?? null}
+            gallery={service.imageGallery || []}
+            title={service.title}
+          />
 
-          {/* Thumbnails (Placeholder) */}
-          <div className="grid grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="aspect-square rounded-xl bg-muted border border-border/50 hover:border-primary cursor-pointer transition-colors relative overflow-hidden group">
-                {imageUrl && (
-                  <Image
-                    src={imageUrl}
-                    alt="Gallery"
-                    fill
-                    className="object-cover opacity-60 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0"
-                    unoptimized
-                  />
+          <Card className="mt-8 flex items-center gap-2 p-4 rounded-2xl bg-secondary/20 border border-border/40 backdrop-blur-sm mb-6">
+            <ShieldCheck className="w-5 h-5 text-primary shrink-0" />
+            <p className="text-xs font-medium text-muted-foreground">
+              Este servicio cumple con los estándares de calidad de <span className="text-foreground font-bold">Kuin-Twin</span>.
+            </p>
+          </Card>
+
+          {/* Service Attributes (Metadata) */}
+          {service && (service as any).metadata && (service as any).metadata.length > 0 && (
+            <div className="space-y-4 mb-10 text-center">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Especificaciones</h3>
+              <Card className="p-6 border-border/40 bg-secondary/10 backdrop-blur-sm">
+                {(service as any).metadata.map((item: any, idx: number) => (
+                  <div
+                    key={idx}
+                    className="flex items-center p-3 rounded-xl bg-secondary/10 border border-border/40 hover:border-primary/20 transition-colors group gap-2"
+                  >
+                    <span className="text-xs font-semibold text-muted-foreground uppercase text-nowrap">{item.key}</span>
+                    <span className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">{item.value}</span>
+                  </div>
+                ))}
+              </Card>
+            </div>
+          )}
+
+
+          {/* Work Schedule */}
+          {service.workSchedule && (service.workSchedule as any).schedule && (service.workSchedule as any).schedule.length > 0 && (
+            <div className="space-y-4 mb-10">
+              <div className="flex items-center gap-2 justify-center">
+                <Clock className="w-3.5 h-3.5 text-primary" />
+                <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Horarios de Atención</h3>
+              </div>
+              <Card className="p-6 border-border/40 bg-secondary/10 backdrop-blur-sm">
+                {(service.workSchedule as any).schedule.map((day: any) => {
+                  const dayLabels: Record<string, string> = {
+                    Monday: 'Lunes',
+                    Tuesday: 'Martes',
+                    Wednesday: 'Miércoles',
+                    Thursday: 'Jueves',
+                    Friday: 'Viernes',
+                    Saturday: 'Sábado',
+                    Sunday: 'Domingo',
+                  };
+                  return (
+                    <div key={day.day} className="flex items-center justify-between py-0.5">
+                      <span className={`text-xs font-medium ${day.enabled ? 'text-foreground' : 'text-slate-500'}`}>
+                        {dayLabels[day.day] || day.day}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        {!day.enabled && <div className="h-1 w-1 rounded-full bg-red-400" />}
+                        <span className={`text-[11px] font-bold ${day.enabled ? 'text-foreground' : 'text-red-400/80 uppercase'}`}>
+                          {day.enabled ? `${day.startTime} - ${day.endTime}` : 'Cerrado'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </Card>
+            </div>
+          )}
+
+
+          {/* Location & Map Section */}
+          <div className="space-y-4 mb-10">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-3.5 h-3.5 text-primary" />
+              <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Donde se Presta el Servicio</h3>
+            </div>
+            <Card className="overflow-hidden border-border/40 bg-secondary/5 backdrop-blur-sm rounded-2xl group transition-all hover:shadow-2xl hover:shadow-primary/5">
+              <div className="p-5 flex items-start gap-4 bg-background/40">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+                  <MapPin className="w-5 h-5 text-primary" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-bold text-foreground leading-tight">
+                    {service.address || "Dirección por definir con el profesional"}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold flex items-center gap-2">
+                    <span>Zona de Disponibilidad</span>
+                    <span className="h-1 w-1 rounded-full bg-primary" />
+                    <span>A 2.5 km de tu ubicación</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="h-[220px] w-full bg-secondary/10 relative overflow-hidden">
+                {service.address ? (
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0, filter: 'grayscale(0.4) contrast(1.1) invert(0.05)' }}
+                    loading="lazy"
+                    allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(service.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                  ></iframe>
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-30">
+                    <MapPin className="w-8 h-8" />
+                    <span className="text-xs font-bold uppercase tracking-tighter">Mapa no disponible</span>
+                  </div>
+                )}
+
+                {/* Overlay for better integration */}
+                <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/10" />
+
+                {service.address && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(service.address)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute bottom-4 right-4 bg-background/90 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-border/50 shadow-lg hover:bg-primary hover:text-white hover:border-primary transition-all active:scale-95"
+                  >
+                    Abrir en Mapas
+                  </a>
                 )}
               </div>
-            ))}
+            </Card>
+          </div>
+
+          <CompanySection
+            company={service.company}
+            vendorName={service.vendor?.profile?.displayName || 'Profesional'}
+          />
+
+          {/* Section: Reviews */}
+          <div className="mt-12 space-y-8">
+            <h2 className="text-2xl font-bold border-l-4 border-primary pl-4">Experiencias y Opiniones</h2>
+            <ReviewForm serviceId={service.id} />
+            <ReviewList serviceId={service.id} />
           </div>
         </div>
 
         {/* Right Column: Details & Booking */}
-        <div className="w-full md:w-1/2 lg:w-2/5 flex flex-col">
-          <div className="flex items-start justify-between">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">{service.title}</h1>
-          </div>
-
-          <div className="flex items-center gap-4 text-sm mb-6">
-            <div className="flex items-center gap-1 text-yellow-500 font-bold bg-yellow-500/10 px-2 py-0.5 rounded-md">
-              <Star className="w-4 h-4 fill-current" />
-              {service.starsRate} <span className="text-muted-foreground font-normal">({service.reviewsCount} reseñas)</span>
-            </div>
-            <span className="text-muted-foreground flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" />
-              A 2.5 km de ti
-            </span>
-            <div className="h-4 w-px bg-border/50 mx-1" />
-            <StatusIndicator userId={service.vendorId} showText />
-          </div>
-
-          <div className="flex items-end gap-2 mb-8">
-            <span className="text-4xl font-bold text-primary">
-              {service.showPrice && service.basePrice
-                ? `$${service.basePrice}`
-                : 'A Cotizar'}
-            </span>
-            {service.showPrice && service.basePrice && (
-              <span className="text-muted-foreground text-sm font-medium mb-1.5">
-                / {service.unitId ? 'servicio' : 'sesión'}
+        <div className="w-full md:w-1/2 lg:w-2/5 space-y-8">
+          <div className="flex flex-col">
+            {service.category && (
+              <span className="text-xs font-bold text-primary uppercase tracking-widest mb-2 px-3 py-1 bg-primary/10 rounded-full w-fit">
+                {service.category.name}
               </span>
             )}
+            <div className="flex items-start justify-between">
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">{service.title}</h1>
+            </div>
+
+            <div className="flex items-center gap-4 text-sm mb-6">
+              <div className="flex items-center gap-1 text-yellow-500 font-bold bg-yellow-500/10 px-2 py-0.5 rounded-md">
+                <Star className="w-4 h-4 fill-current" />
+                {service.starsRate} <span className="text-muted-foreground font-normal">({service.reviewsCount} reseñas)</span>
+              </div>
+              <span className="text-muted-foreground flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5" />
+                A 2.5 km de ti
+              </span>
+              <div className="h-4 w-px bg-border/50 mx-1" />
+              <StatusIndicator userId={service.vendorId} showText />
+            </div>
+
+            <div className="flex items-end gap-2 mb-8">
+              <span className="text-4xl font-bold text-primary">
+                {service.showPrice && service.basePrice
+                  ? `$${service.basePrice}`
+                  : 'A Cotizar'}
+              </span>
+              {service.showPrice && service.basePrice && (
+                <span className="text-muted-foreground text-sm font-medium mb-1.5">
+                  / {service.unitId ? 'servicio' : 'sesión'}
+                </span>
+              )}
+            </div>
+
+            <div className="prose prose-sm dark:prose-invert text-muted-foreground mb-10 leading-relaxed">
+              {service.description || "Este profesional no ha proporcionado una descripción detallada, pero su reputación habla por sí sola."}
+            </div>
+
+
+
+
           </div>
 
-          <div className="prose prose-sm dark:prose-invert text-muted-foreground mb-8 line-clamp-6">
-            {service.description || "Este profesional no ha proporcionado una descripción detallada, pero su reputación habla por sí sola."}
-          </div>
+          {/* Call to Action Box - Sticky */}
+          <div className="sticky top-24">
+            <Card className="p-6 border-primary/20 bg-primary/5 backdrop-blur-sm shadow-lg shadow-primary/5">
+              <h3 className="font-bold text-lg mb-4">
+                {service.showPrice ? 'Reservar este servicio' : 'Solicitar Cotización'}
+              </h3>
 
-          {/* Call to Action Box */}
-          <Card className="p-6 border-primary/20 bg-primary/5 backdrop-blur-sm mt-auto shadow-lg shadow-primary/5">
-            <h3 className="font-bold text-lg mb-4">
-              {service.showPrice ? 'Reservar este servicio' : 'Solicitar Cotización'}
-            </h3>
-
-            {service.showPrice ? (
-              <>
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-background border border-border/50 hover:border-primary/50 cursor-pointer transition-colors group">
-                    <div className="flex items-center gap-3">
-                      <Calendar className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
-                      <div className="flex flex-col text-left">
-                        <span className="text-xs text-muted-foreground font-semibold">Fecha y Hora</span>
-                        <span className="text-sm font-medium">Seleccionar disponibilidad</span>
+              {service.showPrice ? (
+                <>
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-background border border-border/50 hover:border-primary/50 cursor-pointer transition-colors group">
+                      <div className="flex items-center gap-3">
+                        <Calendar className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+                        <div className="flex flex-col text-left">
+                          <span className="text-xs text-muted-foreground font-semibold">Fecha y Hora</span>
+                          <span className="text-sm font-medium">Seleccionar disponibilidad</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex gap-3">
-                  <Button className="flex-1 rounded-full text-lg h-12 shadow-lg shadow-primary/20">
-                    Reservar Ahora
-                  </Button>
-                  <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-primary/20 bg-background hover:bg-primary/10 hover:text-primary hover:border-primary">
-                    <MessageCircle className="w-5 h-5" />
-                  </Button>
-                </div>
-                <p className="text-xs text-center text-muted-foreground mt-4">
-                  Sin cobros ocultos. Cancelación gratuita hasta 24h antes.
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Este servicio requiere una evaluación previa para determinar el costo exacto. Contacta al experto para una cotización.
-                </p>
-                <Link href={`/chat/new?vendorId=${service.vendorId}&serviceId=${service.id}`} className="w-full block">
-                  <Button className="w-full rounded-full text-lg h-12 shadow-lg shadow-primary/20 gap-2">
-                    <MessageCircle className="w-5 h-5" />
-                    Chat con el Experto
-                  </Button>
-                </Link>
-                <p className="text-xs text-center text-muted-foreground mt-4">
-                  Respuesta promedio: menos de 15 minutos.
-                </p>
-              </>
-            )}
-          </Card>
+                  <div className="flex gap-3">
+                    <Button className="flex-1 rounded-full text-lg h-12 shadow-lg shadow-primary/20">
+                      Reservar Ahora
+                    </Button>
+                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-primary/20 bg-background hover:bg-primary/10 hover:text-primary hover:border-primary">
+                      <MessageCircle className="w-5 h-5" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-center text-muted-foreground mt-4">
+                    Sin cobros ocultos. Cancelación gratuita hasta 24h antes.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Este servicio requiere una evaluación previa para determinar el costo exacto. Contacta al experto para una cotización.
+                  </p>
+                  <Link href={`/chat/new?vendorId=${service.vendorId}&serviceId=${service.id}`} className="w-full block">
+                    <Button className="w-full rounded-full text-lg h-12 shadow-lg shadow-primary/20 gap-2">
+                      <MessageCircle className="w-5 h-5" />
+                      Chat con el Experto
+                    </Button>
+                  </Link>
+                  <p className="text-xs text-center text-muted-foreground mt-4">
+                    Respuesta promedio: menos de 15 minutos.
+                  </p>
+                </>
+              )}
+            </Card>
+          </div>
         </div>
 
       </div>

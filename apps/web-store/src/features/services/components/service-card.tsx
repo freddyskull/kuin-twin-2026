@@ -54,10 +54,15 @@ export const ServiceCard = ({ service }: ServiceCardProps) => {
           </div>
 
           <div className="p-5 flex flex-col grow">
-            <div className="flex justify-between items-start mb-2">
+            <div className="flex flex-col mb-2">
               <h3 className="font-bold text-lg line-clamp-1 group-hover:text-primary transition-colors">
                 {service.title}
               </h3>
+              {service.company && (
+                <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/70">
+                  {service.company.businessName}
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-2 mb-3">
