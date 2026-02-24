@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/providers/query-provider";
+import { Footer } from "@/components/footer";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -18,6 +19,8 @@ export const metadata: Metadata = {
   description: "Encuentra los mejores servicios cerca de ti con Kuin-Twin.",
 };
 
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,6 +33,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          <Footer />
         </Providers>
       </body>
     </html>
