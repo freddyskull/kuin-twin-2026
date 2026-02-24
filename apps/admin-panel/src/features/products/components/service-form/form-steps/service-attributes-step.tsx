@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import { useFormContext, useFieldArray, useWatch } from 'react-hook-form';
 import { Star, Trash2, MapPin, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Label, FormTextarea, FormInput, MapSelector, geocode, Button } from 'ui-components';
+import { Label, FormTextarea, FormInput, Button } from 'ui-components';
+import { MapSelector, geocode } from 'ui-components/components/map-selector';
 import type { ServiceFormValues } from '../schema';
 
 export const ServiceAttributesStep: React.FC = () => {

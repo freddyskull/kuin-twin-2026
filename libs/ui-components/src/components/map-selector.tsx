@@ -4,28 +4,31 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { cn } from '../lib/utils';
 
-// Fix for default marker icons in Leaflet with Webpack/Vite
-// @ts-ignore
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
+// Fix for default marker icons and customIcon at runtime to avoid SSR errors
+let customIcon: any = null;
 
-// Custom Premium Marker
-const customIcon = L.divIcon({
-  className: 'custom-div-icon',
-  html: `
-    <div class="relative flex flex-col items-center group">
-      <div class="bg-[#E5C068] text-[#0a0b1e] p-2 rounded-full shadow-[0_0_20px_rgba(229,192,104,0.4)] transform -translate-y-4 transition-transform scale-125">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+if (typeof window !== 'undefined') {
+  // @ts-ignore
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  });
+
+  customIcon = L.divIcon({
+    className: 'custom-div-icon',
+    html: `
+      <div class="relative flex flex-col items-center group">
+        <div class="bg-[#E5C068] text-[#0a0b1e] p-2 rounded-full shadow-[0_0_20px_rgba(229,192,104,0.4)] transform -translate-y-4 transition-transform scale-125">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
       </div>
-    </div>
-  `,
-  iconSize: [30, 42],
-  iconAnchor: [15, 42],
-});
+    `,
+    iconSize: [30, 42],
+    iconAnchor: [15, 42],
+  });
+}
 
 interface MapSelectorProps {
   initialLatitude?: number;
@@ -137,11 +140,16 @@ export const MapSelector: React.FC<MapSelectorProps> = ({
   // Medellín by default if no coordinates provided and geo fails
   const defaultPos: [number, number] = [6.2442, -75.5812];
 
+  const [mounted, setMounted] = useState(false);
   const [position, setPosition] = useState<[number, number] | null>(
     initialLatitude && initialLongitude && initialLatitude !== 0
       ? [initialLatitude, initialLongitude]
       : null
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Auto-detect user location if no initial position provided
   useEffect(() => {
@@ -186,6 +194,8 @@ export const MapSelector: React.FC<MapSelectorProps> = ({
       }
     }
   }, [initialLatitude, initialLongitude, onAddressChange]);
+
+  if (!mounted) return <div className={cn("w-full h-[400px] rounded-3xl bg-[#0a0b1e]", className)} />;
 
   return (
     <div className={cn("relative w-full h-[400px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0a0b1e]", className)}>

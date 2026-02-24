@@ -43,24 +43,36 @@ export class ServiceService {
     return service;
   }
 
-  async findAll(filters?: { vendorId?: string; categoryId?: string; isActive?: boolean }): Promise<Service[]> {
-    const parts = ['services'];
-    if (filters?.vendorId) parts.push(`vendor:${filters.vendorId}`);
-    if (filters?.categoryId) parts.push(`category:${filters.categoryId}`);
-    if (filters?.isActive !== undefined) parts.push(`active:${filters.isActive}`);
-    
-    const cacheKey = parts.length > 1 ? parts.join(':') : 'services:all';
-    const cached = await this.cacheManager.get<Service[]>(cacheKey);
-    if (cached) return cached;
+  async findAll(filters?: { vendorId?: string; categoryId?: string; isActive?: boolean; page?: number; limit?: number }): Promise<{ items: Service[]; total: number }> {
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 10;
+    const skip = (page - 1) * limit;
 
-    const services = await this.prisma.service.findMany({
-      where: { vendorId: filters?.vendorId, categoryId: filters?.categoryId, isActive: filters?.isActive },
-      include: { category: true, unit: true, company: true, branches: true, metadata: true, vendor: { select: { id: true, email: true, profile: true } } },
-      orderBy: { title: 'asc' },
-    });
+    const where = { 
+      vendorId: filters?.vendorId, 
+      categoryId: filters?.categoryId, 
+      isActive: filters?.isActive 
+    };
 
-    await this.cacheManager.set(cacheKey, services, 300000);
-    return services;
+    const [items, total] = await Promise.all([
+      this.prisma.service.findMany({
+        where,
+        include: { 
+          category: true, 
+          unit: true, 
+          company: true, 
+          branches: true, 
+          metadata: true, 
+          vendor: { select: { id: true, email: true, profile: true } } 
+        },
+        orderBy: { title: 'asc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.service.count({ where }),
+    ]);
+
+    return { items, total };
   }
 
   async findOne(term: string): Promise<Service> {

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, LayoutDashboard } from 'lucide-react';
 import { useServices, useDeleteService, useToggleServiceStatus } from './services.hooks';
@@ -9,13 +9,25 @@ import { ServiceCompanyManager } from './components/service-company-manager';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const ServicesPage: React.FC = () => {
-  const { data: services = [], isLoading, error } = useServices();
+  const [page, setPage] = useState(1);
+  const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const limit = 10;
+
+  const { data, isLoading, error } = useServices({
+    page,
+    limit,
+    isActive: filter === 'all' ? undefined : (filter === 'active')
+  });
+
+  const services = data?.items || [];
+  const total = data?.total || 0;
+  const totalPages = Math.ceil(total / limit);
+
   const deleteMutation = useDeleteService();
   const toggleStatusMutation = useToggleServiceStatus();
 
   const [statusConfirm, setStatusConfirm] = React.useState<{ id: string, title: string, nextStatus: boolean } | null>(null);
   const [selectedServiceForCompanies, setSelectedServiceForCompanies] = React.useState<any | null>(null);
-  const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const handleToggleStatus = (id: string, title: string, currentStatus: boolean) => {
     setStatusConfirm({ id, title, nextStatus: !currentStatus });
@@ -42,12 +54,10 @@ export const ServicesPage: React.FC = () => {
     }
   };
 
-  const filteredServices = useMemo(() => {
-    return services.filter((s: any) => {
-      const matchesFilter = filter === 'all' || (filter === 'active' ? s.isActive : !s.isActive);
-      return matchesFilter;
-    });
-  }, [services, filter]);
+  const handleFilterChange = (f: 'all' | 'active' | 'inactive') => {
+    setFilter(f);
+    setPage(1); // Reset to first page on filter change
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -168,7 +178,7 @@ export const ServicesPage: React.FC = () => {
             {(['all', 'active', 'inactive'] as const).map((f) => (
               <button
                 key={f}
-                onClick={() => setFilter(f)}
+                onClick={() => handleFilterChange(f)}
                 className={`px-6 py-2.5 text-sm font-bold rounded-xl transition-all capitalize ${filter === f
                   ? 'bg-white/10 text-white shadow-lg'
                   : 'text-slate-500 hover:text-slate-300'
@@ -190,11 +200,51 @@ export const ServicesPage: React.FC = () => {
       <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden">
         <DataTable
           columns={columns}
-          data={filteredServices}
+          data={services}
           isLoading={isLoading}
           emptyMessage="No se encontraron servicios con los criterios seleccionados."
           className="border-none"
         />
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="p-6 border-t border-white/5 flex items-center justify-between bg-white/5">
+            <div className="text-sm text-slate-500 font-bold">
+              Mostrando <span className="text-white">{(page - 1) * limit + 1}</span> a <span className="text-white">{Math.min(page * limit, total)}</span> de <span className="text-white">{total}</span> servicios
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="rounded-xl px-4"
+              >
+                Anterior
+              </Button>
+              <div className="flex items-center gap-1 px-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={`h-8 w-8 rounded-lg text-xs font-bold transition-all ${p === page ? 'bg-dashboard-primary text-white shadow-lg' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="rounded-xl px-4"
+              >
+                Siguiente
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <AnimatePresence>

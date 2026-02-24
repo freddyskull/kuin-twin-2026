@@ -25,11 +25,15 @@ export class ServiceController {
     @Query('vendorId') vendorId?: string,
     @Query('categoryId') categoryId?: string,
     @Query('isActive') isActive?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
   ) {
     return this.serviceService.findAll({
       vendorId,
       categoryId,
       isActive: isActive === 'true' ? true : isActive === 'false' ? false : undefined,
+      page: page ? parseInt(page) : undefined,
+      limit: limit ? parseInt(limit) : undefined,
     });
   }
 

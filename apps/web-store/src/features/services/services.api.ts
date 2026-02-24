@@ -2,8 +2,9 @@ import { api } from '@/lib/api';
 import { ServiceDto, ReviewDto, CreateReviewDto } from 'shared-types';
 
 export const getServices = async (): Promise<ServiceDto[]> => {
-  const { data } = await api.get<ServiceDto[]>('/services?isActive=true');
-  return data;
+  const { data } = await api.get<{ items: ServiceDto[]; total: number }>('/services?isActive=true&limit=100');
+  // El backend ahora devuelve { items, total } con paginación
+  return data.items ?? (data as unknown as ServiceDto[]);
 };
 
 export const getServiceBySlug = async (slug: string): Promise<ServiceDto> => {

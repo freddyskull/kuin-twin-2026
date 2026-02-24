@@ -2,18 +2,18 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from 'api-client';
 
 export const servicesKeys = {
-  all: ['services'] as const,
-  detail: (id: string) => ['services', id] as const,
+  all: (filters?: any) => ['services', filters] as const,
+  detail: (id: string) => ['services', 'detail', id] as const,
   categories: ['categories'] as const,
   units: ['service-units'] as const,
 };
 
-export const useServices = () => {
+export const useServices = (params?: { page?: number; limit?: number; isActive?: boolean | string }) => {
   return useQuery({
-    queryKey: servicesKeys.all,
+    queryKey: servicesKeys.all(params),
     queryFn: async () => {
-      const { data } = await api.get('/services');
-      return data;
+      const response = await api.get('/services', { params });
+      return response.data; // { items: Service[], total: number }
     },
   });
 };
@@ -57,7 +57,7 @@ export const useCreateService = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: servicesKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['services'] });
     },
   });
 };
@@ -70,7 +70,7 @@ export const useUpdateService = () => {
       return responseData;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: servicesKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       queryClient.invalidateQueries({ queryKey: servicesKeys.detail(variables.id) });
     },
   });
@@ -83,7 +83,7 @@ export const useDeleteService = () => {
       await api.delete(`/services/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: servicesKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['services'] });
     },
   });
 };
@@ -96,7 +96,7 @@ export const useToggleServiceStatus = () => {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: servicesKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       queryClient.invalidateQueries({ queryKey: servicesKeys.detail(data.id) });
     },
   });

@@ -12,7 +12,7 @@ export { FormCheckbox } from "./components/form-checkbox";
 export { FormSwitch } from "./components/form-switch";
 export { FormTextarea } from "./components/form-textarea";
 export { CustomForm } from "./components/custom-form";
-export { MapSelector, geocode } from "./components/map-selector";
+// export { MapSelector, geocode } from "./components/map-selector";
 export { FormChips } from "./components/form-chips";
 export { DataTable } from "./components/data-table";
 export { SmartSubmitButton } from "./components/smart-submit-button";
