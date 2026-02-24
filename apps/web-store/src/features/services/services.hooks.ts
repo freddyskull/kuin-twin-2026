@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getServices, getServiceBySlug, getReviews, createReview } from './services.api';
+import { getServices, getServiceBySlug, getReviews, createReview, getRelatedServices } from './services.api';
 import { CreateReviewDto } from 'shared-types';
 
 export const useServices = () => {
@@ -35,5 +35,13 @@ export const useCreateReview = () => {
       queryClient.invalidateQueries({ queryKey: ['reviews', variables.serviceId] });
       queryClient.invalidateQueries({ queryKey: ['services'] });
     },
+  });
+};
+
+export const useRelatedServices = (serviceId: string, limit: number = 4) => {
+  return useQuery({
+    queryKey: ['services', serviceId, 'related'],
+    queryFn: () => getRelatedServices(serviceId, limit),
+    enabled: !!serviceId,
   });
 };

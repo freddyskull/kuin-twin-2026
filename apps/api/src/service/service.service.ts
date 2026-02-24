@@ -147,6 +147,46 @@ export class ServiceService {
     ]);
   }
 
+  async findRelated(id: string, limit: number = 4): Promise<Service[]> {
+    const service = await this.prisma.service.findUnique({
+      where: { id },
+      select: { categoryId: true, companyId: true, tags: true }
+    });
+
+    if (!service) throw new NotFoundException(`Servicio no encontrado`);
+
+    const related = await this.prisma.service.findMany({
+      where: {
+        id: { not: id },
+        isActive: true,
+        OR: [
+          { categoryId: service.categoryId },
+          { tags: { hasSome: service.tags } }
+        ]
+      },
+      include: {
+        category: true,
+        unit: true,
+        company: true,
+        vendor: { 
+          select: { 
+            id: true, 
+            profile: {
+              select: {
+                displayName: true,
+                avatarUrl: true
+              }
+            } 
+          } 
+        }
+      },
+      take: limit,
+      orderBy: { starsRate: 'desc' }
+    });
+
+    return related;
+  }
+
   private async clearServiceCache(vId: string, cId: string, sId?: string) {
     if (sId) await this.cacheManager.del(`service:${sId}`);
     // Limpiar variantes de caché incluyendo filtros de isActive

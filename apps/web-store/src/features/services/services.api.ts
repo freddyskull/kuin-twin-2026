@@ -20,3 +20,8 @@ export const createReview = async (review: CreateReviewDto): Promise<ReviewDto> 
   const { data } = await api.post<ReviewDto>('/reviews', review);
   return data;
 };
+
+export const getRelatedServices = async (serviceId: string, limit: number = 4): Promise<ServiceDto[]> => {
+  const { data } = await api.get<ServiceDto[]>(`/services/${serviceId}/related?limit=${limit}`);
+  return data;
+};

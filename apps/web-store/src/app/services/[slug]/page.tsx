@@ -8,7 +8,7 @@ import { Button, Card } from '@/components/ui';
 import { ArrowLeft, Star, MapPin, Calendar, MessageCircle, Share2, Heart, ShieldCheck, Clock } from 'lucide-react';
 import { ServiceDto } from 'shared-types';
 import { StatusIndicator } from '@/features/chat/components';
-import { ServiceGallery, CompanySection, ReviewForm, ReviewList } from '@/features/services';
+import { ServiceGallery, CompanySection, ReviewForm, ReviewList, RelatedServices } from '@/features/services';
 
 interface PageProps {
   params: { slug: string };
@@ -330,6 +330,10 @@ export default async function ServicePage({ params }: PageProps) {
           </div>
         </div>
 
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 md:px-12 z-10 relative">
+        <RelatedServices serviceId={service.id} />
       </div>
     </div>
   );

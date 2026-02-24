@@ -9,3 +9,4 @@ export * from "./sheet";
 export * from "./avatar";
 export * from "./badge";
 export * from "./textarea";
+export * from "./skeleton";

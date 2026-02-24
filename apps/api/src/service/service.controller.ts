@@ -38,6 +38,12 @@ export class ServiceController {
     return this.serviceService.findOne(id);
   }
 
+  @Get(':id/related')
+  async getRelated(@Param('id') id: string, @Query('limit') limit?: string) {
+    return this.serviceService.findRelated(id, limit ? parseInt(limit) : 4);
+  }
+
+
   @Patch(':id')
   async update(
     @Param('id') id: string,
