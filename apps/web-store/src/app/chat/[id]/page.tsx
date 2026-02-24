@@ -35,7 +35,7 @@ export default function IndividualChatPage() {
 
       <Navbar />
 
-      <div className="relative z-10 flex flex-col h-screen pt-32 container-app p-4 md:p-8">
+      <div className="relative z-10 flex flex-col h-[80vh] pt-32 container-app p-4 md:p-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}

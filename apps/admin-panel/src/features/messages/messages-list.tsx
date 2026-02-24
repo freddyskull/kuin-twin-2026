@@ -2,14 +2,15 @@ import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useMessagesStore } from '../../stores/messages.store';
 import { useAuthStore } from '../../stores/auth.store';
 import { getSocket } from '../../lib/socket';
-import { Search, RefreshCw, MessageSquare, ChevronRight, UserCircle, ShieldCheck, Trash2 } from 'lucide-react';
+import { Search, RefreshCw, MessageSquare, ChevronRight, UserCircle, ShieldCheck, Trash2, Send } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar';
-
-import { Send } from 'lucide-react';
 import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
+import { useParams, useNavigate } from 'react-router-dom';
 
 export const MessagesList: React.FC = () => {
+  const { userId } = useParams<{ userId?: string }>();
+  const navigate = useNavigate();
   const {
     messages,
     fetchAllMessages,
@@ -22,12 +23,25 @@ export const MessagesList: React.FC = () => {
   } = useMessagesStore();
   const { user: currentUser } = useAuthStore();
 
-  // State for selections
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  // State for selections - Initialized from URL param if exists
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(userId || null);
   const [userSearch, setUserSearch] = useState('');
   const [newMessage, setNewMessage] = useState('');
 
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Sync state if URL param changes
+  useEffect(() => {
+    if (userId) {
+      setSelectedUserId(userId);
+    }
+  }, [userId]);
+
+  // Update URL when selection changes
+  const handleSelectUser = (id: string) => {
+    setSelectedUserId(id);
+    navigate(`/mensajes/${id}`);
+  };
 
   // Initial Fetch
   useEffect(() => {
@@ -150,7 +164,7 @@ export const MessagesList: React.FC = () => {
           {allUsersInvolved.map(u => (
             <button
               key={u.id}
-              onClick={() => setSelectedUserId(u.id)}
+              onClick={() => handleSelectUser(u.id)}
               className={cn(
                 "w-full flex items-center gap-3 p-3.5 rounded-2xl text-left transition-all group border relative overflow-hidden",
                 selectedUserId === u.id

@@ -84,8 +84,8 @@ export const Header: React.FC = () => {
           <button
             onClick={() => setShowNotifications(!showNotifications)}
             className={`relative p-2 rounded-xl border transition-all group ${showNotifications
-                ? 'bg-dashboard-primary/10 border-dashboard-primary/50 text-dashboard-primary'
-                : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+              ? 'bg-dashboard-primary/10 border-dashboard-primary/50 text-dashboard-primary'
+              : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
               }`}
           >
             <Bell className="h-5 w-5" />
@@ -129,7 +129,7 @@ export const Header: React.FC = () => {
                             key={msg.id}
                             onClick={() => {
                               removeNotification(msg.id);
-                              navigate('/mensajes');
+                              navigate(`/mensajes/${msg.senderId}`);
                               setShowNotifications(false);
                             }}
                             className="p-4 hover:bg-white/5 transition-colors cursor-pointer group"

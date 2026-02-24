@@ -57,7 +57,9 @@ const App: React.FC = () => {
               <Route path="/empresas/:id/editar" element={<EditCompanyPage />} />
 
               {/* Messages (Admin Only usually, but let's allow both for now) */}
-              <Route path="/mensajes" element={<MessagesPage />} />
+              <Route path="/mensajes" element={<MessagesPage />}>
+                <Route path=":userId" element={<MessagesPage />} />
+              </Route>
 
               {/* Profile */}
               <Route path="/perfil" element={<ProfilePage />} />
