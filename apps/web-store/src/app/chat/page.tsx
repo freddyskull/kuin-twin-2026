@@ -54,7 +54,7 @@ export default function ChatInboxPage() {
 
       <Navbar />
 
-      <div className="relative z-10 flex flex-col h-[calc(100vh-80px)] container-app p-4 md:p-8">
+      <div className="relative z-10 flex flex-col h-screen pt-32 container-app p-4 md:p-8">
         <div className="flex items-center gap-4 mb-8">
           <Link href="/">
             <Button variant="ghost" size="icon" className="rounded-full">

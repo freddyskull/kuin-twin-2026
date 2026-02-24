@@ -19,7 +19,7 @@ export default function Home() {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 rounded-full blur-[120px] pointer-events-none" />
 
-      <Navbar transparent />
+      <Navbar />
 
       <main className="relative z-10 container-app pt-20 pb-32 flex flex-col items-center text-center">
         {/* Badge */}
