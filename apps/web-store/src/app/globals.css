@@ -2,6 +2,10 @@
 @import "tw-animate-css";
 /* @import "shadcn/tailwind.css"; Removed specific shaImport if causing issues, standard importing is better */
 
+/* Escanear la librería compartida para generar clases de Tailwind */
+@source "../../../../libs/ui-components/src/**/*.tsx";
+
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

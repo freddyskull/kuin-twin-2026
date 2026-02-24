@@ -7,8 +7,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
-import { NavbarNotifications } from "./navbar-notifications";
 import { Button } from "@/components/ui/button";
+import { NotificationBell } from "ui-components";
+import { useMessagesStore } from "@/features/chat";
+import { useRouter } from "next/navigation";
 
 interface NavbarProps {
   className?: string;
@@ -17,6 +19,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ className }) => {
   const { user, logout } = useAuthStore();
   const pathname = usePathname();
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = React.useState(false);
 
   React.useEffect(() => {
@@ -47,7 +50,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
               KUIN<span className="text-foreground">TWIN</span>
             </Link>
 
-            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground justify-center text-center">
               <Link
                 href="/"
                 className={cn("hover:text-primary transition-colors font-bold", isHome ? "text-foreground" : "text-muted-foreground")}
@@ -59,7 +62,17 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
             </div>
 
             <div className="flex items-center gap-2 md:gap-3">
-              {user && <NavbarNotifications />}
+              {user && (
+                <NotificationBell
+                  unreadCount={useMessagesStore.getState().unreadCount}
+                  notifications={useMessagesStore((state) => state.notificationMessages)}
+                  onClearAll={() => useMessagesStore.getState().clearUnread()}
+                  onRemoveNotification={(id) => useMessagesStore.getState().removeNotification(id)}
+                  onViewAll={() => router.push("/chat")}
+                  onNotificationClick={(msg) => router.push(`/chat/${msg.senderId}`)}
+                  dropdownClassName="w-[min(90vw,360px)] sm:w-[440px] md:w-[520px]"
+                />
+              )}
               <ThemeToggle />
               <div className="h-6 w-px bg-border/40 mx-1 hidden sm:block" />
               {user ? (

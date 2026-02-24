@@ -12,8 +12,9 @@ interface Message {
     email: string; 
     displayName?: string;
     avatarUrl?: string;
-    profile?: { displayName: string; avatarUrl?: string } 
+    profile?: { displayName: string; avatarUrl?: string };
   };
+  isGlobal?: boolean;
 }
 
 interface MessagesState {

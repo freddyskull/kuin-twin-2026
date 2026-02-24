@@ -143,13 +143,6 @@ export {
   TooltipProvider,
 } from "./components/ui/tooltip";
 
-export {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-} from "./components/ui/table";
+export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption } from "./components/ui/table";
+export { NotificationBell } from "./components/notification-bell";
+export type { NotificationMessage, NotificationBellProps } from "./components/notification-bell";
