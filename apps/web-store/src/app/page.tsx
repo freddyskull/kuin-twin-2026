@@ -1,23 +1,55 @@
 "use client";
 
+import { useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Button } from '@/components/ui';
-import { ArrowRight, Star, MapPin, Search } from "lucide-react";
+import { ArrowRight, Star, MapPin, Search, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useServices, ServiceCard } from "@/features/services";
-import { useAuthStore } from "@/features/auth/auth.store";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui";
+import { useInfiniteServices, ServiceCard } from "@/features/services";
 import { Navbar } from "@/components/navbar";
 
 export default function Home() {
-  const { data: services, isLoading, isError } = useServices();
-  const { user, logout } = useAuthStore();
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteServices(12);
+
+  // Aplanar todas las páginas en un solo array
+  const services = data?.pages.flatMap((p) => p.items) ?? [];
+  const total = data?.pages[0]?.total ?? 0;
+
+  // Sentinel ref para IntersectionObserver (carga automática al scroll)
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const [entry] = entries;
+      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [hasNextPage, isFetchingNextPage, fetchNextPage]
+  );
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(handleObserver, {
+      rootMargin: "200px", // Carga 200px antes de llegar al final
+    });
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [handleObserver]);
 
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden">
-      {/* Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 rounded-full blur-[120px] pointer-events-none" />
+    <div className="relative min-h-screen bg-background">
+      {/* Background Orbs — fixed para no interferir con el scroll */}
+      <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 rounded-full blur-[120px] pointer-events-none z-0" />
 
       <Navbar />
 
@@ -82,7 +114,7 @@ export default function Home() {
           </Button>
         </motion.div>
 
-        {/* Featured Cards - Dynamic Content */}
+        {/* Services Grid con Scroll Infinito */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -90,53 +122,92 @@ export default function Home() {
           viewport={{ once: true }}
           className="mt-20 w-full text-left"
         >
-          <h2 className="text-2xl font-bold mb-8 pl-2 border-l-4 border-primary">Populares cerca de ti</h2>
+          {/* Header con contador */}
+          <div className="flex items-center justify-between mb-8 pl-2">
+            <h2 className="text-2xl font-bold border-l-4 border-primary pl-4">
+              Populares cerca de ti
+            </h2>
+            {!isLoading && total > 0 && (
+              <span className="text-sm text-muted-foreground font-bold">
+                {services.length} de {total} servicios
+              </span>
+            )}
+          </div>
 
+          {/* Skeleton de carga inicial */}
           {isLoading && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-64 rounded-xl bg-card border animate-pulse" />
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className="h-72 rounded-2xl bg-card border border-border/50 animate-pulse" />
               ))}
             </div>
           )}
 
+          {/* Error */}
           {isError && (
             <div className="text-center py-20 bg-destructive/10 rounded-xl border border-destructive/20 text-destructive">
               <p>Hubo un error al cargar los servicios. Por favor intenta más tarde.</p>
             </div>
           )}
 
-          {!isLoading && !isError && services && services.length > 0 && (
-            <motion.div
-              variants={{
-                hidden: { opacity: 0 },
-                show: {
-                  opacity: 1,
-                  transition: {
-                    staggerChildren: 0.1
-                  }
-                }
-              }}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-            >
-              {services.map((service, i) => (
-                <motion.div
-                  key={service.id}
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    show: { opacity: 1, y: 0 }
-                  }}
-                >
-                  <ServiceCard service={service} />
-                </motion.div>
-              ))}
-            </motion.div>
+          {/* Grid de servicios */}
+          {!isLoading && !isError && services.length > 0 && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {services.map((service, i) => (
+                  <motion.div
+                    key={service.id}
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, delay: Math.min(i % 12, 11) * 0.05 }}
+                    className="h-full"
+                  >
+                    <ServiceCard service={service} />
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Sentinel invisible para carga automática */}
+              <div ref={sentinelRef} className="h-1 w-full" />
+
+              {/* Spinner al cargar siguiente página */}
+              {isFetchingNextPage && (
+                <div className="flex justify-center mt-6 py-6">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              )}
+
+              {/* Botón de carga manual como respaldo visible */}
+              {hasNextPage && !isFetchingNextPage && (
+                <div className="flex justify-center mt-8">
+                  <Button
+                    variant="outline"
+                    onClick={() => fetchNextPage()}
+                    className="rounded-full px-8 py-5 gap-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all"
+                  >
+                    Cargar más servicios <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+
+              {/* Fin de resultados */}
+              {!hasNextPage && !isFetchingNextPage && (
+                <div className="text-center mt-10 py-8 border-t border-border/30">
+                  <p className="text-muted-foreground text-sm font-medium">
+                    🎉 Has visto todos los <span className="text-primary font-bold">{total}</span> servicios disponibles
+                  </p>
+                  <Link href="/registro">
+                    <Button variant="outline" className="mt-4 rounded-full gap-2">
+                      ¿Eres proveedor? Únete <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </>
           )}
 
-          {!isLoading && !isError && (!services || services.length === 0) && (
+          {/* Vacío */}
+          {!isLoading && !isError && services.length === 0 && (
             <div className="text-center py-20 opacity-60">
               <p>No se encontraron servicios disponibles en este momento.</p>
             </div>

@@ -1,11 +1,25 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getServices, getServiceBySlug, getReviews, createReview, getRelatedServices } from './services.api';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getServices, getServicesPaginated, getServiceBySlug, getReviews, createReview, getRelatedServices } from './services.api';
 import { CreateReviewDto } from 'shared-types';
 
 export const useServices = () => {
   return useQuery({
     queryKey: ['services'],
     queryFn: getServices,
+  });
+};
+
+// Hook de scroll infinito — devuelve páginas acumuladas
+export const useInfiniteServices = (limit = 12) => {
+  return useInfiniteQuery({
+    queryKey: ['services', 'infinite', limit],
+    queryFn: ({ pageParam }) => getServicesPaginated({ page: pageParam as number, limit }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((sum, p) => sum + p.items.length, 0);
+      return loaded < lastPage.total ? lastPage.page + 1 : undefined;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutos
   });
 };
 
