@@ -59,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
                 Inicio
               </Link>
               <Link href="/planes" className={cn("hover:text-primary transition-colors font-bold", pathname === "/planes" ? "text-foreground" : "text-muted-foreground")}>Planes</Link>
-              <Link href="#" className="hover:text-primary transition-colors font-bold">Explorar</Link>
+              {/* <Link href="#" className="hover:text-primary transition-colors font-bold">Explorar</Link> */}
             </div>
 
             <div className="flex items-center gap-2 md:gap-3">

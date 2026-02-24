@@ -46,9 +46,13 @@ export const ServiceCard = ({ service }: ServiceCardProps) => {
             )}
 
             {/* Price Badge */}
-            {service.showPrice && service.basePrice && (
-              <div className="absolute top-2 right-2 bg-background/90 backdrop-blur-md px-3 py-1 rounded-full text-sm font-bold shadow-sm border border-border/50 z-10">
-                {`$${Number(service.basePrice).toFixed(2)}`}
+            {service.showPrice && service.basePrice ? (
+              <div className="absolute top-3 right-3 bg-background/95 backdrop-blur-md px-4 py-1.5 rounded-2xl text-sm font-black shadow-lg border border-primary/20 z-10 text-primary">
+                {`$${Number(service.basePrice).toLocaleString('es-MX', { minimumFractionDigits: 0 })}`}
+              </div>
+            ) : !service.showPrice && (
+              <div className="absolute top-3 right-3 bg-primary/20 backdrop-blur-md px-4 py-1.5 rounded-2xl text-[10px] font-black shadow-lg border border-primary/40 z-10 text-primary uppercase tracking-widest">
+                Por Cotizar
               </div>
             )}
           </div>
@@ -85,10 +89,6 @@ export const ServiceCard = ({ service }: ServiceCardProps) => {
                 <span>A 2.5 km</span>
               </div>
 
-              {/* Conditional Price Display at Footer */}
-              {!service.showPrice && (
-                <span className="text-sm font-bold text-primary">A Cotizar</span>
-              )}
 
               <span className="text-sm font-medium text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform ml-auto">
                 Ver detalles <ArrowRight className="w-4 h-4" />
