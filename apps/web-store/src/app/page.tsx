@@ -83,7 +83,13 @@ export default function Home() {
         </motion.div>
 
         {/* Featured Cards - Dynamic Content */}
-        <div className="mt-20 w-full text-left">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="mt-20 w-full text-left"
+        >
           <h2 className="text-2xl font-bold mb-8 pl-2 border-l-4 border-primary">Populares cerca de ti</h2>
 
           {isLoading && (
@@ -101,11 +107,33 @@ export default function Home() {
           )}
 
           {!isLoading && !isError && services && services.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <motion.div
+              variants={{
+                hidden: { opacity: 0 },
+                show: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.1
+                  }
+                }
+              }}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            >
               {services.map((service, i) => (
-                <ServiceCard key={service.id} service={service} />
+                <motion.div
+                  key={service.id}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    show: { opacity: 1, y: 0 }
+                  }}
+                >
+                  <ServiceCard service={service} />
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
 
           {!isLoading && !isError && (!services || services.length === 0) && (
@@ -113,7 +141,7 @@ export default function Home() {
               <p>No se encontraron servicios disponibles en este momento.</p>
             </div>
           )}
-        </div>
+        </motion.div>
       </main>
     </div>
   );

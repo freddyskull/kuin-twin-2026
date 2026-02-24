@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { Navbar } from "@/components/navbar";
+import { motion } from "framer-motion";
 
 export default function ChatInboxPage() {
   const { user, setAuth } = useAuthStore();
@@ -55,18 +56,28 @@ export default function ChatInboxPage() {
       <Navbar />
 
       <div className="relative z-10 flex flex-col h-screen pt-32 container-app p-4 md:p-8">
-        <div className="flex items-center gap-4 mb-8">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center gap-4 mb-8"
+        >
           <Link href="/">
             <Button variant="ghost" size="icon" className="rounded-full">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
           <h1 className="text-3xl font-bold tracking-tight">Mensajes</h1>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 overflow-hidden pb-8">
           {/* Sidebar: Lista de conversaciones */}
-          <div className="lg:col-span-1 bg-card/30 backdrop-blur-md rounded-2xl border border-border/50 p-4 flex flex-col overflow-hidden shadow-xl">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="lg:col-span-1 bg-card/30 backdrop-blur-md rounded-2xl border border-border/50 p-4 flex flex-col overflow-hidden shadow-xl"
+          >
             <h3 className="text-xs font-bold text-muted-foreground mb-4 px-2 uppercase tracking-widest">Conversaciones Recientes</h3>
             <div className="flex-1 overflow-y-auto custom-scrollbar">
               <ConversationList
@@ -74,10 +85,15 @@ export default function ChatInboxPage() {
                 onSelect={(id) => router.push(`/chat/${id}`)}
               />
             </div>
-          </div>
+          </motion.div>
 
           {/* Content: Área de chat vacía */}
-          <div className="hidden lg:flex lg:col-span-2 bg-muted/20 border border-dashed border-border/50 rounded-2xl items-center justify-center flex-col text-center p-12">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="hidden lg:flex lg:col-span-2 bg-muted/20 border border-dashed border-border/50 rounded-2xl items-center justify-center flex-col text-center p-12"
+          >
             <div className="w-20 h-20 rounded-full bg-primary/5 flex items-center justify-center mb-6">
               <MessageSquare className="w-10 h-10 text-primary opacity-40" />
             </div>
@@ -85,7 +101,7 @@ export default function ChatInboxPage() {
             <p className="text-sm text-muted-foreground max-w-xs">
               Selecciona un chat de la lista para ver los mensajes. Puedes contactar a un vendedor desde la página de su servicio.
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

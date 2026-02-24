@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui";
 import { Navbar } from "@/components/navbar";
+import { motion } from "framer-motion";
 
 export default function IndividualChatPage() {
   const { user } = useAuthStore();
@@ -35,18 +36,28 @@ export default function IndividualChatPage() {
       <Navbar />
 
       <div className="relative z-10 flex flex-col h-screen pt-32 container-app p-4 md:p-8">
-        <div className="flex items-center gap-4 mb-6 md:mb-8">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center gap-4 mb-6 md:mb-8"
+        >
           <Link href="/chat">
             <Button variant="ghost" size="icon" className="rounded-full">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Chat</h1>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 flex-1 overflow-hidden">
           {/* Sidebar: Lista de conversaciones (hidden on mobile when in chat) */}
-          <div className="hidden lg:flex lg:flex-col lg:col-span-1 bg-card/30 backdrop-blur-md rounded-2xl border border-border/50 p-4 overflow-hidden shadow-xl">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="hidden lg:flex lg:flex-col lg:col-span-1 bg-card/30 backdrop-blur-md rounded-2xl border border-border/50 p-4 overflow-hidden shadow-xl"
+          >
             <h3 className="text-xs font-bold text-muted-foreground mb-4 px-2 uppercase tracking-widest">Mis Chats</h3>
             <div className="flex-1 overflow-y-auto custom-scrollbar">
               <ConversationList
@@ -55,12 +66,17 @@ export default function IndividualChatPage() {
                 onSelect={(id) => router.push(`/chat/${id}`)}
               />
             </div>
-          </div>
+          </motion.div>
 
           {/* Content: Área de chat activa */}
-          <div className="lg:col-span-3 flex flex-col h-full">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="lg:col-span-3 flex flex-col h-full"
+          >
             <ChatBox userId={user.id} otherUserId={otherUserId} />
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

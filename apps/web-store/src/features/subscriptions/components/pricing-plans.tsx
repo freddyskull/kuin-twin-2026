@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { PricingCard } from "./pricing-card";
 
 const SUBSCRIPTION_PLANS = [
@@ -57,15 +58,28 @@ export function PricingPlans() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto px-4 py-12">
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ staggerChildren: 0.15 }}
+      viewport={{ once: true }}
+      className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto px-4 py-12"
+    >
       {SUBSCRIPTION_PLANS.map((plan) => (
-        <PricingCard
+        <motion.div
           key={plan.title}
-          {...plan}
-          loading={loadingPlan === plan.title}
-          onSelect={() => handleSelectPlan(plan.title)}
-        />
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          viewport={{ once: true }}
+        >
+          <PricingCard
+            {...plan}
+            loading={loadingPlan === plan.title}
+            onSelect={() => handleSelectPlan(plan.title)}
+          />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }
