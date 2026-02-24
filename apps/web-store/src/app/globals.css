@@ -43,73 +43,83 @@
 
 @layer base {
   :root {
-    --background: hsl(226 49% 10%);
-    --foreground: hsl(226 49% 10%);
-    --card: hsl(224 45% 10%);
+    --background: hsl(0 0% 100%);
+    --foreground: hsl(222.2 84% 4.9%);
     
-    --background: hsl(240 40% 5%);
-    --foreground: hsl(0 0% 100%);
+    --card: hsl(0 0% 100%);
+    --card-foreground: hsl(222.2 84% 4.9%);
     
-    --card: hsl(224 45% 10%); /* Sidebar bg from shared lib */
-    --card-foreground: hsl(0 0% 100%);
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(222.2 84% 4.9%);
     
-    --popover: hsl(224 45% 10%);
-    --popover-foreground: hsl(0 0% 100%);
+    --primary: hsl(43 96% 56%); /* Oro Kuin */
+    --primary-foreground: hsl(222.2 47.4% 11.2%);
     
-    --primary: hsl(43 96% 56%); /* Gold */
-    --primary-foreground: hsl(0 0% 0%);
+    --secondary: hsl(210 40% 96.1%);
+    --secondary-foreground: hsl(222.2 47.4% 11.2%);
     
-    --secondary: hsl(217 45% 11%);
-    --secondary-foreground: hsl(0 0% 100%);
+    --muted: hsl(210 40% 96.1%);
+    --muted-foreground: hsl(215.4 16.3% 46.9%);
     
-    --muted: hsl(217 45% 11%);
-    --muted-foreground: hsl(215 20% 65%);
-    
-    --accent: hsl(199 89% 48%); /* Blue accent from shared lib */
-    --accent-foreground: hsl(0 0% 100%);
+    --accent: hsl(199 89% 48%); /* Azul Kuin */
+    --accent-foreground: hsl(222.2 47.4% 11.2%);
     
     --destructive: hsl(0 84.2% 60.2%);
-    --destructive-foreground: hsl(0 0% 98%);
+    --destructive-foreground: hsl(210 40% 98%);
     
-    --border: hsl(217 45% 11%);
-    --input: hsl(217 45% 11%);
+    --border: hsl(214.3 31.8% 91.4%);
+    --input: hsl(214.3 31.8% 91.4%);
     --ring: hsl(43 96% 56%);
     
-    --radius: 0.5rem;
-    
-    --sidebar-background: hsl(224 45% 10%);
-    --sidebar-foreground: hsl(0 0% 100%);
+    --radius: 0.75rem;
+
+    --sidebar-background: hsl(0 0% 98%);
+    --sidebar-foreground: hsl(240 5.3% 26.1%);
     --sidebar-primary: hsl(43 96% 56%);
-    --sidebar-primary-foreground: hsl(0 0% 0%);
-    --sidebar-accent: hsl(199 89% 48%);
-    --sidebar-accent-foreground: hsl(0 0% 100%);
-    --sidebar-border: hsl(217 45% 11%);
-    --sidebar-ring: hsl(217 45% 11%);
+    --sidebar-primary-foreground: hsl(0 0% 100%);
+    --sidebar-accent: hsl(240 4.8% 95.9%);
+    --sidebar-accent-foreground: hsl(240 5.9% 10%);
+    --sidebar-border: hsl(240 5.9% 90%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
   }
 
-  /* Force Dark mode styles even in :root if we want that look always, 
-     or just define .dark class. 
-     The Admin Panel effectively runs in dark mode mostly. */
   .dark {
     --background: hsl(240 40% 5%);
-    --foreground: hsl(0 0% 100%);
+    --foreground: hsl(0 0% 98%);
+    
     --card: hsl(224 45% 10%);
-    --card-foreground: hsl(0 0% 100%);
+    --card-foreground: hsl(0 0% 98%);
+    
     --popover: hsl(224 45% 10%);
-    --popover-foreground: hsl(0 0% 100%);
-    --primary: #F4C025 ;
-    --primary-foreground: hsl(0 0% 0%);
-    --secondary: hsl(217 45% 11%);
-    --secondary-foreground: hsl(0 0% 100%);
-    --muted: hsl(217 45% 11%);
-    --muted-foreground: hsl(215 20% 65%);
+    --popover-foreground: hsl(0 0% 98%);
+    
+    --primary: hsl(43 96% 56%);
+    --primary-foreground: hsl(222.2 47.4% 11.2%);
+    
+    --secondary: hsl(217.2 32.6% 17.5%);
+    --secondary-foreground: hsl(0 0% 98%);
+    
+    --muted: hsl(217.2 32.6% 17.5%);
+    --muted-foreground: hsl(215 20.2% 65.1%);
+    
     --accent: hsl(199 89% 48%);
-    --accent-foreground: hsl(0 0% 100%);
+    --accent-foreground: hsl(0 0% 98%);
+    
     --destructive: hsl(0 62.8% 30.6%);
     --destructive-foreground: hsl(0 0% 98%);
-    --border: hsl(217 45% 11%);
-    --input: hsl(217 45% 11%);
+    
+    --border: hsl(217.2 32.6% 17.5%);
+    --input: hsl(217.2 32.6% 17.5%);
     --ring: hsl(43 96% 56%);
+
+    --sidebar-background: hsl(224 45% 10%);
+    --sidebar-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-primary: hsl(224.3 76.3% 48%);
+    --sidebar-primary-foreground: hsl(0 0% 100%);
+    --sidebar-accent: hsl(240 3.7% 15.9%);
+    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-border: hsl(240 3.7% 15.9%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
   }
 }
 
@@ -118,12 +128,11 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
-    /* Starfield Background ported from shared css */
+    @apply bg-background text-foreground transition-colors duration-300;
+    /* Starfield Background para modo oscuro, patrón sutil para claro */
     background-image: 
-      radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0);
-    background-size: 24px 24px;
-    background-position: 0 0;
+      radial-gradient(circle at 1px 1px, hsl(var(--foreground) / 0.05) 1px, transparent 0);
+    background-size: 32px 32px;
   }
 }
 
@@ -132,17 +141,17 @@
   [data-sidebar="sidebar"] {
     background: 
       repeating-conic-gradient(from 0deg at 50% 50%, 
-        rgba(255, 255, 255, 0.03) 0deg, 
+        rgba(0, 0, 0, 0.01) 0deg, 
         transparent 0.5deg, 
         transparent 1deg, 
-        rgba(0, 0, 0, 0.03) 1.5deg),
-      linear-gradient(180deg, hsl(223, 47%, 24%) 0%, hsl(223, 50%, 9%) 100%);
+        rgba(0, 0, 0, 0.01) 1.5deg),
+      var(--sidebar-background);
     position: relative;
   }
 
-  /* Galaxy-style starfield background for Main content */
-  main.bg-background,
-  [data-sidebar="inset"] {
+  /* Galaxy-style starfield background for Main content - Only in Dark */
+  .dark [data-sidebar="inset"],
+  .dark main.bg-background {
     background-color: hsl(240 40% 5%) !important;
     background-image: 
       radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.15), transparent),

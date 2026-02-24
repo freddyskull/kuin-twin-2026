@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/providers/query-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 import { Footer } from "@/components/footer";
 
 const outfit = Outfit({
@@ -32,8 +33,15 @@ export default function RootLayout({
         className={`${outfit.variable} ${inter.variable} font-sans antialiased`}
       >
         <Providers>
-          {children}
-          <Footer />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Footer />
+          </ThemeProvider>
         </Providers>
       </body>
     </html>

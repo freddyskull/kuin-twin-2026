@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui";
 import { Button } from '@/components/ui';
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "./theme-toggle";
 
 interface NavbarProps {
   className?: string;
@@ -47,7 +48,9 @@ export const Navbar: React.FC<NavbarProps> = ({ className, transparent = false }
           <Link href="#" className="hover:text-primary transition-colors font-bold">Explorar</Link>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
+          <ThemeToggle />
+          <div className="h-6 w-px bg-border/40 mx-1 hidden sm:block" />
           {user ? (
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">

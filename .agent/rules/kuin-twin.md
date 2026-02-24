@@ -53,4 +53,11 @@ Este documento define las reglas técnicas y de arquitectura exclusivas para el 
 27. **Performance:** Imágenes optimizadas obligatoriamente mediante el componente `<Image />` de Next.js.
 28. **Mobile First:** El diseño debe ser 100% responsivo, priorizando la experiencia en celulares.
 
-**Instrucción para el Agente:** *Gemini, utiliza este archivo como la guía definitiva para Kuin-Twin. Aplica la fragmentación de archivos y la atomización de esquemas de Zod de forma estricta.*
+## 🚀 Git Workflow & Commits
+29. **Mensaje de Commit Obligatorio:** Al finalizar cualquier modificación, el agente debe proporcionar un mensaje de commit siguiendo el formato: `[scope/app] emoji tipo: descripción`.
+    * **Scopes:** `backend`, `frontend`, `mobile`, `docs` o `ambos`.
+    * **Apps:** Nombre de la aplicación (ej: `api`, `web-store`, `admin-panel`).
+    * **Emojis:** Usar la convención de Gitmojis (✨ feat, 🐛 fix, ♻️ refactor, 🎨 style, 💄 ui, 🔧 config, etc.).
+    * **Idioma:** Exclusivamente en **español**.
+
+**Instrucción para el Agente:** *Gemini, utiliza este archivo como la guía definitiva para Kuin-Twin. Aplica la fragmentación de archivos, la atomización de esquemas de Zod y la generación de mensajes de commit de forma estricta.*

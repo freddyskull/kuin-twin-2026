@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Github, Twitter, Instagram, Linkedin, Mail, MapPin, Phone, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui";
+import { ThemeToggle } from "./theme-toggle";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -121,6 +122,8 @@ export const Footer = () => {
             © {currentYear} Kuin-Twin. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-6">
+            <ThemeToggle />
+            <div className="h-4 w-px bg-border/40" />
             <Link href="#" className="text-xs text-muted-foreground hover:text-primary transition-colors">Español (MX)</Link>
             <div className="h-4 w-px bg-border/40" />
             <div className="flex items-center gap-2">

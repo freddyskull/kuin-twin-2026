@@ -62,8 +62,6 @@ export default async function ServicePage({ params }: PageProps) {
 
   const imageUrl = getAbsoluteUrl(service.imageUrl);
 
-  console.log(service)
-
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Background Orbs */}
@@ -104,59 +102,56 @@ export default async function ServicePage({ params }: PageProps) {
           </Card>
 
           {/* Service Attributes (Metadata) */}
-          {service && (service as any).metadata && (service as any).metadata.length > 0 && (
+          {service.metadata && service.metadata.length > 0 && (
             <div className="space-y-4 mb-10 text-center">
               <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Especificaciones</h3>
-              <Card className="p-6 border-border/40 bg-secondary/10 backdrop-blur-sm">
-                {(service as any).metadata.map((item: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className="flex items-center p-3 rounded-xl bg-secondary/10 border border-border/40 hover:border-primary/20 transition-colors group gap-2"
-                  >
-                    <span className="text-xs font-semibold text-muted-foreground uppercase text-nowrap">{item.key}</span>
+              <div className="grid grid-cols-2 gap-4">
+                {service.metadata.map((item, idx) => (
+                  <Card key={idx} className="p-3 rounded-xl bg-secondary/5 border border-border/40 hover:border-primary/20 transition-colors group flex items-center gap-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase text-nowrap">{item.key}:</span>
                     <span className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">{item.value}</span>
-                  </div>
+                  </Card>
                 ))}
-              </Card>
+              </div>
             </div>
           )}
-
 
           {/* Work Schedule */}
-          {service.workSchedule && (service.workSchedule as any).schedule && (service.workSchedule as any).schedule.length > 0 && (
-            <div className="space-y-4 mb-10">
-              <div className="flex items-center gap-2 justify-center">
-                <Clock className="w-3.5 h-3.5 text-primary" />
-                <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Horarios de Atención</h3>
-              </div>
-              <Card className="p-6 border-border/40 bg-secondary/10 backdrop-blur-sm">
-                {(service.workSchedule as any).schedule.map((day: any) => {
-                  const dayLabels: Record<string, string> = {
-                    Monday: 'Lunes',
-                    Tuesday: 'Martes',
-                    Wednesday: 'Miércoles',
-                    Thursday: 'Jueves',
-                    Friday: 'Viernes',
-                    Saturday: 'Sábado',
-                    Sunday: 'Domingo',
-                  };
-                  return (
-                    <div key={day.day} className="flex items-center justify-between py-0.5">
-                      <span className={`text-xs font-medium ${day.enabled ? 'text-foreground' : 'text-slate-500'}`}>
-                        {dayLabels[day.day] || day.day}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        {!day.enabled && <div className="h-1 w-1 rounded-full bg-red-400" />}
-                        <span className={`text-[11px] font-bold ${day.enabled ? 'text-foreground' : 'text-red-400/80 uppercase'}`}>
-                          {day.enabled ? `${day.startTime} - ${day.endTime}` : 'Cerrado'}
+          {service.workSchedule && (service.workSchedule as Record<string, any>).schedule &&
+            Array.isArray((service.workSchedule as any).schedule) && (
+              <div className="space-y-4 mb-10">
+                <div className="flex items-center gap-2 justify-center">
+                  <Clock className="w-3.5 h-3.5 text-primary" />
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Horarios de Atención</h3>
+                </div>
+                <Card className="p-6 border-border/40 bg-secondary/5 backdrop-blur-sm">
+                  {(service.workSchedule as any).schedule.map((day: any) => {
+                    const dayLabels: Record<string, string> = {
+                      Monday: 'Lunes',
+                      Tuesday: 'Martes',
+                      Wednesday: 'Miércoles',
+                      Thursday: 'Jueves',
+                      Friday: 'Viernes',
+                      Saturday: 'Sábado',
+                      Sunday: 'Domingo',
+                    };
+                    return (
+                      <div key={day.day} className="flex items-center justify-between py-0.5">
+                        <span className={`text-xs font-medium ${day.enabled ? 'text-foreground' : 'text-slate-500'}`}>
+                          {dayLabels[day.day] || day.day}
                         </span>
+                        <div className="flex items-center gap-2">
+                          {!day.enabled && <div className="h-1 w-1 rounded-full bg-red-400" />}
+                          <span className={`text-[11px] font-bold ${day.enabled ? 'text-foreground' : 'text-red-400/80 uppercase'}`}>
+                            {day.enabled ? `${day.startTime} - ${day.endTime}` : 'Cerrado'}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </Card>
-            </div>
-          )}
+                    );
+                  })}
+                </Card>
+              </div>
+            )}
 
 
           {/* Location & Map Section */}
@@ -187,7 +182,7 @@ export default async function ServicePage({ params }: PageProps) {
                   <iframe
                     width="100%"
                     height="100%"
-                    style={{ border: 0, filter: 'grayscale(0.4) contrast(1.1) invert(0.05)' }}
+                    style={{ border: 0, filter: 'contrast(1.1) brightness(1.05)' }}
                     loading="lazy"
                     allowFullScreen
                     referrerPolicy="no-referrer-when-downgrade"
