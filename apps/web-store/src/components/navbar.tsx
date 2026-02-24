@@ -45,6 +45,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className, transparent = false }
           >
             Mensajes
           </Link>
+          <Link href="/planes" className="hover:text-primary transition-colors font-bold">Planes</Link>
           <Link href="#" className="hover:text-primary transition-colors font-bold">Explorar</Link>
         </div>
 
