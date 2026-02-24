@@ -47,6 +47,7 @@ const SUBSCRIPTION_PLANS = [
 
 export function PricingPlans() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [hoveredPlan, setHoveredPlan] = useState<string | null>(null);
 
   const handleSelectPlan = (planTitle: string) => {
     setLoadingPlan(planTitle);
@@ -77,6 +78,13 @@ export function PricingPlans() {
             {...plan}
             loading={loadingPlan === plan.title}
             onSelect={() => handleSelectPlan(plan.title)}
+            isHighlighted={
+              hoveredPlan !== null
+                ? hoveredPlan === plan.title   // si algo está hovered, solo ese tiene borde
+                : plan.isPopular               // por defecto, el popular
+            }
+            onMouseEnter={() => setHoveredPlan(plan.title)}
+            onMouseLeave={() => setHoveredPlan(null)}
           />
         </motion.div>
       ))}

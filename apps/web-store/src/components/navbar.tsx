@@ -45,12 +45,13 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
             : "h-20 bg-transparent border-transparent",
           className
         )}>
-          <div className="container-app h-full flex items-center justify-between">
+          <div className="container-app h-full flex items-center justify-between relative">
             <Link href="/" className="text-2xl font-bold tracking-tighter text-primary">
               KUIN<span className="text-foreground">TWIN</span>
             </Link>
 
-            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground justify-center text-center">
+            {/* Links centrados absolutamente respecto a la pantalla */}
+            <div className="hidden md:flex items-center gap-8 text-sm font-medium absolute left-1/2 -translate-x-1/2">
               <Link
                 href="/"
                 className={cn("hover:text-primary transition-colors font-bold", isHome ? "text-foreground" : "text-muted-foreground")}
@@ -70,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
                   onRemoveNotification={(id) => useMessagesStore.getState().removeNotification(id)}
                   onViewAll={() => router.push("/chat")}
                   onNotificationClick={(msg) => router.push(`/chat/${msg.senderId}`)}
-                  dropdownClassName="w-[min(90vw,360px)] sm:w-[440px] md:w-[520px]"
+                  dropdownClassName="w-[min(90vw,360px)]"
                 />
               )}
               <ThemeToggle />

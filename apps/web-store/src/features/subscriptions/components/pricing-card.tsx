@@ -20,9 +20,12 @@ interface PricingCardProps {
   description: string;
   features: string[];
   isPopular?: boolean;
+  isHighlighted?: boolean;
   buttonText?: string;
   onSelect?: () => void;
   loading?: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 export function PricingCard({
@@ -31,15 +34,23 @@ export function PricingCard({
   description,
   features,
   isPopular,
+  isHighlighted,
   buttonText = "Seleccionar Plan",
   onSelect,
-  loading
+  loading,
+  onMouseEnter,
+  onMouseLeave
 }: PricingCardProps) {
+  // isHighlighted controla el borde: si no se pasa, cae en isPopular
+  const highlighted = isHighlighted ?? isPopular;
+
   return (
     <Card
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={cn(
-        "relative flex flex-col h-full transition-all duration-300 hover:shadow-2xl border-2",
-        isPopular ? "border-primary scale-105 shadow-xl z-10" : "border-border hover:border-primary/50"
+        "relative rounded-xl bg-card/50 hover:bg-card/20 backdrop-blur-sm flex flex-col h-full transition-all duration-500 ease-in-out hover:shadow-2xl border-2",
+        highlighted ? "border-primary scale-105 shadow-xl shadow-primary/10 z-10" : "border-border"
       )}
     >
       {isPopular && (
