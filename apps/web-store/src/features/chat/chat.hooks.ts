@@ -54,3 +54,4 @@ export const useOnlineStatus = (userId: string | undefined) => {
     refetchInterval: 10000, // Poll every 10s
   });
 };
+export * from './messages.store';

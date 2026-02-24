@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { useChatMessages, useSendMessage, useMarkAsRead } from '../chat.hooks';
+import { useChatMessages, useSendMessage, useMarkAsRead, useMessagesStore } from '../chat.hooks';
 import { ChatMessage } from './chat-message';
 import { Button, Input } from '@/components/ui';
 import { Send, Loader2 } from 'lucide-react';
@@ -21,6 +21,7 @@ export const ChatBox = ({ userId, otherUserId }: ChatBoxProps) => {
   const sendMessageMutation = useSendMessage(userId);
   const markAsReadMutation = useMarkAsRead(userId);
   const queryClient = useQueryClient();
+  const { removeNotificationsBySender } = useMessagesStore();
 
   // Socket for real-time messages
   useEffect(() => {
@@ -32,6 +33,8 @@ export const ChatBox = ({ userId, otherUserId }: ChatBoxProps) => {
         if (payload.senderId === otherUserId) {
           queryClient.invalidateQueries({ queryKey: ['chat', 'messages', userId, otherUserId] });
           queryClient.invalidateQueries({ queryKey: ['chat', 'conversations', userId] });
+          // También limpiamos notificaciones globales si estamos en el chat con esa persona
+          removeNotificationsBySender(otherUserId);
         }
       };
 
@@ -41,7 +44,7 @@ export const ChatBox = ({ userId, otherUserId }: ChatBoxProps) => {
         socket.off('new_message', handleNewMessage);
       };
     }
-  }, [userId, otherUserId, queryClient]);
+  }, [userId, otherUserId, queryClient, removeNotificationsBySender]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -56,9 +59,10 @@ export const ChatBox = ({ userId, otherUserId }: ChatBoxProps) => {
       const hasUnread = messages.some(m => !m.isRead && m.receiverId === userId);
       if (hasUnread) {
         markAsReadMutation.mutate(otherUserId);
+        removeNotificationsBySender(otherUserId);
       }
     }
-  }, [messages, userId, otherUserId]);
+  }, [messages, userId, otherUserId, removeNotificationsBySender]);
 
   const handleSend = () => {
     if (!content.trim()) return;

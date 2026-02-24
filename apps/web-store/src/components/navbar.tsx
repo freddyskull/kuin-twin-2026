@@ -4,10 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/features/auth/auth.store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui";
-import { Button } from '@/components/ui';
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
+import { NavbarNotifications } from "./navbar-notifications";
+import { Button } from "@/components/ui/button";
 
 interface NavbarProps {
   className?: string;
@@ -53,17 +54,12 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
               >
                 Inicio
               </Link>
-              <Link
-                href="/chat"
-                className={cn("hover:text-primary transition-colors font-bold", isChat ? "text-foreground" : "text-muted-foreground")}
-              >
-                Mensajes
-              </Link>
-              <Link href="/planes" className="hover:text-primary transition-colors font-bold">Planes</Link>
+              <Link href="/planes" className={cn("hover:text-primary transition-colors font-bold", pathname === "/planes" ? "text-foreground" : "text-muted-foreground")}>Planes</Link>
               <Link href="#" className="hover:text-primary transition-colors font-bold">Explorar</Link>
             </div>
 
-            <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex items-center gap-2 md:gap-3">
+              {user && <NavbarNotifications />}
               <ThemeToggle />
               <div className="h-6 w-px bg-border/40 mx-1 hidden sm:block" />
               {user ? (
