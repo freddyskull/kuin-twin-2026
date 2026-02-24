@@ -86,7 +86,7 @@ export default async function ServicePage({ params }: PageProps) {
       </nav>
 
       {/* Hero Section */}
-      <div className="relative pt-24 px-6 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row gap-8 lg:gap-12 z-10">
+      <div className="relative pt-24 container-app flex flex-col md:flex-row gap-8 lg:gap-12 z-10">
 
         {/* Left Column: Image Gallery */}
         <div className="w-full md:w-1/2 lg:w-3/5">
@@ -332,7 +332,7 @@ export default async function ServicePage({ params }: PageProps) {
 
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 z-10 relative">
+      <div className="container-app z-10 relative">
         <RelatedServices serviceId={service.id} />
       </div>
     </div>

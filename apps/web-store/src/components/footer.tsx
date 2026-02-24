@@ -13,7 +13,7 @@ export const Footer = () => {
       {/* Background Decor */}
       <div className="absolute bottom-0 left-0 w-[30%] h-[30%] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 py-16 md:px-12 relative z-10">
+      <div className="container-app py-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Section */}
           <div className="space-y-6">

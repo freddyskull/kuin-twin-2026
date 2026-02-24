@@ -21,7 +21,7 @@ export default function Home() {
 
       <Navbar transparent />
 
-      <main className="relative z-10 px-6 pt-20 pb-32 md:px-12 flex flex-col items-center text-center">
+      <main className="relative z-10 container-app pt-20 pb-32 flex flex-col items-center text-center">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -83,7 +83,7 @@ export default function Home() {
         </motion.div>
 
         {/* Featured Cards - Dynamic Content */}
-        <div className="mt-20 w-full max-w-7xl text-left">
+        <div className="mt-20 w-full text-left">
           <h2 className="text-2xl font-bold mb-8 pl-2 border-l-4 border-primary">Populares cerca de ti</h2>
 
           {isLoading && (
