@@ -32,9 +32,10 @@ export class ServiceService {
       data: {
         ...data,
         metadata: { create: createDto.metadata || [] },
+        faqs: { create: createDto.faqs || [] },
         slots: { create: transformSlots(createDto.slots || []) }
       },
-      include: { metadata: true, slots: true, branches: true }
+      include: { metadata: true, faqs: true, slots: true, branches: true }
     });
 
     await this.updateGisLocation(service.id, createDto.latitude, createDto.longitude);
@@ -63,6 +64,7 @@ export class ServiceService {
           company: true, 
           branches: true, 
           metadata: true, 
+          faqs: { orderBy: { order: 'asc' } },
           vendor: { select: { id: true, email: true, profile: true } } 
         },
         orderBy: { title: 'asc' },
@@ -92,6 +94,7 @@ export class ServiceService {
           }
         },
         metadata: true,
+        faqs: { orderBy: { order: 'asc' } },
         slots: { where: { status: 'AVAILABLE' }, take: 10 },
       },
     });
@@ -114,12 +117,13 @@ export class ServiceService {
 
     const updateData = mapUpdateServiceData(updateDto);
     if (updateDto.metadata) updateData.metadata = { deleteMany: {}, create: updateDto.metadata };
+    if (updateDto.faqs) updateData.faqs = { deleteMany: {}, create: updateDto.faqs };
     if (updateDto.slots) updateData.slots = { deleteMany: {}, create: transformSlots(updateDto.slots) };
 
     const updated = await this.prisma.service.update({
       where: { id },
       data: updateData,
-      include: { metadata: true, slots: true, branches: true }
+      include: { metadata: true, faqs: true, slots: true, branches: true }
     });
 
     await this.updateGisLocation(id, updateDto.latitude, updateDto.longitude);
@@ -154,6 +158,7 @@ export class ServiceService {
     await this.clearServiceCache(service.vendorId, service.categoryId, id);
     await this.prisma.$transaction([
       this.prisma.serviceMetadata.deleteMany({ where: { serviceId: id } }),
+      this.prisma.serviceFaq.deleteMany({ where: { serviceId: id } }),
       this.prisma.serviceSlot.deleteMany({ where: { serviceId: id } }),
       this.prisma.service.delete({ where: { id } }),
     ]);

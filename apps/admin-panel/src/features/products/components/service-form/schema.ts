@@ -71,6 +71,17 @@ export const serviceSchema = z.object({
       return z.NEVER;
     }
   }),
+  faqs: z.array(z.object({
+    question: z.string(),
+    answer: z.string(),
+    order: z.number().optional().default(0),
+  })).default([]).transform((items) => {
+    // Filter out empty items
+    return items.filter(item => item.question.trim() !== '' || item.answer.trim() !== '');
+  }).refine((items) => {
+    // Both question and answer must be present if one is
+    return items.every(item => item.question.trim() !== '' && item.answer.trim() !== '');
+  }, 'Ambos campos (pregunta y respuesta) deben estar llenos'),
   slots: z.array(z.any()).optional().default([]),
   workSchedule: z.object({
     schedule: z.array(z.object({

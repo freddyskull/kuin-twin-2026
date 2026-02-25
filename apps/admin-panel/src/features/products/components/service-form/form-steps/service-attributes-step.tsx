@@ -14,6 +14,11 @@ export const ServiceAttributesStep: React.FC = () => {
     name: "metadata"
   });
 
+  const { fields: faqFields, append: appendFaq, remove: removeFaq } = useFieldArray({
+    control,
+    name: "faqs"
+  });
+
   const watchedMetadata = useWatch({ control, name: 'metadata' });
   const watchedDynamicAttributes = useWatch({ control, name: 'dynamicAttributes' });
   const watchedLatitude = useWatch({ control, name: 'latitude' });
@@ -126,6 +131,43 @@ export const ServiceAttributesStep: React.FC = () => {
                 {(errors.metadata?.[index]?.key || errors.metadata?.[index]?.value) && (
                   <p className="text-[10px] text-red-500 font-bold pl-1">
                     {errors.metadata?.[index]?.key?.message || errors.metadata?.[index]?.value?.message}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Preguntas Frecuentes (FAQs)</Label>
+            <button type="button" onClick={() => appendFaq({ question: '', answer: '', order: 0 })} className="text-dashboard-primary text-[10px] font-bold uppercase tracking-wider hover:underline">
+              + Añadir FAQ
+            </button>
+          </div>
+          <div className="space-y-4">
+            {faqFields.map((field, index) => (
+              <div key={field.id} className="bg-[#0a0b1e]/20 p-4 rounded-xl border border-white/5 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Pregunta #{index + 1}</span>
+                  <button type="button" onClick={() => removeFaq(index)} className="p-1.5 text-slate-600 hover:text-red-500 transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <input
+                  {...register(`faqs.${index}.question` as const)}
+                  placeholder="¿Pregunta?"
+                  className="w-full bg-[#0a0b1e]/40 border border-white/5 rounded-lg py-2.5 px-4 text-white text-xs font-bold focus:ring-1 focus:ring-dashboard-primary/30 outline-none"
+                />
+                <textarea
+                  {...register(`faqs.${index}.answer` as const)}
+                  placeholder="Respuesta..."
+                  rows={2}
+                  className="w-full bg-[#0a0b1e]/40 border border-white/5 rounded-lg py-2.5 px-4 text-white text-xs font-medium focus:ring-1 focus:ring-dashboard-primary/30 outline-none resize-none"
+                />
+                {errors.faqs?.[index] && (
+                  <p className="text-[10px] text-red-500 font-bold pl-1">
+                    Ambos campos son requeridos para guardar la FAQ
                   </p>
                 )}
               </div>

@@ -3,7 +3,7 @@ import { CreateServiceDto, UpdateServiceDto } from './dto';
 export function mapCreateServiceData(createDto: CreateServiceDto, slug: string) {
   const { 
     vendorId, categoryId, unitId, companyId, 
-    metadata, slots, workSchedule, tags, 
+    metadata, faqs, slots, workSchedule, tags, 
     dynamicAttributes, commentsBox,
     branchIds, latitude, longitude, address,
     ...rest 
@@ -36,7 +36,7 @@ export function mapCreateServiceData(createDto: CreateServiceDto, slug: string) 
 
 export function mapUpdateServiceData(updateDto: UpdateServiceDto) {
   const { 
-    metadata, slots, workSchedule, companyId, 
+    metadata, faqs, slots, workSchedule, companyId, 
     tags, dynamicAttributes, commentsBox,
     branchIds, latitude, longitude, address,
     ...rest 

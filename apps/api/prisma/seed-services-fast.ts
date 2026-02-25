@@ -136,7 +136,11 @@ const SERVICES = [
       { key: 'Idiomas', value: 'Español, Inglés, Francés' },
       { key: 'Certificación', value: 'Conducción Defensiva VIP' }
     ],
-    tags: ['transporte', 'lujo', 'premium', 'chofer', 'bilingüe']
+    tags: ['transporte', 'lujo', 'premium', 'chofer', 'bilingüe'],
+    faqs: [
+      { question: '¿Los chóferes hablan inglés?', answer: 'Sí, todos nuestros chóferes en la categoría VIP son bilingües certificados.', order: 1 },
+      { question: '¿Puedo solicitar blindaje?', answer: 'Sí, contamos con vehículos con niveles de blindaje 3 y 5 bajo solicitud previa.', order: 2 }
+    ]
   },
   {
     title: 'Jets Privados - Vuelo Nacional',
@@ -149,7 +153,11 @@ const SERVICES = [
       { key: 'Autonomía', value: '5,000 km sin escalas' },
       { key: 'Extras', value: 'Permiso para mascotas, Kit de Descanso' }
     ],
-    tags: ['aviación', 'jet', 'vuelo', 'privado', 'rápido']
+    tags: ['aviación', 'jet', 'vuelo', 'privado', 'rápido'],
+    faqs: [
+      { question: '¿Con cuánta anticipación debo reservar?', answer: 'Podemos tener un jet listo en tan solo 2 a 4 horas para vuelos nacionales.', order: 1 },
+      { question: '¿Puedo llevar a mi mascota?', answer: 'Sí, todas nuestras aeronaves son pet-friendly, solo requerimos aviso previo.', order: 2 }
+    ]
   },
   {
     title: 'Barman Profesional para Fiestas',
@@ -162,7 +170,11 @@ const SERVICES = [
       { key: 'Duración', value: 'Desde 5 horas de servicio' },
       { key: 'Barra', value: 'Incluye barra móvil LED' }
     ],
-    tags: ['bebidas', 'cócteles', 'fiesta', 'barman', 'mixología']
+    tags: ['bebidas', 'cócteles', 'fiesta', 'barman', 'mixología'],
+    faqs: [
+      { question: '¿Incluye los insumos y licores?', answer: 'Ofrecemos paquetes que pueden incluir solo el servicio de barman o el servicio integral con todos los insumos premium incluidos.', order: 1 },
+      { question: '¿Con cuánto tiempo de anticipación llegan?', answer: 'Nuestro equipo llega 60 minutos antes del inicio del evento para el montaje de la barra.', order: 2 }
+    ]
   },
   {
     title: 'Masaje Relajante Profundo',
@@ -175,7 +187,11 @@ const SERVICES = [
       { key: 'Duración', value: '90 minutos' },
       { key: 'Material', value: 'Aceites Orgánicos Certificados' }
     ],
-    tags: ['bienestar', 'spa', 'masaje', 'relajación', 'salud']
+    tags: ['bienestar', 'spa', 'masaje', 'relajación', 'salud'],
+    faqs: [
+      { question: '¿Qué espacio se necesita para el masaje?', answer: 'Solo requerimos un espacio libre de aproximadamente 2.5 x 1.5 metros para colocar la camilla cómodamente.', order: 1 },
+      { question: '¿Llevan todo el material necesario?', answer: 'Sí, llevamos camilla profesional, sábanas esterilizadas, aceites esenciales y música ambiental.', order: 2 }
+    ]
   },
   {
     title: 'Limpieza Profunda de Residencias',
@@ -188,7 +204,11 @@ const SERVICES = [
       { key: 'Garantía', value: 'Revisión de calidad al finalizar' },
       { key: 'Seguridad', value: 'Personal investigado y uniformado' }
     ],
-    tags: ['hogar', 'limpieza', 'desinfección', 'profesional', 'casa']
+    tags: ['hogar', 'limpieza', 'desinfección', 'profesional', 'casa'],
+    faqs: [
+      { question: '¿Es necesario que yo esté presente?', answer: 'No es estrictamente necesario si nos proporciona acceso seguro, aunque recomendamos estar al inicio y al final para la entrega.', order: 1 },
+      { question: '¿Los productos son seguros para mascotas?', answer: 'Utilizamos productos ecológicos y biodegradables que son 100% seguros para niños y mascotas.', order: 2 }
+    ]
   },
   {
     title: 'Chef a Domicilio - Cena Romántica',
@@ -201,7 +221,11 @@ const SERVICES = [
       { key: 'Vinos', value: 'Selección de Sommelier incluida' },
       { key: 'Personal', value: 'Chef + 1 Mesero de servicio' }
     ],
-    tags: ['comida', 'chef', 'cena', 'romántico', 'gourmet']
+    tags: ['comida', 'chef', 'cena', 'romántico', 'gourmet'],
+    faqs: [
+      { question: '¿Se encargan de la limpieza de la cocina?', answer: 'Absolutamente. Devolvemos su cocina impecable, tal como la encontramos.', order: 1 },
+      { question: '¿Pueden adaptarse a restricciones alimenticias?', answer: 'Sí, personalizamos el menú para dietas keto, veganas, sin gluten o alergias específicas.', order: 2 }
+    ]
   },
   {
     title: 'Escolta Privada VIP',
@@ -214,7 +238,11 @@ const SERVICES = [
       { key: 'Armamento', value: 'Autorizado SEDENA (opcional)' },
       { key: 'Táctica', value: 'Protocolo de Extracción Segura' }
     ],
-    tags: ['seguridad', 'escolta', 'protección', 'VIP', 'prevención']
+    tags: ['seguridad', 'escolta', 'protección', 'VIP', 'prevención'],
+    faqs: [
+      { question: '¿Qué tipo de vehículos utilizan?', answer: 'Podemos operar con sus vehículos privados o proveer unidades escolta blindadas Nivel 4 o 5.', order: 1 },
+      { question: '¿El servicio es por evento o por hora?', answer: 'Ofrecemos ambas modalidades, adaptándonos a servicios de corta duración o protección 24/7.', order: 2 }
+    ]
   },
   {
     title: 'Decoración de Interiores Express',
@@ -227,7 +255,11 @@ const SERVICES = [
       { key: 'Entrega', value: 'Render 3D y lista de compras' },
       { key: 'Estilo', value: 'Contemporáneo / Minimalista' }
     ],
-    tags: ['diseño', 'interiores', 'decoración', 'remodelación', 'hogar']
+    tags: ['diseño', 'interiores', 'decoración', 'remodelación', 'hogar'],
+    faqs: [
+      { question: '¿Tengo que comprar muebles nuevos?', answer: 'No necesariamente. Podemos trabajar optimizando sus piezas actuales y sugiriendo solo cambios estratégicos.', order: 1 },
+      { question: '¿Incluyen supervisión de obra?', answer: 'En el servicio Express nos enfocamos en diseño y montaje rápido, para supervisión mayor ofrecemos el servicio integral.', order: 2 }
+    ]
   },
   {
     title: 'Entrenamiento Personalizado',
@@ -240,7 +272,11 @@ const SERVICES = [
       { key: 'Nutrición', value: 'Plan de alimentación incluido' },
       { key: 'App', value: 'Acceso a seguimiento en tiempo real' }
     ],
-    tags: ['fitness', 'ejercicio', 'gimnasio', 'entrenador', 'salud']
+    tags: ['fitness', 'ejercicio', 'gimnasio', 'entrenador', 'salud'],
+    faqs: [
+      { question: '¿Dónde se realizan los entrenamientos?', answer: 'Podemos entrenar en su gimnasio residencial, parques públicos autorizados o estudios privados.', order: 1 },
+      { question: '¿Incluye guía nutricional?', answer: 'Sí, el servicio base incluye una guía de alimentación alineada a sus objetivos de entrenamiento.', order: 2 }
+    ]
   },
   {
     title: 'Yoga al Amanecer',
@@ -253,7 +289,11 @@ const SERVICES = [
       { key: 'Material', value: 'Incluye Mat de alta densidad' },
       { key: 'Duración', value: '75 minutos de práctica' }
     ],
-    tags: ['yoga', 'meditación', 'bienestar', 'amanecer', 'paz']
+    tags: ['yoga', 'meditación', 'bienestar', 'amanecer', 'paz'],
+    faqs: [
+      { question: '¿Nunca he hecho yoga, puedo tomar la clase?', answer: 'Claro, nuestras clases al amanecer son multinivel y perfectas para principiantes.', order: 1 },
+      { question: '¿Qué ropa debo usar?', answer: 'Recomendamos ropa deportiva cómoda y flexible que permita libertad de movimiento.', order: 2 }
+    ]
   },
   {
     title: 'Jardinería de Paisaje',
@@ -266,7 +306,11 @@ const SERVICES = [
       { key: 'Sostenibilidad', value: 'Uso de plantas xero-paisajistas' },
       { key: 'Garantía', value: 'Seguro de vida para plantas mayores' }
     ],
-    tags: ['jardín', 'paisajismo', 'exterior', 'naturaleza', 'plantas']
+    tags: ['jardín', 'paisajismo', 'exterior', 'naturaleza', 'plantas'],
+    faqs: [
+      { question: '¿Hacen diseños desde cero?', answer: 'Sí, realizamos el proyecto completo desde el plano conceptual hasta la plantación final.', order: 1 },
+      { question: '¿Tienen servicio de mantenimiento regular?', answer: 'Sí, contamos con abonos mensuales para mantenimiento preventivo y correctivo.', order: 2 }
+    ]
   },
   {
     title: 'Fotógrafo Profesional para Eventos',
@@ -279,7 +323,11 @@ const SERVICES = [
       { key: 'Entrega', value: 'Galería digital en 48 horas' },
       { key: 'Extras', value: 'Uso de Drone 4K incluido' }
     ],
-    tags: ['foto', 'video', 'eventos', 'recuerdos', 'profesional']
+    tags: ['foto', 'video', 'eventos', 'recuerdos', 'profesional'],
+    faqs: [
+      { question: '¿Cuentan con equipo de respaldo?', answer: 'Siempre grabamos y fotografiamos con dos cámaras y doble tarjeta de memoria por seguridad.', order: 1 },
+      { question: '¿Entregan fotos impresas?', answer: 'La entrega base es digital en alta resolución, pero ofrecemos álbumes premium impresos como adicional.', order: 2 }
+    ]
   }
 ];
 
@@ -333,6 +381,10 @@ async function main() {
         slug: slugify(s.title),
         workSchedule: s.schedule as any,
         tags: s.tags,
+        faqs: {
+          deleteMany: {},
+          create: s.faqs || []
+        },
         latitude: 19.4326 + (Math.random() - 0.5) * 0.1,
         longitude: -99.1332 + (Math.random() - 0.5) * 0.1,
         address: `${company.taxAddress}, ${company.taxAddressCity}`,
@@ -352,6 +404,9 @@ async function main() {
         slug: slugify(s.title),
         workSchedule: s.schedule as any,
         tags: s.tags,
+        faqs: {
+          create: s.faqs || []
+        },
         latitude: 19.4326 + (Math.random() - 0.5) * 0.1,
         longitude: -99.1332 + (Math.random() - 0.5) * 0.1,
         address: `${company.taxAddress}, ${company.taxAddressCity}`,

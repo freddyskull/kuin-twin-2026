@@ -8,7 +8,7 @@ import { Button, Card } from '@/components/ui';
 import { ArrowLeft, Star, MapPin, Calendar, MessageCircle, Share2, Heart, ShieldCheck, Clock } from 'lucide-react';
 import { ServiceDto } from 'shared-types';
 import { StatusIndicator } from '@/features/chat/components';
-import { ServiceGallery, CompanySection, ReviewForm, ReviewList, RelatedServices } from '@/features/services';
+import { ServiceGallery, CompanySection, ReviewForm, ReviewList, RelatedServices, ServiceFaqs } from '@/features/services';
 
 interface PageProps {
   params: { slug: string };
@@ -216,6 +216,11 @@ export default async function ServicePage({ params }: PageProps) {
             company={service.company}
             vendorName={service.vendor?.profile?.displayName || 'Profesional'}
           />
+
+          {/* FAQs Section */}
+          {service.faqs && service.faqs.length > 0 && (
+            <ServiceFaqs faqs={service.faqs} />
+          )}
 
           {/* Section: Reviews */}
           <div className="mt-12 space-y-8">

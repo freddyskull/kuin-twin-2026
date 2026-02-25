@@ -68,6 +68,7 @@ export const EditServicePage: React.FC = () => {
         longitude: (service.dynamicAttributes as any)?.longitud || 0,
         workSchedule: service.workSchedule as any || undefined,
         slots: loadedSlots,
+        faqs: service.faqs || [],
         companyId: service.companyId || ''
       });
     }
@@ -117,6 +118,7 @@ export const EditServicePage: React.FC = () => {
         dynamicAttributes: data.dynamicAttributes ? JSON.parse(data.dynamicAttributes) : {},
         workSchedule: data.workSchedule,
         slots: data.slots || [],
+        faqs: data.faqs || [],
         companyId: data.companyId,
         branchIds: data.branchIds,
         latitude: data.latitude,

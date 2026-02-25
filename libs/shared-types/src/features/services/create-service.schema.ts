@@ -24,6 +24,12 @@ export const CreateServiceSchema = z.object({
   workSchedule: z.any().nullish(),
   commentsBox: z.any().nullish(),
   
+  faqs: z.array(z.object({
+    question: z.string().min(5, 'La pregunta es muy corta'),
+    answer: z.string().min(5, 'La respuesta es muy corta'),
+    order: z.number().int().default(0),
+  })).default([]),
+  
   slots: z.array(ServiceSlotSchema).default([]),
   branchIds: z.array(z.string().uuid()).default([]),
   

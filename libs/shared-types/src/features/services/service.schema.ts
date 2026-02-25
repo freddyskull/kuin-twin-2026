@@ -55,6 +55,13 @@ export const ServiceSchema = z.object({
     value: z.string(),
   })).optional(),
 
+  faqs: z.array(z.object({
+    id: z.string().uuid().optional(),
+    question: z.string(),
+    answer: z.string(),
+    order: z.number().optional(),
+  })).optional(),
+
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 });

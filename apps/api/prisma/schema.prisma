@@ -247,6 +247,7 @@ model Service {
   bookings Booking[]
   branches Branch[] // Sucursales donde se ofrece este servicio
   reviews  Review[]
+  faqs     ServiceFaq[]
 
   @@unique([vendorId, title])
   @@index([companyId]) // Índice para rapidez en búsquedas por empresa
@@ -275,6 +276,17 @@ model ServiceMetadata {
   service   Service @relation(fields: [serviceId], references: [id])
   key       String // Ej: "experiencia"
   value     String // Ej: "5 años"
+}
+
+model ServiceFaq {
+  id        String  @id @default(uuid())
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  question  String  @db.Text
+  answer    String  @db.Text
+  order     Int     @default(0)
+
+  @@index([serviceId])
 }
 
 // --- FLUJO DE RESERVAS ---
