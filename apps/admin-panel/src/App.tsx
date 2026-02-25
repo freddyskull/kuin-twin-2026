@@ -28,6 +28,7 @@ const CreateCompanyPage = lazy(() => import('./features/companies').then(m => ({
 const EditCompanyPage = lazy(() => import('./features/companies').then(m => ({ default: m.EditCompanyPage })));
 const ProfilePage = lazy(() => import('./features/profile').then(m => ({ default: m.ProfilePage })));
 const MessagesPage = lazy(() => import('./features/messages').then(m => ({ default: m.MessagesList })));
+const BookingsPage = lazy(() => import('./features/bookings').then(m => ({ default: m.BookingsPage })));
 
 const App: React.FC = () => {
   return (
@@ -60,6 +61,8 @@ const App: React.FC = () => {
               <Route path="/mensajes" element={<MessagesPage />}>
                 <Route path=":userId" element={<MessagesPage />} />
               </Route>
+
+              <Route path="/pedidos" element={<BookingsPage />} />
 
               {/* Profile */}
               <Route path="/perfil" element={<ProfilePage />} />

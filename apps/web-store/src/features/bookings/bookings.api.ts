@@ -1,4 +1,4 @@
-import { CreateBookingInput, BookingDto } from 'shared-types';
+import type { CreateBookingInput, BookingDto } from 'shared-types';
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001') + '/api';
 

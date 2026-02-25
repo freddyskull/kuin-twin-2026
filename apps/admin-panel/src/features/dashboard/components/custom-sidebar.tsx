@@ -13,12 +13,17 @@ import {
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../../stores/auth.store';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { usePendingServicesCount } from '../../bookings/bookings.hooks';
 
 
 export const Sidebar: React.FC = () => {
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const user = useAuthStore((state) => state.user);
+
+  const pendingCount = usePendingServicesCount(user?.id);
 
   const handleLogout = () => {
     logout();
@@ -32,7 +37,7 @@ export const Sidebar: React.FC = () => {
     { icon: Briefcase, label: 'Mis Servicios', to: '/servicios' },
     { icon: Building2, label: 'Empresas', to: '/empresas' },
     { icon: MessageSquare, label: 'Mensajes', to: '/mensajes' },
-    { icon: ShoppingBag, label: 'Pedidos', to: '/pedidos' },
+    { icon: ShoppingBag, label: 'Pedidos', to: '/pedidos', badge: pendingCount > 0 ? pendingCount : null },
     { icon: BarChart3, label: 'Estadísticas', to: '/estadisticas' },
     { icon: Settings, label: 'Ajustes', to: '/ajustes' },
   ];
@@ -60,13 +65,19 @@ export const Sidebar: React.FC = () => {
             >
               <motion.div
                 whileHover={{ x: 5 }}
-                className={`flex items-center gap-4 w-full p-4 rounded-full transition-all duration-300 ${isActive
+                className={`flex items-center gap-4 w-full p-4 rounded-full transition-all duration-300 relative group/item ${isActive
                   ? 'bg-sidebar-primary/10 text-sidebar-primary shadow-inner shadow-sidebar-primary/5 border-l-4 border-sidebar-primary'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
                   }`}
               >
                 <item.icon className={`h-5 w-5 ${isActive ? 'text-sidebar-primary' : ''}`} />
-                <span className="font-medium">{item.label}</span>
+                <span className="font-medium flex-1">{item.label}</span>
+
+                {item.badge && (
+                  <span className="absolute right-4 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white shadow-lg shadow-red-500/40 animate-pulse">
+                    {item.badge}
+                  </span>
+                )}
               </motion.div>
             </Link>
           );
