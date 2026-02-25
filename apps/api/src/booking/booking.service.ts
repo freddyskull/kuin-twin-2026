@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { CreateBookingInput, UpdateBookingDto } from './dto/booking.dto';
+import { CreateBookingInput, UpdateBookingInput } from 'shared-types';
 import { Booking, BookingStatus, SlotStatus } from '@prisma/client';
 import { SocketGateway } from '../socket/socket.gateway';
 
@@ -154,7 +154,7 @@ export class BookingService {
   /**
    * Actualizar estado de la reserva
    */
-  async updateStatus(id: string, updateDto: UpdateBookingDto): Promise<Booking> {
+  async updateStatus(id: string, updateDto: UpdateBookingInput): Promise<Booking> {
     const booking = await this.prisma.booking.findUnique({
       where: { id },
       include: { slots: true },

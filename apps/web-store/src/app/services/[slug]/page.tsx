@@ -9,6 +9,7 @@ import { ArrowLeft, Star, MapPin, Calendar, MessageCircle, Share2, Heart, Shield
 import { ServiceDto } from 'shared-types';
 import { StatusIndicator } from '@/features/chat/components';
 import { ServiceGallery, CompanySection, ReviewForm, ReviewList, RelatedServices, ServiceFaqs, ServiceHeader, FloatingVendorBadge } from '@/features/services';
+import { BookingDialog } from '@/features/bookings';
 
 interface PageProps {
   params: { slug: string };
@@ -303,9 +304,16 @@ export default async function ServicePage({ params }: PageProps) {
                   </div>
 
                   <div className="flex gap-3">
-                    <Button className="flex-1 rounded-full text-lg h-12 shadow-lg shadow-primary/20">
-                      Reservar Ahora
-                    </Button>
+                    <BookingDialog
+                      serviceId={service.id}
+                      serviceTitle={service.title}
+                      basePrice={service.basePrice ? Number(service.basePrice) : null}
+                      unitName={service.unit?.name}
+                    >
+                      <Button className="flex-1 rounded-full text-lg h-12 shadow-lg shadow-primary/20">
+                        Reservar Ahora
+                      </Button>
+                    </BookingDialog>
                     <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-primary/20 bg-background hover:bg-primary/10 hover:text-primary hover:border-primary transition-colors">
                       <MessageCircle className="w-5 h-5" />
                     </Button>

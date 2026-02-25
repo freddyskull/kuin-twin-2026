@@ -8,3 +8,4 @@ export * from './features/services';
 export * from './features/chat';
 export * from './features/categories/category.schema';
 export * from './features/favorites';
+export * from './features/bookings';
