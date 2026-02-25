@@ -277,7 +277,7 @@ export default async function ServicePage({ params }: PageProps) {
               </span>
               {service.showPrice && service.basePrice && (
                 <span className="text-muted-foreground text-sm font-medium mb-1.5">
-                  / {service.unitId ? 'servicio' : 'sesión'}
+                  / {service.unit?.name || 'servicio'}
                 </span>
               )}
             </div>

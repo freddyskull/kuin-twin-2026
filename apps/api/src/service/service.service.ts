@@ -35,7 +35,7 @@ export class ServiceService {
         faqs: { create: createDto.faqs || [] },
         slots: { create: transformSlots(createDto.slots || []) }
       },
-      include: { metadata: true, faqs: true, slots: true, branches: true }
+      include: { metadata: true, faqs: true, slots: true, branches: true, unit: true }
     });
 
     await this.updateGisLocation(service.id, createDto.latitude, createDto.longitude);
@@ -123,7 +123,7 @@ export class ServiceService {
     const updated = await this.prisma.service.update({
       where: { id },
       data: updateData,
-      include: { metadata: true, faqs: true, slots: true, branches: true }
+      include: { metadata: true, faqs: true, slots: true, branches: true, unit: true }
     });
 
     await this.updateGisLocation(id, updateDto.latitude, updateDto.longitude);

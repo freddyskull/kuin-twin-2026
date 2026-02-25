@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { CompanySchema } from '../companies/company.schema';
 import { CategorySchema } from '../categories/category.schema';
+import { ServiceUnitSchema } from './service-unit.schema';
 
 export const ServiceSchema = z.object({
   id: z.string().uuid(),
@@ -36,6 +37,7 @@ export const ServiceSchema = z.object({
   // Joins (Opcionales para DTO de respuesta)
   company: CompanySchema.optional(),
   category: CategorySchema.optional(),
+  unit: ServiceUnitSchema.optional(),
   vendor: z.object({
     id: z.string().uuid(),
     email: z.string().email(),

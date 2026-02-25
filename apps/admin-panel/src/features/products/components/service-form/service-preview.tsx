@@ -15,7 +15,7 @@ interface ServicePreviewProps {
 export const ServicePreview: React.FC<ServicePreviewProps> = ({ currentStep, isEditMode = false }) => {
   const { control, formState: { errors, isValid, isDirty } } = useFormContext<ServiceFormValues>();
   const watchedValues = useWatch({ control });
-  const { categories } = useServicesStore();
+  const { categories, units } = useServicesStore();
 
   const [localPreview, setLocalPreview] = React.useState<string | null>(null);
 
@@ -34,6 +34,7 @@ export const ServicePreview: React.FC<ServicePreviewProps> = ({ currentStep, isE
 
   const displayImage = localPreview || watchedValues.imageUrl;
   const category = categories.find(c => c.id === watchedValues.categoryId);
+  const unit = units.find(u => u.id === watchedValues.unitId);
 
   // Mapeo de valores para el ServiceCard compartido
   // Usamos el mismo diseño que en la página principal (ServiceCard)
@@ -48,7 +49,8 @@ export const ServicePreview: React.FC<ServicePreviewProps> = ({ currentStep, isE
     starsRate: '5.0',
     reviewsCount: 0,
     tags: watchedValues.tags,
-    slug: 'preview'
+    slug: 'preview',
+    unit: unit ? { name: unit.name, abbreviation: unit.abbreviation } : undefined
   };
 
   return (

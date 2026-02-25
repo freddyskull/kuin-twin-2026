@@ -4,3 +4,4 @@ export * from './update-service.schema';
 export * from './review.schema';
 export * from './service-metadata.schema';
 export * from './service-slot.schema';
+export * from './service-unit.schema';

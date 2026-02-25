@@ -18,6 +18,7 @@ interface ServiceDtoLite {
   reviewsCount?: number;
   tags?: string[];
   company?: { businessName: string };
+  unit?: { name: string; abbreviation: string };
 }
 
 interface ServiceCardProps {
@@ -68,6 +69,11 @@ export const ServiceCard = ({
             {service.showPrice && service.basePrice ? (
               <div className="absolute top-3 right-3 bg-background/95 backdrop-blur-md px-3 py-1.5 rounded-2xl text-[11px] font-black shadow-lg border border-primary/20 z-10 text-primary">
                 {formatCurrency(service.basePrice)}
+                {service.unit && (
+                  <span className="text-[10px] font-normal opacity-70 ml-1">
+                    / {service.unit.abbreviation || service.unit.name}
+                  </span>
+                )}
               </div>
             ) : service.showPrice === false && (
               <div className="absolute top-3 right-3 bg-primary/20 backdrop-blur-md px-3 py-1.5 rounded-2xl text-[9px] font-black shadow-lg border border-primary/40 z-10 text-primary uppercase tracking-widest">
