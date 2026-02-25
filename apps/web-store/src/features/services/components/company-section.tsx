@@ -40,7 +40,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({ company, vendorN
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors pointer-events-none" />
 
       <div className="flex flex-col md:flex-row gap-6 items-start">
-        <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-2xl border border-border/40 bg-muted dark:bg-zinc-900 shadow-inner flex items-center justify-center">
+        <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-2xl border border-border/40 bg-muted  shadow-inner flex items-center justify-center">
           {logoUrl ? (
             <Image
               src={logoUrl}
