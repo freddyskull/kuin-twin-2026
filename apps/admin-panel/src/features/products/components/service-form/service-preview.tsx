@@ -1,8 +1,11 @@
+'use client';
+
 import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { Image as ImageIcon, Lightbulb, Check, FileWarning } from 'lucide-react';
+import { Lightbulb, Check, FileWarning } from 'lucide-react';
 import type { ServiceFormValues } from './schema';
 import { useServicesStore } from '../../../../stores/services.store';
+import { ServiceCard } from 'ui-components';
 
 interface ServicePreviewProps {
   currentStep: number;
@@ -12,7 +15,7 @@ interface ServicePreviewProps {
 export const ServicePreview: React.FC<ServicePreviewProps> = ({ currentStep, isEditMode = false }) => {
   const { control, formState: { errors, isValid, isDirty } } = useFormContext<ServiceFormValues>();
   const watchedValues = useWatch({ control });
-  const { categories, units } = useServicesStore();
+  const { categories } = useServicesStore();
 
   const [localPreview, setLocalPreview] = React.useState<string | null>(null);
 
@@ -30,65 +33,44 @@ export const ServicePreview: React.FC<ServicePreviewProps> = ({ currentStep, isE
   }, [watchedValues.imageFile]);
 
   const displayImage = localPreview || watchedValues.imageUrl;
+  const category = categories.find(c => c.id === watchedValues.categoryId);
+
+  // Mapeo de valores para el ServiceCard compartido
+  // Usamos el mismo diseño que en la página principal (ServiceCard)
+  const previewData = {
+    title: watchedValues.title,
+    description: watchedValues.description,
+    basePrice: watchedValues.basePrice,
+    showPrice: watchedValues.showPrice,
+    imageUrl: displayImage,
+    category: category ? { name: category.name } : undefined,
+    company: watchedValues.companyId ? { businessName: 'Tu Empresa' } : undefined,
+    starsRate: '5.0',
+    reviewsCount: 0,
+    tags: watchedValues.tags,
+    slug: 'preview'
+  };
 
   return (
     <div className="col-span-4 space-y-6 sticky top-24 self-start">
       <div className="space-y-4">
         <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-2">Vista Previa</h3>
-        <div className="bg-[#0a0b1e] border border-white/5 rounded-3xl overflow-hidden group shadow-xl">
-          <div className="h-56 bg-[#1a1c3d] relative">
-            {displayImage ? (
-              <img
-                src={displayImage.startsWith('http') || displayImage.startsWith('blob:') ? displayImage : `http://localhost:3001${displayImage}`}
-                className="w-full h-full object-cover"
-                alt="Preview"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-700">
-                <ImageIcon className="h-10 w-10" />
-              </div>
-            )}
-          </div>
-          <div className="p-6 space-y-4">
-            <div className="space-y-1">
-              <h4 className="text-lg font-bold text-white truncate">{watchedValues.title || 'Servicio sin título'}</h4>
-              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">
-                {categories.find(c => c.id === watchedValues.categoryId)?.name || 'Category'}
-              </p>
-            </div>
-
-            {((watchedValues.imageGallery?.length || 0) + (watchedValues.imageGalleryFiles?.length || 0)) > 0 && (
-              <div className="flex items-center gap-1.5 pt-1.5">
-                <div className="h-1.5 w-1.5 rounded-full bg-dashboard-primary animate-pulse" />
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                  +{(watchedValues.imageGallery?.length || 0) + (watchedValues.imageGalleryFiles?.length || 0)} Fotos en Galería
-                </span>
-              </div>
-            )}
-
-            <div className="flex items-baseline gap-1 pt-2 border-t border-white/5">
-              {(watchedValues.metadata || []).find((m: any) => m.key === 'Precio') ? (
-                <span className="text-2xl font-black text-dashboard-primary">${watchedValues.metadata?.find((m: any) => m.key === 'Precio')?.value}</span>
-              ) : (
-                <span className="text-2xl font-black text-dashboard-primary">${Number(watchedValues.basePrice || 0).toLocaleString()}</span>
-              )}
-              <span className="text-[9px] font-bold text-slate-500 uppercase">/ {units.find(u => u.id === watchedValues.unitId)?.abbreviation || 'Unidad'}</span>
-            </div>
-          </div>
+        <div className="w-full ml-0">
+          <ServiceCard service={previewData as any} />
         </div>
       </div>
 
-      <div className="bg-[#1a1c3d]/20 border border-white/5 rounded-2xl p-6 flex gap-4">
-        <Lightbulb className="h-5 w-5 text-dashboard-primary shrink-0" />
-        <p className="text-slate-400 text-xs font-medium leading-relaxed">
-          {currentStep === 1 && "Los títulos claros funcionan mejor."}
-          {currentStep === 2 && "Precios estándar reducen la fricción."}
-          {currentStep === 3 && "Lo visual vende la experiencia."}
-          {currentStep >= 4 && "Los detalles generan confianza."}
+      <div className="bg-[#1a1c3d]/20 border border-white/5 rounded-2xl p-4 flex gap-3">
+        <Lightbulb className="h-4 w-4 text-dashboard-primary shrink-0" />
+        <p className="text-slate-400 text-[10px] font-medium leading-relaxed">
+          {currentStep === 1 && "Los títulos claros atraen más miradas."}
+          {currentStep === 2 && "El precio es decisivo para el cliente."}
+          {currentStep === 3 && "La imagen principal es tu carta de presentación."}
+          {currentStep >= 4 && "Los detalles y tags ayudan al posicionamiento."}
         </p>
       </div>
 
-      {/* Diagnóstico de Errores Mejorado en el Preview */}
+      {/* Diagnóstico de Errores */}
       {(Object.keys(errors).length > 0 || (isValid && !isDirty && isEditMode && currentStep === 5)) && (
         <div className="space-y-4">
           {(!isValid) && (
@@ -99,32 +81,26 @@ export const ServicePreview: React.FC<ServicePreviewProps> = ({ currentStep, isE
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-sm font-bold text-red-500">Atención: Faltan datos</h4>
-                  <ul className="list-disc list-inside text-xs text-red-400 font-medium pt-1 space-y-1">
-                    {Object.keys(errors).length === 0 ? (
-                      <li>Revisando validaciones...</li>
-                    ) : (
-                      Object.keys(errors).map((key) => {
-                        const errorObj = (errors as any)[key];
-                        const errorMessage = errorObj?.message || (errorObj?.root?.message) || "Error de validación";
+                  <ul className="list-disc list-inside text-[10px] text-red-400 font-medium pt-1 space-y-1">
+                    {Object.keys(errors).map((key) => {
+                      const errorObj = (errors as any)[key];
+                      const errorMessage = errorObj?.message || (errorObj?.root?.message) || "Error de validación";
+                      const fieldName = {
+                        basePrice: 'Precio Base',
+                        unitId: 'Unidad de Medida',
+                        title: 'Título',
+                        categoryId: 'Categoría',
+                        companyId: 'Empresa',
+                        description: 'Descripción',
+                        metadata: 'Atributos'
+                      }[key] || key;
 
-                        // Mapeo amistoso
-                        const fieldName = {
-                          basePrice: 'Precio Base',
-                          unitId: 'Unidad de Medida',
-                          title: 'Título',
-                          categoryId: 'Categoría',
-                          companyId: 'Empresa',
-                          description: 'Descripción',
-                          metadata: 'Atributos'
-                        }[key] || key;
-
-                        return (
-                          <li key={key}>
-                            <span className="font-bold capitalize text-red-300">{fieldName}:</span> {errorMessage}
-                          </li>
-                        );
-                      })
-                    )}
+                      return (
+                        <li key={key}>
+                          <span className="font-bold capitalize text-red-300">{fieldName}:</span> {errorMessage}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               </div>
@@ -134,17 +110,16 @@ export const ServicePreview: React.FC<ServicePreviewProps> = ({ currentStep, isE
           {isValid && !isDirty && isEditMode && (
             <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 animate-in slide-in-from-bottom-2">
               <div className="flex items-center gap-3">
-                <Check className="h-5 w-5 text-yellow-500" />
+                <Check className="h-4 w-4 text-yellow-500" />
                 <div>
-                  <h4 className="text-sm font-bold text-yellow-500">Sin cambios detectados</h4>
-                  <p className="text-xs text-yellow-400/80">Realiza alguna modificación para habilitar la actualización.</p>
+                  <h4 className="text-sm font-bold text-yellow-500 text-xs">Sin cambios detectados</h4>
+                  <p className="text-[10px] text-yellow-400/80">Modifica algo para habilitar el guardado.</p>
                 </div>
               </div>
             </div>
           )}
         </div>
       )}
-
     </div>
   );
 };

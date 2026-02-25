@@ -1,5 +1,5 @@
 // Export utilities
-export { cn } from "./lib/utils";
+export { cn, getAbsoluteUrl, formatCurrency } from "./lib/utils";
 
 // Export components
 export { Button, buttonVariants } from "./components/ui/button";
@@ -9,6 +9,7 @@ export { Label } from "./components/ui/label";
 export { FormInput } from "./components/form-input";
 export { FormSelect } from "./components/form-select";
 export { FormCheckbox } from "./components/form-checkbox";
+export { FormSelect as SharedFormSelect } from "./components/form-select"; // Evitar colisión si es necesario
 export { FormSwitch } from "./components/form-switch";
 export { FormTextarea } from "./components/form-textarea";
 export { CustomForm } from "./components/custom-form";
@@ -144,5 +145,11 @@ export {
 } from "./components/ui/tooltip";
 
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption } from "./components/ui/table";
+export { Card, CardHeader, CardFooter, CardTitle, CardAction, CardDescription, CardContent } from "./components/ui/card";
+export { Badge, badgeVariants } from "./components/ui/badge";
+export { ServiceCard } from "./components/service-card";
+export { ServiceGallery } from "./components/service-gallery";
+export { ServiceFaqs } from "./components/service-faqs";
+export { ServiceDetailPreview } from "./components/service-detail-preview";
 export { NotificationBell } from "./components/notification-bell";
 export type { NotificationMessage, NotificationBellProps } from "./components/notification-bell";
