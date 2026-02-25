@@ -67,10 +67,7 @@ export default function Home() {
   }, [handleObserver]);
 
   return (
-    <div className="relative min-h-screen bg-background">
-      {/* Background Orbs — fixed para no interferir con el scroll */}
-      <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 rounded-full blur-[120px] pointer-events-none z-0" />
+    <div className="relative min-h-screen">
 
       <Navbar />
 

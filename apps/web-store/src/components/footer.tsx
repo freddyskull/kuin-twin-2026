@@ -15,7 +15,7 @@ export const Footer = () => {
   if (isAuthPage) return null;
 
   return (
-    <footer className="relative bg-background border-t border-border/40 overflow-hidden">
+    <footer className="relative border-t border-border/40 overflow-hidden bg-background/60 backdrop-blur-sm">
       {/* Background Decor */}
       <div className="absolute bottom-0 left-0 w-[30%] h-[30%] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 

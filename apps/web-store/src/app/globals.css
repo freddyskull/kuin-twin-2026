@@ -131,11 +131,17 @@
   * {
     @apply border-border;
   }
+  /* El HTML recibe el color de fondo sólido base */
+  html {
+    @apply bg-background;
+  }
+  /* El body es transparente para que los orbes fijos traspasasen */
   body {
-    @apply bg-background text-foreground transition-colors duration-300;
-    /* Starfield Background para modo oscuro, patrón sutil para claro */
+    @apply text-foreground transition-colors duration-300;
+    background: transparent;
+    /* Patrón de puntos sutil sobre el fondo */
     background-image: 
-      radial-gradient(circle at 1px 1px, hsl(var(--foreground) / 0.05) 1px, transparent 0);
+      radial-gradient(circle at 1px 1px, hsl(var(--foreground) / 0.04) 1px, transparent 0);
     background-size: 32px 32px;
   }
 }

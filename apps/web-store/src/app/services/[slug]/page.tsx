@@ -64,8 +64,6 @@ export default async function ServicePage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none z-0" />
 
       {/* Navigation Bar Improved */}
       <ServiceHeader

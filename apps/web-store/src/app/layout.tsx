@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Footer } from "@/components/footer";
+import { BackgroundOrbs } from "@/components/background-orbs";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -39,6 +40,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <BackgroundOrbs />
             {children}
             <Footer />
           </ThemeProvider>
