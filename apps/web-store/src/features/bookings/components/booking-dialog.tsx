@@ -29,6 +29,7 @@ import {
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { CalendarIcon, Loader2, CheckCircle2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/features/auth/auth.store';
 import { useCreateBooking } from '../bookings.hooks';
@@ -72,16 +73,22 @@ export const BookingDialog: React.FC<BookingDialogProps> = ({
       return;
     }
 
-    try {
-      await createBookingMutation.mutateAsync({
-        ...data,
-        customerId: user?.id || '', // Asegurar que usamos el ID del usuario actual
-      });
-      setIsSuccess(true);
-      form.reset();
-    } catch (error) {
-      console.error('Error creating booking:', error);
-    }
+    createBookingMutation.mutate({
+      ...data,
+      customerId: user?.id || '',
+    }, {
+      onSuccess: () => {
+        setIsSuccess(true);
+        form.reset();
+        toast.success('¡Reserva enviada con éxito!');
+      },
+      onError: (error: any) => {
+        toast.error(error.message || 'Error al procesar la reserva', {
+          description: 'Verifica los datos e inténtalo de nuevo.',
+          duration: 5000,
+        });
+      }
+    });
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -136,6 +143,7 @@ export const BookingDialog: React.FC<BookingDialogProps> = ({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-6">
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Fecha de la Reserva */}
               <FormField

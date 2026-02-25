@@ -27,6 +27,30 @@ export class BookingService {
     });
     if (!service) throw new NotFoundException('Servicio no encontrado');
 
+    // 1.5 Validar si ya existe una reserva pendiente para este servicio en el mismo día
+    const startOfDay = new Date(scheduledDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(scheduledDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const existingBooking = await this.prisma.booking.findFirst({
+      where: {
+        customerId,
+        serviceId,
+        scheduledDate: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+        status: {
+          in: [BookingStatus.PENDING, BookingStatus.ACTIVE]
+        }
+      }
+    });
+
+    if (existingBooking) {
+      throw new ConflictException('Ya tienes una reserva pendiente o activa para este servicio el mismo día. Espera la confirmación del vendedor.');
+    }
+
     // 2. Validar disponibilidad de slots si se proporcionan
     if (slotIds && slotIds.length > 0) {
       const availableSlots = await this.prisma.serviceSlot.findMany({

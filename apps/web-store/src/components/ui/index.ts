@@ -12,3 +12,4 @@ export * from "./textarea";
 export * from "./skeleton";
 export * from "./popover";
 export * from "./calendar";
+export * from "./sonner";
