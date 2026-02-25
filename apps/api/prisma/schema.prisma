@@ -23,9 +23,10 @@ model User {
   bookings  Booking[] // Si es Customer
   media     Media[] // Galería de medios (WP style)
 
-  sentMessages     Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
-  reviews          Review[]  @relation("UserReviews")
+  sentMessages     Message[]  @relation("SentMessages")
+  receivedMessages Message[]  @relation("ReceivedMessages")
+  reviews          Review[]   @relation("UserReviews")
+  favorites        Favorite[]
 }
 
 model Message {
@@ -242,12 +243,13 @@ model Service {
   commentsBox       Json? // Config de comentarios
 
   // Relaciones de Flujo
-  metadata ServiceMetadata[]
-  slots    ServiceSlot[]
-  bookings Booking[]
-  branches Branch[] // Sucursales donde se ofrece este servicio
-  reviews  Review[]
-  faqs     ServiceFaq[]
+  metadata  ServiceMetadata[]
+  slots     ServiceSlot[]
+  bookings  Booking[]
+  branches  Branch[] // Sucursales donde se ofrece este servicio
+  reviews   Review[]
+  faqs      ServiceFaq[]
+  favorites Favorite[]
 
   @@unique([vendorId, title])
   @@index([companyId]) // Índice para rapidez en búsquedas por empresa
@@ -351,4 +353,15 @@ model Payment {
   amount      Decimal @db.Decimal(10, 2)
   processorId String // Stripe ID / MP ID
   status      String // p.ej: "succeeded", "pending"
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, serviceId])
 }

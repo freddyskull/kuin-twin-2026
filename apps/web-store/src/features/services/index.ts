@@ -7,3 +7,4 @@ export * from './components/review-form';
 export * from './components/review-list';
 export * from './components/related-services';
 export * from './components/service-faqs';
+export * from './components/service-header';

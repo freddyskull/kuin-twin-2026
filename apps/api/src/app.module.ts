@@ -22,6 +22,7 @@ import { ChatModule } from './chat/chat.module';
 import { CompaniesModule } from './companies/companies.module';
 import { BranchesModule } from './branches/branches.module';
 import { ReviewModule } from './review/review.module';
+import { FavoriteModule } from './favorite/favorite.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 
@@ -77,6 +78,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     CompaniesModule,
     BranchesModule,
     ReviewModule,
+    FavoriteModule,
 
     // Servir archivos estáticos
     ServeStaticModule.forRoot(

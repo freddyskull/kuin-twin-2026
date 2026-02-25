@@ -8,7 +8,7 @@ import { Button, Card } from '@/components/ui';
 import { ArrowLeft, Star, MapPin, Calendar, MessageCircle, Share2, Heart, ShieldCheck, Clock } from 'lucide-react';
 import { ServiceDto } from 'shared-types';
 import { StatusIndicator } from '@/features/chat/components';
-import { ServiceGallery, CompanySection, ReviewForm, ReviewList, RelatedServices, ServiceFaqs } from '@/features/services';
+import { ServiceGallery, CompanySection, ReviewForm, ReviewList, RelatedServices, ServiceFaqs, ServiceHeader } from '@/features/services';
 
 interface PageProps {
   params: { slug: string };
@@ -67,21 +67,13 @@ export default async function ServicePage({ params }: PageProps) {
       {/* Background Orbs */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none z-0" />
 
-      {/* Navigation Bar Transparent */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 md:px-12 backdrop-blur-md border-b border-border/10 bg-background/50">
-        <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          Volver
-        </Link>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <Share2 className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="icon" className="rounded-full hover:text-red-500 hover:bg-red-500/10">
-            <Heart className="w-4 h-4" />
-          </Button>
-        </div>
-      </nav>
+      {/* Navigation Bar Improved */}
+      <ServiceHeader
+        serviceId={service.id}
+        vendorId={service.vendorId}
+        title={service.title}
+        description={service.description || undefined}
+      />
 
       {/* Hero Section */}
       <div className="relative pt-24 container-app flex flex-col md:flex-row gap-8 lg:gap-12 z-10">
