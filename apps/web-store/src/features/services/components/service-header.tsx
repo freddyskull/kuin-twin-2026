@@ -75,7 +75,7 @@ export const ServiceHeader: React.FC<ServiceHeaderProps> = ({ serviceId, vendorI
 
   const toggleFavorite = async () => {
     if (!token) {
-      router.push(`/auth/login?returnUrl=${encodeURIComponent(pathname)}`);
+      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
       return;
     }
 

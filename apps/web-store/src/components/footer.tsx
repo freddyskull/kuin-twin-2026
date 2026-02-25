@@ -1,13 +1,18 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { Github, Twitter, Instagram, Linkedin, Mail, MapPin, Phone, ExternalLink } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui";
 import { ThemeToggle } from "./theme-toggle";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+
+  // No mostrar footer en auth pages
+  const isAuthPage = pathname === "/login" || pathname === "/registro";
+  if (isAuthPage) return null;
 
   return (
     <footer className="relative bg-background border-t border-border/40 overflow-hidden">
