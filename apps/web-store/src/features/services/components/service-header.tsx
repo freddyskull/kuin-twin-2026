@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Share2, Heart } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { api } from '@/lib/api';
+import { useAuthStore } from '@/features/auth/auth.store';
 
 interface ServiceHeaderProps {
   serviceId: string;
@@ -18,6 +20,10 @@ export const ServiceHeader: React.FC<ServiceHeaderProps> = ({ serviceId, vendorI
   const [isFavorite, setIsFavorite] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const { token } = useAuthStore();
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,8 +43,8 @@ export const ServiceHeader: React.FC<ServiceHeaderProps> = ({ serviceId, vendorI
         console.error('Error checking favorite:', error);
       }
     };
-    if (serviceId) checkFavorite();
-  }, [serviceId]);
+    if (serviceId && token) checkFavorite();
+  }, [serviceId, token]);
 
   const handleShare = async () => {
     setIsSharing(true);
@@ -68,6 +74,11 @@ export const ServiceHeader: React.FC<ServiceHeaderProps> = ({ serviceId, vendorI
   };
 
   const toggleFavorite = async () => {
+    if (!token) {
+      router.push(`/auth/login?returnUrl=${encodeURIComponent(pathname)}`);
+      return;
+    }
+
     try {
       // Toggle optimista
       setIsFavorite(!isFavorite);
