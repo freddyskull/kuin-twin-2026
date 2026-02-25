@@ -92,7 +92,7 @@ export default function Home() {
           animate="visible"
           custom={0.1}
         >
-          Encuentra la <span className="text-primary italic font-serif">excelencia</span> a la vuelta de la esquina.
+          Encuentra la <span className="text-primary font-heading-italic">excelencia</span> a la vuelta de la esquina.
         </motion.h1>
 
         {/* Subtitle */}

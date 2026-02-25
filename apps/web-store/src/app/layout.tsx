@@ -1,27 +1,31 @@
 import type { Metadata } from "next";
-import { Outfit, Inter } from "next/font/google";
+import { Ubuntu, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Providers from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Footer } from "@/components/footer";
 import { BackgroundOrbs } from "@/components/background-orbs";
+import { ScrollTop } from "@/components/scroll-top";
 
-const outfit = Outfit({
-  variable: "--font-outfit",
+/* Fuente moderna y tecnológica para títulos */
+const ubuntu = Ubuntu({
+  variable: "--font-heading",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  style: ["normal", "italic"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+/* Fuente sans-serif moderna para cuerpo y UI */
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
   title: "Kuin-Twin | Servicios Premium",
   description: "Encuentra los mejores servicios cerca de ti con Kuin-Twin.",
 };
-
-
 
 export default function RootLayout({
   children,
@@ -31,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} ${inter.variable} font-sans antialiased`}
+        className={`${ubuntu.variable} ${jakarta.variable} font-sans antialiased`}
       >
         <Providers>
           <ThemeProvider
@@ -41,6 +45,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <BackgroundOrbs />
+            <ScrollTop />
             {children}
             <Footer />
           </ThemeProvider>
@@ -49,4 +54,3 @@ export default function RootLayout({
     </html>
   );
 }
-
