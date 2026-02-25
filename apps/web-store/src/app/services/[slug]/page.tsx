@@ -1,5 +1,5 @@
 import { getServiceBySlug } from '@/features/services/services.api';
-import { getAbsoluteUrl } from '@/lib/utils';
+import { getAbsoluteUrl, formatCurrency } from '@/lib/utils';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -237,6 +237,20 @@ export default async function ServicePage({ params }: PageProps) {
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">{service.title}</h1>
             </div>
 
+            {/* Tags / Keywords */}
+            {service.tags && service.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {service.tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-secondary/10 text-muted-foreground border border-border/20"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
             <div className="flex items-center gap-4 text-sm mb-6">
               <div className="flex items-center gap-1 text-yellow-500 font-bold bg-yellow-500/10 px-2 py-0.5 rounded-md">
                 <Star className="w-4 h-4 fill-current" />
@@ -253,7 +267,7 @@ export default async function ServicePage({ params }: PageProps) {
             <div className="flex items-end gap-2 mb-8">
               <span className="text-4xl font-bold text-primary">
                 {service.showPrice && service.basePrice
-                  ? `$${service.basePrice}`
+                  ? formatCurrency(service.basePrice)
                   : 'A Cotizar'}
               </span>
               {service.showPrice && service.basePrice && (

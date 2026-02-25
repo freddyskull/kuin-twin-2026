@@ -6,7 +6,7 @@ import { Star, ArrowRight, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { getAbsoluteUrl } from '@/lib/utils';
+import { getAbsoluteUrl, formatCurrency } from '@/lib/utils';
 import { useState } from 'react';
 
 interface ServiceCardProps {
@@ -48,7 +48,7 @@ export const ServiceCard = ({ service }: ServiceCardProps) => {
             {/* Price Badge */}
             {service.showPrice && service.basePrice ? (
               <div className="absolute top-3 right-3 bg-background/95 backdrop-blur-md px-4 py-1.5 rounded-2xl text-sm font-black shadow-lg border border-primary/20 z-10 text-primary">
-                {`$${Number(service.basePrice).toLocaleString('es-MX', { minimumFractionDigits: 0 })}`}
+                {formatCurrency(service.basePrice)}
               </div>
             ) : !service.showPrice && (
               <div className="absolute top-3 right-3 bg-primary/20 backdrop-blur-md px-4 py-1.5 rounded-2xl text-[10px] font-black shadow-lg border border-primary/40 z-10 text-primary uppercase tracking-widest">
@@ -79,16 +79,34 @@ export const ServiceCard = ({ service }: ServiceCardProps) => {
               </span>
             </div>
 
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-4 grow">
+            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
               {service.description || "Sin descripción disponible para este servicio."}
             </p>
+
+            {/* Tags / Keywords */}
+            {service.tags && service.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {service.tags.slice(0, 3).map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm bg-secondary/30 text-muted-foreground border border-border/30"
+                  >
+                    {tag}
+                  </span>
+                ))}
+                {service.tags.length > 3 && (
+                  <span className="text-[9px] font-bold text-muted-foreground/50">
+                    +{service.tags.length - 3}
+                  </span>
+                )}
+              </div>
+            )}
 
             <div className="pt-4 border-t border-border/50 flex items-center justify-between mt-auto">
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <MapPin className="w-3.5 h-3.5" />
                 <span>A 2.5 km</span>
               </div>
-
 
               <span className="text-sm font-medium text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform ml-auto">
                 Ver detalles <ArrowRight className="w-4 h-4" />

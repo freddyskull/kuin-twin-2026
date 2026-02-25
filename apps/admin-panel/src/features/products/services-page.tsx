@@ -4,6 +4,7 @@ import { Plus, Pencil, Trash2, LayoutDashboard } from 'lucide-react';
 import { useServices, useDeleteService, useToggleServiceStatus } from './services.hooks';
 import { Button, DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
+import type { ServiceDto } from 'shared-types';
 import { Modal } from '@/components/modal';
 import { ServiceCompanyManager } from './components/service-company-manager';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -59,7 +60,7 @@ export const ServicesPage: React.FC = () => {
     setPage(1); // Reset to first page on filter change
   };
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<ServiceDto>[] = [
     {
       accessorKey: 'title',
       header: 'Servicio',
@@ -74,10 +75,22 @@ export const ServicesPage: React.FC = () => {
                 <LayoutDashboard className="h-6 w-6 text-slate-600" />
               )}
             </div>
-            <div className="max-w-[200px]">
+            <div className="max-w-[250px] flex flex-col gap-1">
               <div className="font-bold text-white tracking-tight truncate">{service.title}</div>
-              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider h-[1.5em] overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px]">
-                {service.category?.name || 'Sin Categoría'}
+              <div className="flex items-center gap-2 overflow-hidden">
+                <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider whitespace-nowrap">
+                  {service.category?.name || 'Sin Categoría'}
+                </div>
+                {service.tags && service.tags.length > 0 && (
+                  <div className="flex gap-1 overflow-hidden">
+                    {service.tags.slice(0, 2).map((tag: string, i: number) => (
+                      <span key={i} className="text-[8px] px-1.5 py-0.5 rounded bg-white/5 text-slate-500 border border-white/5 whitespace-nowrap">
+                        #{tag}
+                      </span>
+                    ))}
+                    {service.tags.length > 2 && <span className="text-[8px] text-slate-600">+{service.tags.length - 2}</span>}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -118,17 +131,20 @@ export const ServicesPage: React.FC = () => {
     {
       accessorKey: 'basePrice',
       header: 'Precio',
-      cell: ({ row }) => (
-        <>
-          {row.original.showPrice ? (
-            <div className="font-bold text-white">
-              ${Number(row.getValue('basePrice')).toFixed(2)}
-            </div>
-          ) : (
-            <span className="text-dashboard-primary font-bold italic">Cotización</span>
-          )}
-        </>
-      ),
+      cell: ({ row }) => {
+        const price = Number(row.original.basePrice);
+        return (
+          <>
+            {row.original.showPrice ? (
+              <div className="font-bold text-white">
+                {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0 }).format(price)}
+              </div>
+            ) : (
+              <span className="text-dashboard-primary font-bold italic">Cotización</span>
+            )}
+          </>
+        );
+      },
     },
     {
       id: 'actions',

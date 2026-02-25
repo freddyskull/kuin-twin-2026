@@ -23,3 +23,17 @@ export function getAbsoluteUrl(path: string | null | undefined): string | null {
   
   return `${cleanApiUrl}${cleanPath}`;
 }
+
+/**
+ * Formatea un número como moneda (pesos mexicanos por defecto).
+ */
+export function formatCurrency(amount: number | string | null | undefined): string {
+  if (amount === null || amount === undefined) return '';
+  const value = typeof amount === 'string' ? parseFloat(amount) : amount;
+  return new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: 'MXN',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+}
