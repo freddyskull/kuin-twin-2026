@@ -302,6 +302,7 @@ model Booking {
 
   status        BookingStatus @default(PENDING)
   scheduledDate DateTime
+  notes         String?
 
   details BookingDetails?
   payment Payment?

@@ -75,6 +75,7 @@ export class BookingService {
           serviceId,
           scheduledDate: new Date(scheduledDate),
           status: BookingStatus.PENDING,
+          notes: createDto.notes,
           slots: slotIds ? {
             connect: slotIds.map(id => ({ id })),
           } : undefined,
@@ -197,7 +198,11 @@ export class BookingService {
     const updatedBooking = await this.prisma.booking.update({
       where: { id },
       data: { status: updateDto.status },
-      include: { details: true, service: true },
+      include: { 
+        details: true, 
+        service: true,
+        customer: { select: { email: true, profile: true } }
+      },
     });
 
     // Notificar al cliente y al vendedor del cambio de estado

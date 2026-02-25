@@ -21,11 +21,20 @@ export const BookingSchema = z.object({
   serviceId: z.string().uuid(),
   status: BookingStatusSchema.default('PENDING'),
   scheduledDate: z.coerce.date(),
+  notes: z.string().optional(),
   
   // Relations
   details: BookingDetailsSchema.optional(),
   slots: z.array(z.any()).optional(), // Will define SlotSchema later if needed
   service: z.any().optional(), // Avoid circular dependency by using any or specialized DTO
+  customer: z.object({
+    email: z.string(),
+    profile: z.object({
+      displayName: z.string(),
+      avatarUrl: z.string().nullable().optional(),
+      phone: z.string().nullable().optional(),
+    }).optional().nullable(),
+  }).optional(),
 });
 
 export type BookingDto = z.infer<typeof BookingSchema>;

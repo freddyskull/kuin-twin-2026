@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from 'api-client';
 import type { BookingDto } from 'shared-types';
 
@@ -27,4 +27,17 @@ export const usePendingServicesCount = (vendorId?: string) => {
   // Contar servicios únicos con pedidos pendientes
   const uniqueServices = new Set(bookings.map((b) => b.serviceId));
   return uniqueServices.size;
+};
+
+export const useUpdateBookingStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, status, notes }: { id: string; status: string; notes?: string }) => {
+      const { data } = await api.patch(`/bookings/${id}/status`, { status, notes });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+    },
+  });
 };
