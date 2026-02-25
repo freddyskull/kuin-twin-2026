@@ -84,7 +84,7 @@ export default async function ServicePage({ params }: PageProps) {
             title={service.title}
           />
 
-          <Card className="mt-8 flex items-center gap-2 p-4 rounded-2xl bg-secondary/20 border border-border/40 backdrop-blur-sm mb-6">
+          <Card className="mt-8 flex items-center gap-2 p-4 rounded-2xl bg-card border-border/40 shadow-sm mb-6">
             <ShieldCheck className="w-5 h-5 text-primary shrink-0" />
             <p className="text-xs font-medium text-muted-foreground">
               Este servicio cumple con los estándares de calidad de <span className="text-foreground font-bold">Kuin-Twin</span>.
@@ -97,7 +97,7 @@ export default async function ServicePage({ params }: PageProps) {
               <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Especificaciones</h3>
               <div className="grid grid-cols-2 gap-4">
                 {service.metadata.map((item, idx) => (
-                  <Card key={idx} className="p-3 rounded-xl bg-secondary/5 border border-border/40 hover:border-primary/20 transition-colors group flex items-center gap-2">
+                  <Card key={idx} className="p-3 rounded-xl bg-card/60 dark:bg-secondary/5 border border-border/40 hover:border-primary/20 transition-all hover:shadow-md group flex items-center gap-2">
                     <span className="text-xs font-semibold text-muted-foreground uppercase text-nowrap">{item.key}:</span>
                     <span className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">{item.value}</span>
                   </Card>
@@ -114,7 +114,7 @@ export default async function ServicePage({ params }: PageProps) {
                   <Clock className="w-3.5 h-3.5 text-primary" />
                   <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Horarios de Atención</h3>
                 </div>
-                <Card className="p-6 border-border/40 bg-secondary/5 backdrop-blur-sm">
+                <Card className="p-6 border-border/40 bg-card/80 dark:bg-secondary/5 shadow-sm">
                   {(service.workSchedule as any).schedule.map((day: any) => {
                     const dayLabels: Record<string, string> = {
                       Monday: 'Lunes',
@@ -126,8 +126,8 @@ export default async function ServicePage({ params }: PageProps) {
                       Sunday: 'Domingo',
                     };
                     return (
-                      <div key={day.day} className="flex items-center justify-between py-0.5">
-                        <span className={`text-xs font-medium ${day.enabled ? 'text-foreground' : 'text-slate-500'}`}>
+                      <div key={day.day} className="flex items-center justify-between py-1 border-b border-border/10 last:border-0">
+                        <span className={`text-xs font-medium ${day.enabled ? 'text-foreground' : 'text-muted-foreground/50'}`}>
                           {dayLabels[day.day] || day.day}
                         </span>
                         <div className="flex items-center gap-2">
@@ -150,7 +150,7 @@ export default async function ServicePage({ params }: PageProps) {
               <MapPin className="w-3.5 h-3.5 text-primary" />
               <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Donde se Presta el Servicio</h3>
             </div>
-            <Card className="overflow-hidden border-border/40 bg-secondary/5 backdrop-blur-sm rounded-2xl group transition-all hover:shadow-2xl hover:shadow-primary/5">
+            <Card className="overflow-hidden border-border/40 bg-card/80 dark:bg-secondary/5 shadow-sm rounded-2xl group transition-all hover:shadow-xl hover:shadow-primary/5">
               <div className="p-5 flex items-start gap-4 bg-background/40">
                 <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
                   <MapPin className="w-5 h-5 text-primary" />
@@ -167,12 +167,12 @@ export default async function ServicePage({ params }: PageProps) {
                 </div>
               </div>
 
-              <div className="h-[220px] w-full bg-secondary/10 relative overflow-hidden">
+              <div className="h-[220px] w-full bg-muted relative overflow-hidden">
                 {service.address ? (
                   <iframe
                     width="100%"
                     height="100%"
-                    style={{ border: 0, filter: 'contrast(1.1) brightness(1.05)' }}
+                    style={{ border: 0, filter: 'contrast(1.05) brightness(1.02)' }}
                     loading="lazy"
                     allowFullScreen
                     referrerPolicy="no-referrer-when-downgrade"
@@ -186,14 +186,14 @@ export default async function ServicePage({ params }: PageProps) {
                 )}
 
                 {/* Overlay for better integration */}
-                <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/10" />
+                <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5" />
 
                 {service.address && (
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(service.address)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="absolute bottom-4 right-4 bg-background/90 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-border/50 shadow-lg hover:bg-primary hover:text-white hover:border-primary transition-all active:scale-95"
+                    className="absolute bottom-4 right-4 bg-background/90 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-border/50 shadow-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all active:scale-95"
                   >
                     Abrir en Mapas
                   </a>
@@ -238,7 +238,7 @@ export default async function ServicePage({ params }: PageProps) {
                 {service.tags.map((tag, idx) => (
                   <span
                     key={idx}
-                    className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-secondary/10 text-muted-foreground border border-border/20"
+                    className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-card border border-border/40 text-muted-foreground shadow-sm"
                   >
                     #{tag}
                   </span>
@@ -247,12 +247,12 @@ export default async function ServicePage({ params }: PageProps) {
             )}
 
             <div className="flex items-center gap-4 text-sm mb-6">
-              <div className="flex items-center gap-1 text-yellow-500 font-bold bg-yellow-500/10 px-2 py-0.5 rounded-md">
+              <div className="flex items-center gap-1 text-yellow-500 font-bold bg-yellow-500/10 px-2 py-0.5 rounded-md border border-yellow-500/20">
                 <Star className="w-4 h-4 fill-current" />
                 {service.starsRate} <span className="text-muted-foreground font-normal">({service.reviewsCount} reseñas)</span>
               </div>
               <span className="text-muted-foreground flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5" />
+                <MapPin className="w-3.5 h-3.5 text-primary" />
                 A 2.5 km de ti
               </span>
               <div className="h-4 w-px bg-border/50 mx-1" />
@@ -283,7 +283,7 @@ export default async function ServicePage({ params }: PageProps) {
 
           {/* Call to Action Box - Sticky */}
           <div className="sticky top-24">
-            <Card className="p-6 border-primary/20 bg-primary/5 backdrop-blur-sm shadow-lg shadow-primary/5">
+            <Card className="p-6 border-primary/20 bg-card dark:bg-primary/5 backdrop-blur-sm shadow-xl shadow-primary/5">
               <h3 className="font-bold text-lg mb-4">
                 {service.showPrice ? 'Reservar este servicio' : 'Solicitar Cotización'}
               </h3>
@@ -291,7 +291,7 @@ export default async function ServicePage({ params }: PageProps) {
               {service.showPrice ? (
                 <>
                   <div className="space-y-3 mb-6">
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-background border border-border/50 hover:border-primary/50 cursor-pointer transition-colors group">
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-background border border-border/50 hover:border-primary/50 cursor-pointer transition-colors group">
                       <div className="flex items-center gap-3">
                         <Calendar className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
                         <div className="flex flex-col text-left">
@@ -306,7 +306,7 @@ export default async function ServicePage({ params }: PageProps) {
                     <Button className="flex-1 rounded-full text-lg h-12 shadow-lg shadow-primary/20">
                       Reservar Ahora
                     </Button>
-                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-primary/20 bg-background hover:bg-primary/10 hover:text-primary hover:border-primary">
+                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-primary/20 bg-background hover:bg-primary/10 hover:text-primary hover:border-primary transition-colors">
                       <MessageCircle className="w-5 h-5" />
                     </Button>
                   </div>

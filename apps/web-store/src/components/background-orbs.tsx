@@ -12,11 +12,11 @@ export const BackgroundOrbs = () => {
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-      {/* Orb Superior Izquierdo — mismo estilo que registro */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
+      {/* Orb Superior Izquierdo — Oro Kuin */}
+      <div className="absolute top-[-15%] left-[-10%] w-[60%] h-[60%] bg-primary/10 dark:bg-primary/20 rounded-full blur-[140px] animate-pulse pointer-events-none opacity-60 dark:opacity-100" />
 
-      {/* Orb Inferior Derecho — mismo estilo que registro */}
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+      {/* Orb Inferior Derecho — Azul suave */}
+      <div className="absolute bottom-[-15%] right-[-10%] w-[60%] h-[60%] bg-blue-400/5 dark:bg-blue-500/10 rounded-full blur-[140px] pointer-events-none opacity-50 dark:opacity-80" />
     </div>
   );
 };

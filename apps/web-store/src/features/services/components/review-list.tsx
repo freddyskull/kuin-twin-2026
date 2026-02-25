@@ -37,8 +37,8 @@ export const ReviewList: React.FC<ReviewListProps> = ({ serviceId }) => {
   return (
     <div className="space-y-6">
       {reviews.map((review) => (
-        <div key={review.id} className="flex gap-4 p-4 rounded-2xl bg-secondary/5 border border-border/20 transition-colors hover:bg-secondary/10">
-          <Avatar className="w-10 h-10 border border-border/50">
+        <div key={review.id} className="flex gap-4 p-5 rounded-2xl bg-card border border-border/40 shadow-sm transition-all hover:shadow-md hover:border-primary/20">
+          <Avatar className="w-10 h-10 border border-border/40 shadow-inner">
             <AvatarImage src={review.user?.profile?.avatarUrl || undefined} />
             <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold uppercase">
               {review.user?.profile?.displayName?.[0] || '?'}
@@ -63,8 +63,8 @@ export const ReviewList: React.FC<ReviewListProps> = ({ serviceId }) => {
                 <Star
                   key={s}
                   className={`w-3 h-3 ${s <= (review.rating || 0)
-                      ? "text-yellow-500 fill-current"
-                      : "text-muted-foreground/20"
+                    ? "text-yellow-500 fill-current"
+                    : "text-muted-foreground/20"
                     }`}
                 />
               ))}

@@ -44,7 +44,7 @@ export const ServiceGallery: React.FC<ServiceGalleryProps> = ({ mainImage, galle
   return (
     <div className="space-y-4 w-full">
       {/* Main Image Viewer */}
-      <div className="relative aspect-4/3 w-full overflow-hidden rounded-3xl border border-white/5 shadow-2xl bg-[#0a0b1e] group">
+      <div className="relative aspect-4/3 w-full overflow-hidden rounded-3xl border border-border/40 dark:border-white/5 shadow-2xl bg-muted dark:bg-[#0a0b1e] group">
         {currentImage && (
           <Image
             src={currentImage}
@@ -65,14 +65,14 @@ export const ServiceGallery: React.FC<ServiceGalleryProps> = ({ mainImage, galle
           <>
             <button
               onClick={handlePrev}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:border-primary active:scale-90"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-background/20 dark:bg-black/20 backdrop-blur-md border border-border/40 dark:border-white/10 flex items-center justify-center text-foreground dark:text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:border-primary hover:text-primary-foreground active:scale-90"
               aria-label="Anterior"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button
               onClick={handleNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:border-primary active:scale-90"
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-background/20 dark:bg-black/20 backdrop-blur-md border border-border/40 dark:border-white/10 flex items-center justify-center text-foreground dark:text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:border-primary hover:text-primary-foreground active:scale-90"
               aria-label="Siguiente"
             >
               <ChevronRight className="w-6 h-6" />
@@ -81,9 +81,9 @@ export const ServiceGallery: React.FC<ServiceGalleryProps> = ({ mainImage, galle
         )}
 
         {/* Counter Badge */}
-        <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-xl px-3 py-1.5 rounded-full border border-white/10">
-          <p className="text-[10px] font-black tracking-widest text-white/90 uppercase">
-            {activeIndex + 1} <span className="text-white/40">/</span> {allImages.length}
+        <div className="absolute top-4 right-4 bg-background/40 dark:bg-black/40 backdrop-blur-xl px-3 py-1.5 rounded-full border border-border/40 dark:border-white/10">
+          <p className="text-[10px] font-black tracking-widest text-foreground dark:text-white/90 uppercase">
+            {activeIndex + 1} <span className="opacity-40">/</span> {allImages.length}
           </p>
         </div>
       </div>
@@ -101,7 +101,7 @@ export const ServiceGallery: React.FC<ServiceGalleryProps> = ({ mainImage, galle
                   "relative flex-shrink-0 w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all duration-300 snap-start",
                   activeIndex === idx
                     ? "border-primary ring-4 ring-primary/20 scale-95"
-                    : "border-white/5 opacity-50 hover:opacity-100 hover:border-white/20"
+                    : "border-border/40 dark:border-white/5 opacity-50 hover:opacity-100 hover:border-primary/40"
                 )}
               >
                 {thumbUrl && (

@@ -35,12 +35,12 @@ export const CompanySection: React.FC<CompanySectionProps> = ({ company, vendorN
   const logoUrl = getAbsoluteUrl(company.logoUrl);
 
   return (
-    <Card className="p-6 overflow-hidden relative border-border/40 bg-secondary/10 backdrop-blur-sm group">
+    <Card className="p-6 overflow-hidden relative border-border/40 bg-card dark:bg-secondary/10 shadow-sm group">
       {/* Glow Effect */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors pointer-events-none" />
 
       <div className="flex flex-col md:flex-row gap-6 items-start">
-        <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-2xl border border-border/40 bg-white dark:bg-zinc-900 shadow-inner flex items-center justify-center">
+        <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-2xl border border-border/40 bg-muted dark:bg-zinc-900 shadow-inner flex items-center justify-center">
           {logoUrl ? (
             <Image
               src={logoUrl}
@@ -82,12 +82,12 @@ export const CompanySection: React.FC<CompanySectionProps> = ({ company, vendorN
           <div className="pt-2 flex flex-wrap gap-4 text-[11px] font-semibold text-muted-foreground">
             <div className="flex items-center gap-1.5">
               <Info className="w-3.5 h-3.5 text-primary" />
-              Razón Social: {company.legalName}
+              <span className="opacity-80">Razón Social:</span> <span className="text-foreground">{company.legalName}</span>
             </div>
             {company.isSatVerified && (
               <div className="flex items-center gap-1.5">
                 <CheckCircle className="w-3.5 h-3.5 text-green-500" />
-                Estatus Fiscal Activo
+                <span className="text-green-600 dark:text-green-500">Estatus Fiscal Activo</span>
               </div>
             )}
           </div>

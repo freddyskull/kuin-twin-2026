@@ -113,8 +113,8 @@ export const ServiceHeader: React.FC<ServiceHeaderProps> = ({ serviceId, vendorI
               <ArrowLeft className="w-4 h-4" />
             </div>
             <span className={cn(
-              "text-[10px] font-bold uppercase tracking-widest hidden sm:inline-block",
-              scrolled ? "text-foreground" : "text-white sm:text-foreground" // En modo luz el texto base es oscuro
+              "text-[10px] font-bold uppercase tracking-widest hidden sm:inline-block transition-colors text-foreground",
+              scrolled ? "" : ""
             )}>
               Explorar
             </span>
@@ -128,10 +128,10 @@ export const ServiceHeader: React.FC<ServiceHeaderProps> = ({ serviceId, vendorI
             onClick={handleShare}
             disabled={isSharing}
             className={cn(
-              "rounded-full transition-all duration-300 border-border/40",
+              "rounded-full transition-all duration-300 border-border/40 text-foreground",
               scrolled
                 ? "bg-background/50 hover:bg-primary/10 hover:border-primary/30"
-                : "bg-white/10 hover:bg-white/20 backdrop-blur-md text-foreground"
+                : "bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 backdrop-blur-md"
             )}
           >
             <Share2 className={cn("w-4 h-4 transition-transform", isSharing && "scale-125")} />
@@ -142,12 +142,12 @@ export const ServiceHeader: React.FC<ServiceHeaderProps> = ({ serviceId, vendorI
             size="icon"
             onClick={toggleFavorite}
             className={cn(
-              "rounded-full transition-all duration-300 border-border/40 shrink-0",
+              "rounded-full transition-all duration-300 border-border/40 shrink-0 text-foreground",
               isFavorite
                 ? "bg-red-500/10 border-red-500/30 text-red-500 shadow-lg shadow-red-500/10"
                 : scrolled
                   ? "bg-background/50 hover:bg-red-500/10 hover:border-red-500/20"
-                  : "bg-white/10 hover:bg-white/20 backdrop-blur-md"
+                  : "bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 backdrop-blur-md"
             )}
           >
             <Heart className={cn("w-4 h-4 transition-all duration-500", isFavorite ? "fill-current scale-110" : "scale-100")} />

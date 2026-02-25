@@ -46,11 +46,11 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ serviceId }) => {
 
   if (!user) {
     return (
-      <Card className="p-6 bg-secondary/10 border-dashed border-border/60 text-center">
+      <Card className="p-6 bg-card border-dashed border-border/60 text-center shadow-sm">
         <p className="text-sm text-muted-foreground mb-4">
           Inicia sesión para compartir tu experiencia con este servicio.
         </p>
-        <Button variant="outline" size="sm" asChild>
+        <Button variant="outline" size="sm" asChild className="rounded-full">
           <a href="/login">Iniciar Sesión</a>
         </Button>
       </Card>
@@ -60,7 +60,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ serviceId }) => {
   // Si ya ha calificado o acaba de tener éxito, mostrar mensaje de agradecimiento sin opción a repetir
   if (isSuccess || hasAlreadyReviewed) {
     return (
-      <Card className="p-6 bg-primary/5 border-primary/20 text-center animate-in fade-in zoom-in duration-300">
+      <Card className="p-6 bg-primary/5 dark:bg-primary/10 border-primary/20 text-center animate-in fade-in zoom-in duration-300 shadow-sm">
         <div className="flex flex-col items-center gap-2">
           <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center mb-2">
             <Star className="w-5 h-5 text-primary fill-current" />
@@ -79,7 +79,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ serviceId }) => {
   }
 
   return (
-    <Card className="p-6 border-border/40 bg-card/50 backdrop-blur-sm shadow-xl">
+    <Card className="p-6 border-border/40 bg-card shadow-xl shadow-black/5">
       <h3 className="font-bold text-lg mb-4">Deja tu opinión</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

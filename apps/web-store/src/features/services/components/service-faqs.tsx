@@ -35,8 +35,8 @@ export const ServiceFaqs = ({ faqs }: ServiceFaqsProps) => {
             className={cn(
               "group border rounded-2xl transition-all duration-300 overflow-hidden",
               openIndex === index
-                ? "bg-card border-primary/20 shadow-lg shadow-primary/5"
-                : "bg-card/50 border-border/50 hover:border-primary/30"
+                ? "bg-card border-primary/20 shadow-xl shadow-primary/5"
+                : "bg-card/40 dark:bg-card/20 border-border/40 hover:border-primary/20 hover:bg-card/60 dark:hover:bg-card/40"
             )}
           >
             <button
@@ -65,7 +65,7 @@ export const ServiceFaqs = ({ faqs }: ServiceFaqsProps) => {
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3, ease: 'easeInOut' }}
                 >
-                  <div className="px-5 pb-5 text-sm md:text-base text-muted-foreground leading-relaxed border-t border-border/5 pt-4">
+                  <div className="px-5 pb-5 text-sm md:text-base text-muted-foreground leading-relaxed border-t border-border/10 pt-4">
                     {faq.answer}
                   </div>
                 </motion.div>
