@@ -48,16 +48,16 @@ export const CompaniesPage: React.FC = () => {
         const company = row.original;
         return (
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-[#0a0b1e] overflow-hidden flex items-center justify-center border border-white/5 flex-shrink-0">
+            <div className="h-10 w-10 rounded-lg bg-secondary overflow-hidden flex items-center justify-center border border-border flex-shrink-0">
               {company.logoUrl ? (
                 <img src={company.logoUrl} alt={company.businessName} className="h-full w-full object-cover" />
               ) : (
-                <Building2 className="h-5 w-5 text-slate-600" />
+                <Building2 className="h-5 w-5 text-muted-foreground" />
               )}
             </div>
-            <div>
-              <div className="font-bold text-white">{company.businessName}</div>
-              <div className="text-xs text-slate-500">{company.rfc}</div>
+            <div className="min-w-0">
+              <div className="font-bold text-foreground text-xs truncate">{company.businessName}</div>
+              <div className="text-[10px] text-muted-foreground font-medium">{company.rfc}</div>
             </div>
           </div>
         );
@@ -69,12 +69,12 @@ export const CompaniesPage: React.FC = () => {
       cell: ({ row }) => {
         const isVerified = row.getValue('isSatVerified') as boolean;
         return isVerified ? (
-          <div className="flex items-center gap-1.5 text-green-500 bg-green-500/10 px-2.5 py-1 rounded-full text-[10px] font-black uppercase w-fit">
+          <div className="flex items-center gap-1.5 text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border border-emerald-500/20 w-fit">
             <CheckCircle className="h-3 w-3" />
             Verificada
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 text-yellow-500 bg-yellow-500/10 px-2.5 py-1 rounded-full text-[10px] font-black uppercase w-fit">
+          <div className="flex items-center gap-1.5 text-amber-500 bg-amber-500/10 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border border-amber-500/20 w-fit">
             <XCircle className="h-3 w-3" />
             Pendiente
           </div>
@@ -85,43 +85,43 @@ export const CompaniesPage: React.FC = () => {
       accessorKey: '_count.branches',
       header: 'Sucursales',
       cell: ({ row }) => (
-        <div className="font-bold text-slate-300">
+        <div className="font-bold text-foreground text-xs px-2">
           {row.original._count?.branches || 0}
         </div>
       ),
     },
     {
       id: 'actions',
-      header: 'Acciones',
+      header: '',
       cell: ({ row }) => {
         const company = row.original;
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <button
               onClick={() => handleManageBranches(company.id, company.businessName)}
-              className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all"
-              title="Gestionar Sucursales"
+              className="p-1.5 rounded-lg bg-secondary text-muted-foreground hover:text-primary transition-all border border-transparent hover:border-primary/20"
+              title="Sucursales"
               type="button"
             >
-              <Store className="h-4 w-4" />
+              <Store className="h-3.5 w-3.5" />
             </button>
             <Link to={`/empresas/${company.id}/editar`}>
               <button
                 type="button"
-                className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all"
-                title="Editar Empresa"
+                className="p-1.5 rounded-lg bg-secondary text-muted-foreground hover:text-foreground transition-all"
+                title="Editar"
               >
-                <Pencil className="h-4 w-4" />
+                <Pencil className="h-3.5 w-3.5" />
               </button>
             </Link>
             <button
               type="button"
               onClick={() => handleDelete(company.id, company.businessName)}
               disabled={deleteMutation.isPending}
-              className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all disabled:opacity-30"
-              title="Eliminar Empresa"
+              className="p-1.5 rounded-lg bg-secondary text-muted-foreground hover:text-destructive transition-all disabled:opacity-20"
+              title="Eliminar"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
         );
@@ -130,47 +130,57 @@ export const CompaniesPage: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-10 animate-in fade-in duration-700 pb-20">
-      <div className="flex items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <Link to="/empresas/crear">
-            <Button>
-              <Plus className="h-5 w-5 stroke-[3]" />
-              Registrar Nueva Empresa
-            </Button>
-          </Link>
+    <div className="space-y-6 md:space-y-8 max-w-[1400px] mx-auto pb-10 font-sans">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Empresas</h1>
+          <p className="text-muted-foreground text-xs md:text-sm">Gestiona tus empresas registradas y sus sucursales.</p>
+        </div>
 
-          <div className="flex bg-[#1a1c3d]/60 p-1.5 rounded-2xl border border-white/5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+          <div className="flex bg-secondary/50 p-1 rounded-xl border border-border overflow-x-auto no-scrollbar">
             {(['all', 'verified', 'unverified'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-6 py-2.5 text-sm font-bold rounded-xl transition-all capitalize ${filter === f
-                  ? 'bg-white/10 text-white shadow-lg'
-                  : 'text-slate-500 hover:text-slate-300'
+                className={`flex-1 sm:flex-none px-4 py-1.5 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider whitespace-nowrap ${filter === f
+                  ? 'bg-background text-primary shadow-sm border border-border/50'
+                  : 'text-muted-foreground hover:text-foreground'
                   }`}
               >
-                {f === 'all' ? 'Todas' : f === 'verified' ? 'Verificadas' : 'Sin Verificar'}
+                {f === 'all' ? 'Todas' : f === 'verified' ? 'Verificadas' : 'Pendientes'}
               </button>
             ))}
           </div>
+          
+          <Link to="/empresas/crear" className="flex">
+            <Button className="flex-1 h-10 px-5 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+              <Plus className="h-4 w-4 mr-2" />
+              Nueva Empresa
+            </Button>
+          </Link>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-2xl font-bold text-sm">
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
+          <XCircle className="h-4 w-4" />
           Error: {(error as Error).message}
         </div>
       )}
 
-      <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden">
-        <DataTable
-          columns={columns}
-          data={filteredCompanies}
-          isLoading={isLoading}
-          emptyMessage="No se encontraron empresas con los criterios seleccionados."
-          className="border-none"
-        />
+      <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden relative">
+        <div className="overflow-x-auto custom-scrollbar">
+          <div className="min-w-[800px]">
+            <DataTable
+              columns={columns}
+              data={filteredCompanies}
+              isLoading={isLoading}
+              emptyMessage="No se encontraron empresas."
+              className="border-none"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Modal para gestionar sucursales */}

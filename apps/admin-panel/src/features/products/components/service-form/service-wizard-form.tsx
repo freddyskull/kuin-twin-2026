@@ -196,8 +196,8 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
           ))}
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-12 gap-8">
-          <div className="col-span-8 space-y-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          <div className="col-span-1 md:col-span-8 space-y-6 md:space-y-8">
             <AnimatePresence mode="wait">
               {currentStep === 1 && <ServiceInfoStep />}
               {currentStep === 2 && <ServicePriceStep />}
@@ -206,28 +206,31 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
               {currentStep === 5 && <ServiceAvailabilityStep />}
             </AnimatePresence>
 
-            <div className="flex items-center justify-between pt-4">
+            <div className="flex items-center justify-between pt-4 gap-4">
               <Button
                 type="button"
                 onClick={handleBack}
                 disabled={currentStep === 1}
                 variant="outline"
+                className="flex-1 md:flex-none"
               >
                 Atrás
               </Button>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-1 md:flex-none">
                 {isEditMode && currentStep < 5 && (
                   <SmartSubmitButton
                     loadingLabel="Actualizando..."
+                    className="flex-1 md:flex-none"
                   >
-                    Actualizar Ahora
+                    Actualizar
                   </SmartSubmitButton>
                 )}
 
                 {currentStep === 5 ? (
                   <SmartSubmitButton
                     loadingLabel="Procesando..."
+                    className="flex-1 md:flex-none"
                   >
                     {submitLabel}
                   </SmartSubmitButton>
@@ -236,16 +239,19 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
                     type="button"
                     onClick={handleNext}
                     variant="default"
+                    className="flex-1 md:flex-none"
                   >
                     Siguiente
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 )}
               </div>
             </div>
           </div>
 
-          <ServicePreview currentStep={currentStep} isEditMode={isEditMode} />
+          <div className="hidden md:block md:col-span-4">
+            <ServicePreview currentStep={currentStep} isEditMode={isEditMode} />
+          </div>
         </form>
       </div>
     </FormProvider>

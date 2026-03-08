@@ -146,16 +146,16 @@ export const CreateCompanyPage: React.FC = () => {
                   <h2 className="text-2xl font-bold text-white">Información Comercial</h2>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="col-span-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="col-span-1 md:col-span-2">
                     <FormInput name="businessName" label="Nombre Comercial" required placeholder="Ej: Servicios Profesionales SA" />
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="col-span-1 md:col-span-2">
                     <FormInput name="logoUrl" label="URL del Logo" type="url" placeholder="https://ejemplo.com/logo.png" />
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="col-span-1 md:col-span-2">
                     <FormTextarea name="description" label="Descripción" rows={3} placeholder="Breve descripción de la empresa..." />
                   </div>
                 </div>

@@ -1,10 +1,10 @@
 import React from 'react';
 import { useBookings, useUpdateBookingStatus } from './bookings.hooks';
-import { DataTable } from 'ui-components';
+import { DataTable, Avatar, AvatarFallback, AvatarImage } from 'ui-components';
 import { useAuthStore } from '../../stores/auth.store';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ShoppingBag, ChevronRight, CheckCircle2, XCircle, User } from 'lucide-react';
+import { ShoppingBag, ChevronRight, CheckCircle2, XCircle, Calendar } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { BookingDto } from 'shared-types';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -49,27 +49,27 @@ export const BookingsPage: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 text-[10px] font-black uppercase tracking-widest border border-amber-500/20">Pendiente</span>;
+        return <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 text-[10px] font-bold uppercase tracking-wider border border-amber-500/20">Pendiente</span>;
       case 'ACTIVE':
-        return <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-black uppercase tracking-widest border border-blue-500/20">Confirmado</span>;
+        return <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-bold uppercase tracking-wider border border-blue-500/20">Activo</span>;
       case 'COMPLETED':
-        return <span className="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-[10px] font-black uppercase tracking-widest border border-green-500/20">Completado</span>;
+        return <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/20">Completado</span>;
       case 'CANCELLED':
-        return <span className="px-3 py-1 rounded-full bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest border border-red-500/20">Cancelado</span>;
+        return <span className="px-2.5 py-0.5 rounded-full bg-destructive/10 text-destructive text-[10px] font-bold uppercase tracking-wider border border-destructive/20">Cancelado</span>;
       default:
-        return <span className="px-3 py-1 rounded-full bg-slate-500/10 text-slate-500 text-[10px] font-black uppercase tracking-widest border border-slate-500/20">{status}</span>;
+        return <span className="px-2.5 py-0.5 rounded-full bg-secondary text-muted-foreground text-[10px] font-bold uppercase tracking-wider">{status}</span>;
     }
   };
 
   const columns: ColumnDef<BookingDto>[] = [
     {
       accessorKey: 'id',
-      header: 'ID / Fecha',
+      header: 'Pedido',
       cell: ({ row }) => (
-        <div className="flex flex-col gap-1">
-          <div className="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">#{row.original.id.slice(0, 8)}</div>
-          <div className="text-xs font-bold text-white whitespace-nowrap">
-            {format(new Date(row.original.scheduledDate), 'PPP', { locale: es })}
+        <div className="flex flex-col gap-0.5">
+          <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-tight">#{row.original.id.slice(0, 8)}</div>
+          <div className="text-xs font-bold text-foreground">
+            {format(new Date(row.original.scheduledDate), 'dd MMM, yyyy', { locale: es })}
           </div>
         </div>
       ),
@@ -79,12 +79,12 @@ export const BookingsPage: React.FC = () => {
       header: 'Servicio',
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/5">
-            <ShoppingBag className="h-5 w-5 text-dashboard-primary" />
+          <div className="h-9 w-9 rounded-lg bg-secondary flex items-center justify-center border border-border shrink-0">
+            <ShoppingBag className="h-4 w-4 text-primary" />
           </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-white text-sm tracking-tight capitalize">{row.original.service?.title || 'Servicio Premium'}</span>
-            <span className="text-[10px] text-slate-500 font-medium italic">Cant: {row.original.details?.quantity || 1}</span>
+          <div className="flex flex-col min-w-0">
+            <span className="font-bold text-foreground text-xs truncate max-w-[180px]">{row.original.service?.title || 'Servicio Premium'}</span>
+            <span className="text-[10px] text-muted-foreground">Cantidad: {row.original.details?.quantity || 1}</span>
           </div>
         </div>
       ),
@@ -93,17 +93,16 @@ export const BookingsPage: React.FC = () => {
       accessorKey: 'customer',
       header: 'Cliente',
       cell: ({ row }) => (
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center border border-white/5 overflow-hidden">
-            {row.original.customer?.profile?.avatarUrl ? (
-              <img src={row.original.customer.profile.avatarUrl} className="h-full w-full object-cover" />
-            ) : (
-              <User className="h-4 w-4 text-slate-500" />
-            )}
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-white text-xs">{row.original.customer?.profile?.displayName || 'Usuario'}</span>
-            <span className="text-[10px] text-slate-500 font-medium truncate max-w-[120px]">{row.original.customer?.email}</span>
+        <div className="flex items-center gap-2.5">
+          <Avatar className="h-7 w-7 border border-border">
+            <AvatarImage src={row.original.customer?.profile?.avatarUrl} />
+            <AvatarFallback className="text-[9px] bg-secondary text-muted-foreground">
+              {(row.original.customer?.profile?.displayName || 'U').substring(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col min-w-0">
+            <span className="font-bold text-foreground text-[11px] truncate max-w-[120px]">{row.original.customer?.profile?.displayName || 'Usuario'}</span>
+            <span className="text-[9px] text-muted-foreground truncate max-w-[120px]">{row.original.customer?.email}</span>
           </div>
         </div>
       ),
@@ -115,42 +114,42 @@ export const BookingsPage: React.FC = () => {
     },
     {
       id: 'actions',
-      header: 'Acciones',
+      header: '',
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-end gap-2">
           {row.original.status === 'PENDING' && (
             <>
               <button
                 onClick={() => handleStatusUpdate(row.original.id, 'ACTIVE', row.original.service?.title || 'Pedido')}
-                className="p-2 rounded-lg bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-all shadow-lg shadow-green-500/5 group"
+                className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all"
                 title="Confirmar"
               >
-                <CheckCircle2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                <CheckCircle2 className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={() => handleStatusUpdate(row.original.id, 'CANCELLED', row.original.service?.title || 'Pedido')}
-                className="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all shadow-lg shadow-red-500/5 group"
+                className="p-1.5 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-all"
                 title="Rechazar"
               >
-                <XCircle className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                <XCircle className="h-3.5 w-3.5" />
               </button>
             </>
           )}
           {row.original.status === 'ACTIVE' && (
             <button
               onClick={() => handleStatusUpdate(row.original.id, 'COMPLETED', row.original.service?.title || 'Pedido')}
-              className="p-2 rounded-lg bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-all group"
-              title="Marcar como Completado"
+              className="p-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all"
+              title="Completar"
             >
-              <CheckCircle2 className="h-4 w-4" />
+              <CheckCircle2 className="h-3.5 w-3.5" />
             </button>
           )}
           <button
             onClick={() => setSelectedBooking(row.original)}
-            className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all border border-white/5 group"
-            title="Ver Detalles"
+            className="p-1.5 rounded-lg bg-secondary text-muted-foreground hover:text-foreground transition-all"
+            title="Detalles"
           >
-            <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+            <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
       ),
@@ -159,67 +158,50 @@ export const BookingsPage: React.FC = () => {
 
   const totalPending = (allBookings || []).filter((b: BookingDto) => b.status === 'PENDING').length;
   const totalActive = (allBookings || []).filter((b: BookingDto) => b.status === 'ACTIVE').length;
-  const totalCompleted = (allBookings || []).filter((b: BookingDto) => b.status === 'COMPLETED').length;
-  const totalCancelled = (allBookings || []).filter((b: BookingDto) => b.status === 'CANCELLED').length;
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-700">
-      <div className="flex items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <div className="flex bg-[#1a1c3d]/60 p-1.5 rounded-2xl border border-white/5 shadow-2xl">
-            {(['all', 'PENDING', 'ACTIVE', 'COMPLETED', 'CANCELLED'] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-6 py-2.5 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest ${filter === f
-                  ? 'bg-dashboard-primary text-white shadow-lg shadow-dashboard-primary/20'
-                  : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
-                  }`}
-              >
-                {f === 'all' ? 'Todos' : f === 'PENDING' ? 'Pendientes' : f === 'ACTIVE' ? 'Confirmados' : f === 'COMPLETED' ? 'Completados' : 'Cancelados'}
-              </button>
-            ))}
-          </div>
+    <div className="space-y-6 md:space-y-8 max-w-[1400px] mx-auto pb-10 font-sans">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Pedidos</h1>
+          <p className="text-muted-foreground text-xs md:text-sm">Gestiona y realiza seguimiento de todas las reservas.</p>
         </div>
 
-        {/* Status Counters */}
-        <div className="flex items-center gap-6 pr-4">
-          <div className="flex flex-col items-end">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Pendientes</span>
-            <span className="text-xl font-black text-white leading-none">{totalPending}</span>
-          </div>
-          <div className="h-8 w-px bg-white/5" />
-          <div className="flex flex-col items-end">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Confirmados</span>
-            <span className="text-xl font-black text-white leading-none">{totalActive}</span>
-          </div>
-          <div className="h-8 w-px bg-white/5" />
-          <div className="flex flex-col items-end">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Completados</span>
-            <span className="text-xl font-black text-white leading-none">{totalCompleted}</span>
-          </div>
-          <div className="h-8 w-px bg-white/5" />
-          <div className="flex flex-col items-end">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Cancelados</span>
-            <span className="text-xl font-black text-white leading-none">{totalCancelled}</span>
-          </div>
+        <div className="flex bg-secondary/50 p-1 rounded-xl border border-border overflow-x-auto no-scrollbar">
+          {(['all', 'PENDING', 'ACTIVE', 'COMPLETED', 'CANCELLED'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-1.5 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider whitespace-nowrap ${filter === f
+                ? 'bg-background text-primary shadow-sm border border-border/50'
+                : 'text-muted-foreground hover:text-foreground'
+                }`}
+            >
+              {f === 'all' ? 'Todos' : f === 'PENDING' ? `Pendientes (${totalPending})` : f === 'ACTIVE' ? `Activos (${totalActive})` : f === 'COMPLETED' ? 'Completados' : 'Cancelados'}
+            </button>
+          ))}
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-2xl font-bold text-sm">
-          Error: {(error as Error).message}
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
+          <XCircle className="h-4 w-4" />
+          Error al cargar pedidos: {(error as Error).message}
         </div>
       )}
 
-      <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-inner">
-        <DataTable
-          columns={columns}
-          data={bookings}
-          isLoading={isLoading}
-          emptyMessage="No se encontraron pedidos con estos criterios."
-          className="border-none"
-        />
+      <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden relative">
+        <div className="overflow-x-auto custom-scrollbar">
+          <div className="min-w-[850px]">
+            <DataTable
+              columns={columns}
+              data={bookings}
+              isLoading={isLoading}
+              emptyMessage="No se encontraron pedidos."
+              className="border-none"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Confirmation Modal */}
@@ -229,51 +211,40 @@ export const BookingsPage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setConfirmConfig(null)}
-              className="absolute inset-0 bg-[#0a0b1e]/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.98, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-[#1a1c3d] border border-white/10 p-8 rounded-[2rem] shadow-2xl space-y-6"
+              exit={{ opacity: 0, scale: 0.98, y: 10 }}
+              className="relative w-full max-w-sm bg-popover border border-border p-8 rounded-2xl shadow-2xl space-y-6 text-center"
             >
-              <div className="space-y-2 text-center">
-                <div className={`mx-auto h-16 w-16 rounded-2xl flex items-center justify-center mb-4 ${confirmConfig.status === 'ACTIVE' ? 'bg-green-500/10 text-green-500' :
-                  confirmConfig.status === 'CANCELLED' ? 'bg-red-500/10 text-red-500' :
-                    'bg-blue-500/10 text-blue-500'
-                  }`}>
-                  {confirmConfig.status === 'ACTIVE' ? <CheckCircle2 className="h-8 w-8" /> :
-                    confirmConfig.status === 'CANCELLED' ? <XCircle className="h-8 w-8" /> :
-                      <CheckCircle2 className="h-8 w-8" />}
-                </div>
-                <h3 className="text-2xl font-black text-white tracking-tight italic uppercase">¿Confirmar Acción?</h3>
-                <p className="text-slate-400 text-sm leading-relaxed font-medium">
-                  Estás a punto de cambiar el estado de <span className="text-white font-bold">"{confirmConfig.title}"</span> a{' '}
-                  <span className={`font-black uppercase tracking-widest ${confirmConfig.status === 'ACTIVE' ? 'text-green-500' :
-                    confirmConfig.status === 'CANCELLED' ? 'text-red-500' :
-                      'text-blue-500'
-                    }`}>
-                    {confirmConfig.status === 'ACTIVE' ? 'Confirmado' :
-                      confirmConfig.status === 'CANCELLED' ? 'Rechazado' :
-                        'Completado'}
-                  </span>.
+              <div className={`mx-auto h-14 w-14 rounded-full flex items-center justify-center mb-2 ${confirmConfig.status === 'ACTIVE' ? 'bg-blue-500/10 text-blue-500' :
+                confirmConfig.status === 'CANCELLED' ? 'bg-destructive/10 text-destructive' :
+                  'bg-emerald-500/10 text-emerald-500'
+                }`}>
+                <CheckCircle2 className="h-7 w-7" />
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-foreground tracking-tight">¿Confirmar Acción?</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Vas a cambiar el estado de <span className="text-foreground font-bold">"{confirmConfig.title}"</span> a{' '}
+                  <span className="font-bold text-primary uppercase">{confirmConfig.status}</span>.
                 </p>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 pt-2">
                 <button
                   onClick={() => setConfirmConfig(null)}
-                  className="flex-1 px-6 py-3.5 rounded-xl bg-white/5 text-slate-400 font-bold hover:bg-white/10 transition-all text-xs uppercase tracking-widest"
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-secondary text-foreground font-bold hover:bg-secondary/80 transition-all text-xs uppercase tracking-widest"
                 >
                   Regresar
                 </button>
                 <button
                   onClick={confirmUpdate}
                   disabled={updateStatusMutation.isPending}
-                  className={`flex-1 px-6 py-3.5 rounded-xl font-black text-white shadow-lg transition-all text-xs uppercase tracking-widest disabled:opacity-50 ${confirmConfig.status === 'ACTIVE' ? 'bg-green-500 shadow-green-500/20' :
-                    confirmConfig.status === 'CANCELLED' ? 'bg-red-500 shadow-red-500/20' :
-                      'bg-blue-500 shadow-blue-500/20'
-                    }`}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 transition-all text-xs uppercase tracking-widest disabled:opacity-50"
                 >
                   {updateStatusMutation.isPending ? 'Procesando...' : 'Confirmar'}
                 </button>
@@ -290,88 +261,81 @@ export const BookingsPage: React.FC = () => {
         size="lg"
       >
         {selectedBooking && (
-          <div className="space-y-8 p-4">
-            <div className="flex items-center justify-between border-b border-white/5 pb-6">
+          <div className="space-y-8 font-sans">
+            <div className="flex items-center justify-between pb-6 border-b border-border/50">
               <div className="flex items-center gap-4">
-                <div className="h-14 w-14 rounded-2xl bg-dashboard-primary flex items-center justify-center shadow-lg shadow-dashboard-primary/10">
-                  <ShoppingBag className="h-7 w-7 text-white m-3.5" />
+                <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 text-primary-foreground">
+                  <ShoppingBag className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="text-xl font-black text-white uppercase tracking-tight italic">{selectedBooking.service?.title}</h4>
-                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Reserva #{selectedBooking.id.slice(0, 8)}</p>
+                  <h4 className="text-lg font-bold text-foreground tracking-tight">{selectedBooking.service?.title}</h4>
+                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">ID #{selectedBooking.id.slice(0, 8)}</p>
                 </div>
               </div>
               {getStatusBadge(selectedBooking.status)}
             </div>
 
-            <div className="space-y-4">
-              <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Datos del Comprador</h5>
-              <div className="bg-white/5 p-6 rounded-3xl border border-white/5 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-dashboard-primary/20 flex items-center justify-center border border-dashboard-primary/20 overflow-hidden">
-                    {selectedBooking.customer?.profile?.avatarUrl ? (
-                      <img src={selectedBooking.customer.profile.avatarUrl} className="h-full w-full object-cover" />
-                    ) : (
-                      <User className="h-6 w-6 text-dashboard-primary" />
-                    )}
-                  </div>
-                  <div>
-                    <h6 className="text-white font-bold">{selectedBooking.customer?.profile?.displayName || 'Cliente Sin Nombre'}</h6>
-                    <p className="text-xs text-slate-500 font-medium italic">{selectedBooking.customer?.email}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <h5 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Cliente</h5>
+                <div className="bg-secondary/30 p-4 rounded-2xl border border-border/50 flex items-center gap-3">
+                  <Avatar className="h-10 w-10 border border-border">
+                    <AvatarImage src={selectedBooking.customer?.profile?.avatarUrl} />
+                    <AvatarFallback className="bg-secondary text-muted-foreground font-bold">
+                      {(selectedBooking.customer?.profile?.displayName || 'U').substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-foreground truncate">{selectedBooking.customer?.profile?.displayName || 'Usuario'}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{selectedBooking.customer?.email}</p>
                   </div>
                 </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Teléfono Directo</span>
-                  <span className="text-sm text-white font-black tracking-tight">{selectedBooking.customer?.profile?.phone || 'No proporcionado'}</span>
+              </div>
+
+              <div className="space-y-4">
+                <h5 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Programación</h5>
+                <div className="bg-secondary/30 p-4 rounded-2xl border border-border/50">
+                  <div className="flex items-center gap-3 text-foreground">
+                    <Calendar className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-bold">{format(new Date(selectedBooking.scheduledDate), 'PPPP', { locale: es })}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-white">
-              <div className="space-y-4">
-                <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Información de la Cita</h5>
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
-                  <p className="flex justify-between text-sm">
-                    <span className="text-slate-400 font-bold">Fecha:</span>
-                    <span className="font-medium">{format(new Date(selectedBooking.scheduledDate), 'PPPP', { locale: es })}</span>
-                  </p>
-                  <p className="flex justify-between text-sm">
-                    <span className="text-slate-400 font-bold">Cliente ID:</span>
-                    <span className="font-mono text-xs">{selectedBooking.customerId}</span>
-                  </p>
+            <div className="space-y-4">
+              <h5 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Resumen Económico</h5>
+              <div className="bg-secondary/30 p-6 rounded-2xl border border-border/50 space-y-3">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Cantidad</span>
+                  <span className="font-bold text-foreground">{selectedBooking.details?.quantity} Unidades</span>
                 </div>
-              </div>
-
-              <div className="space-y-4">
-                <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Resumen de Pago</h5>
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2 text-white">
-                  <p className="flex justify-between text-sm font-bold capitalize">
-                    <span className="text-slate-400 ">Cantidad:</span>
-                    <span>{selectedBooking.details?.quantity} Unidades</span>
-                  </p>
-                  <p className="flex justify-between text-lg font-black pt-2 border-t border-white/5">
-                    <span className="text-dashboard-primary">Total:</span>
-                    <span>${selectedBooking.details?.grandTotal}</span>
-                  </p>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Precio Unitario</span>
+                  <span className="font-bold text-foreground">${selectedBooking.details?.unitPrice}</span>
+                </div>
+                <div className="pt-3 border-t border-border/50 flex justify-between items-center">
+                  <span className="text-base font-bold text-foreground">Total</span>
+                  <span className="text-2xl font-bold text-primary tracking-tight">${selectedBooking.details?.grandTotal}</span>
                 </div>
               </div>
             </div>
 
             {selectedBooking.notes && (
               <div className="space-y-4">
-                <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Notas del Cliente</h5>
-                <div className="bg-amber-500/5 p-6 rounded-3xl border border-amber-500/10 italic text-slate-300 text-sm leading-relaxed">
+                <h5 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Notas del Cliente</h5>
+                <div className="bg-amber-500/5 p-4 rounded-2xl border border-amber-500/10 italic text-muted-foreground text-xs leading-relaxed">
                   "{selectedBooking.notes}"
                 </div>
               </div>
             )}
 
-            <div className="flex gap-4 pt-4 border-t border-white/5">
+            <div className="flex pt-4">
               <button
                 onClick={() => setSelectedBooking(null)}
-                className="flex-1 px-6 py-4 rounded-2xl bg-white/5 text-slate-400 font-bold hover:bg-white/10 transition-all text-xs uppercase tracking-widest"
+                className="w-full px-6 py-3 rounded-xl bg-secondary text-foreground font-bold hover:bg-secondary/80 transition-all text-xs uppercase tracking-widest"
               >
-                Cerrar
+                Cerrar Panel
               </button>
             </div>
           </div>

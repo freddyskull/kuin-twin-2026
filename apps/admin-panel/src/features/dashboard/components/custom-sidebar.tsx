@@ -8,21 +8,28 @@ import {
   LogOut,
   Plus,
   Building2,
-  MessageSquare
+  MessageSquare,
+  X
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../../stores/auth.store';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { usePendingServicesCount } from '../../bookings/bookings.hooks';
+import { useIsMobile } from '../../../hooks/use-mobile';
+import { cn } from 'ui-components';
 
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
 
-export const Sidebar: React.FC = () => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   const user = useAuthStore((state) => state.user);
-
   const pendingCount = usePendingServicesCount(user?.id);
 
   const handleLogout = () => {
@@ -30,9 +37,8 @@ export const Sidebar: React.FC = () => {
     navigate('/iniciar-sesion');
   };
 
-
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Panel Control', to: '/' },
+    { icon: LayoutDashboard, label: 'Dashboard', to: '/' },
     { icon: Plus, label: 'Nuevo Servicio', to: '/servicios/crear' },
     { icon: Briefcase, label: 'Mis Servicios', to: '/servicios' },
     { icon: Building2, label: 'Empresas', to: '/empresas' },
@@ -42,19 +48,32 @@ export const Sidebar: React.FC = () => {
     { icon: Settings, label: 'Ajustes', to: '/ajustes' },
   ];
 
-
   return (
-    <aside className="fixed left-0 top-0 h-screen w-72 bg-sidebar flex flex-col p-8 z-50">
-      {/* Logo */}
-      <div className="flex items-center gap-4 mb-16">
-        <div className="h-10 w-10 rounded-xl bg-sidebar-primary flex items-center justify-center shadow-lg shadow-sidebar-primary/20">
-          <span className="text-sidebar font-black text-xl">K</span>
+    <aside className={cn(
+      "fixed left-0 top-0 h-screen w-72 bg-sidebar border-r border-sidebar-border flex flex-col p-6 z-50 transition-transform duration-300 ease-in-out",
+      isMobile && !isOpen ? "-translate-x-full" : "translate-x-0"
+    )}>
+      {/* Logo & Close Button */}
+      <div className="flex items-center justify-between mb-10 px-2">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+            <span className="text-primary-foreground font-black text-lg">K</span>
+          </div>
+          <span className="font-bold text-white tracking-tight text-lg">Kuin Twin</span>
         </div>
-        <span className="font-bold text-white tracking-[0.2em] text-sm">KUIN TWIN</span>
+        
+        {isMobile && (
+          <button 
+            onClick={onClose}
+            className="p-2 rounded-lg bg-secondary/50 text-muted-foreground hover:text-foreground transition-all"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-4">
+      <nav className="flex-1 space-y-1.5 overflow-y-auto custom-scrollbar pr-2 -mr-2">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.to;
           return (
@@ -62,19 +81,23 @@ export const Sidebar: React.FC = () => {
               key={item.label}
               to={item.to as any}
               className="block"
+              onClick={() => isMobile && onClose?.()}
             >
               <motion.div
-                whileHover={{ x: 5 }}
-                className={`flex items-center gap-4 w-full p-4 rounded-full transition-all duration-300 relative group/item ${isActive
-                  ? 'bg-sidebar-primary/10 text-sidebar-primary shadow-inner shadow-sidebar-primary/5 border-l-4 border-sidebar-primary'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
-                  }`}
+                whileHover={{ x: 4 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className={cn(
+                  "flex items-center gap-3 w-full px-4 py-2.5 rounded-xl transition-all duration-200 relative group/item",
+                  isActive
+                    ? 'bg-primary/10 text-primary border border-primary/20'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50 border border-transparent'
+                )}
               >
-                <item.icon className={`h-5 w-5 ${isActive ? 'text-sidebar-primary' : ''}`} />
-                <span className="font-medium flex-1">{item.label}</span>
+                <item.icon className={`h-4.5 w-4.5 ${isActive ? 'text-primary' : 'text-muted-foreground group-hover/item:text-foreground'}`} />
+                <span className="font-medium text-sm flex-1">{item.label}</span>
 
                 {item.badge && (
-                  <span className="absolute right-4 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white shadow-lg shadow-red-500/40 animate-pulse">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-primary text-[10px] font-black text-primary-foreground shadow-lg shadow-primary/20">
                     {item.badge}
                   </span>
                 )}
@@ -85,13 +108,15 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* Logout */}
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-4 text-red-500 hover:text-red-400 transition-colors p-4 mt-auto group"
-      >
-        <LogOut className="h-5 w-5 group-hover:scale-110 transition-transform" />
-        <span className="font-semibold">Cerrar Sesión</span>
-      </button>
+      <div className="mt-auto pt-6 border-t border-sidebar-border">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 text-muted-foreground hover:text-destructive transition-colors px-4 py-2.5 rounded-xl hover:bg-destructive/5 group"
+        >
+          <LogOut className="h-4.5 w-4.5 group-hover:translate-x-0.5 transition-transform" />
+          <span className="font-semibold text-sm">Cerrar Sesión</span>
+        </button>
+      </div>
     </aside>
   );
 };

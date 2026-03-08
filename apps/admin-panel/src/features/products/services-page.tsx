@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Pencil, Trash2, LayoutDashboard } from 'lucide-react';
+import { Plus, Pencil, Trash2, LayoutDashboard, Building2, XCircle } from 'lucide-react';
 import { useServices, useDeleteService, useToggleServiceStatus } from './services.hooks';
 import { Button, DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -67,30 +67,18 @@ export const ServicesPage: React.FC = () => {
       cell: ({ row }) => {
         const service = row.original;
         return (
-          <div className="flex items-center gap-4" title={service.title}>
-            <div className="h-12 w-12 rounded-xl bg-[#0a0b1e] overflow-hidden flex items-center justify-center border border-white/5 flex-shrink-0">
+          <div className="flex items-center gap-3" title={service.title}>
+            <div className="h-10 w-10 rounded-lg bg-secondary overflow-hidden flex items-center justify-center border border-border flex-shrink-0">
               {service.imageUrl ? (
                 <img src={service.imageUrl.startsWith('http') ? service.imageUrl : `http://localhost:3001${service.imageUrl}`} alt={service.title} className="h-full w-full object-cover" />
               ) : (
-                <LayoutDashboard className="h-6 w-6 text-slate-600" />
+                <LayoutDashboard className="h-5 w-5 text-muted-foreground" />
               )}
             </div>
-            <div className="max-w-[250px] flex flex-col gap-1">
-              <div className="font-bold text-white tracking-tight truncate">{service.title}</div>
-              <div className="flex items-center gap-2 overflow-hidden">
-                <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider whitespace-nowrap">
-                  {service.category?.name || 'Sin Categoría'}
-                </div>
-                {service.tags && service.tags.length > 0 && (
-                  <div className="flex gap-1 overflow-hidden">
-                    {service.tags.slice(0, 2).map((tag: string, i: number) => (
-                      <span key={i} className="text-[8px] px-1.5 py-0.5 rounded bg-white/5 text-slate-500 border border-white/5 whitespace-nowrap">
-                        #{tag}
-                      </span>
-                    ))}
-                    {service.tags.length > 2 && <span className="text-[8px] text-slate-600">+{service.tags.length - 2}</span>}
-                  </div>
-                )}
+            <div className="max-w-[220px] min-w-0">
+              <div className="font-bold text-foreground text-xs truncate">{service.title}</div>
+              <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider truncate">
+                {service.category?.name || 'Sin Categoría'}
               </div>
             </div>
           </div>
@@ -102,14 +90,12 @@ export const ServicesPage: React.FC = () => {
       header: 'Empresa',
       cell: ({ row }) => {
         const company = row.original.company;
-        if (!company) return <span className="text-slate-500 italic">Sin empresa</span>;
+        if (!company) return <span className="text-muted-foreground text-[10px] italic font-medium">No asignada</span>;
 
         return (
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-white/5 text-slate-400 border border-white/5">
-              {company.businessName}
-            </span>
-          </div>
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-secondary/50 text-muted-foreground border border-border/50 truncate max-w-[150px]">
+            {company.businessName}
+          </span>
         );
       },
     },
@@ -121,7 +107,9 @@ export const ServicesPage: React.FC = () => {
         return (
           <button
             onClick={() => handleToggleStatus(service.id, service.title, service.isActive)}
-            className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase transition-all hover:scale-105 active:scale-95 ${service.isActive ? 'bg-green-500/20 text-green-500 active:bg-green-500/40' : 'bg-red-500/20 text-red-500 active:bg-red-500/40'}`}
+            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase transition-all border ${service.isActive 
+              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
+              : 'bg-muted text-muted-foreground border-border'}`}
           >
             {service.isActive ? 'Activo' : 'Inactivo'}
           </button>
@@ -134,44 +122,42 @@ export const ServicesPage: React.FC = () => {
       cell: ({ row }) => {
         const price = Number(row.original.basePrice);
         return (
-          <>
+          <div className="text-xs font-bold text-foreground">
             {row.original.showPrice ? (
-              <div className="font-bold text-white">
-                {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0 }).format(price)}
-              </div>
+              new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0 }).format(price)
             ) : (
-              <span className="text-dashboard-primary font-bold italic">Cotización</span>
+              <span className="text-primary italic">Cotización</span>
             )}
-          </>
+          </div>
         );
       },
     },
     {
       id: 'actions',
-      header: 'Acciones',
+      header: '',
       cell: ({ row }) => {
         const service = row.original;
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <button
               onClick={() => setSelectedServiceForCompanies(service)}
-              className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 transition-all"
-              title="Gestionar Sucursales"
+              className="p-1.5 rounded-lg bg-secondary text-muted-foreground hover:text-primary transition-all border border-transparent hover:border-primary/20"
+              title="Sucursales"
             >
-              <LayoutDashboard className="h-4 w-4" />
+              <Building2 className="h-3.5 w-3.5" />
             </button>
             <Link to={`/servicios/${service.id}/editar`}>
-              <button className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-dashboard-primary hover:bg-dashboard-primary/10 transition-all" title="Editar Servicio">
-                <Pencil className="h-4 w-4" />
+              <button className="p-1.5 rounded-lg bg-secondary text-muted-foreground hover:text-foreground transition-all" title="Editar">
+                <Pencil className="h-3.5 w-3.5" />
               </button>
             </Link>
             <button
               onClick={() => handleDelete(service.id, service.title)}
               disabled={deleteMutation.isPending || service.isActive}
-              className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed"
-              title="Eliminar Servicio"
+              className="p-1.5 rounded-lg bg-secondary text-muted-foreground hover:text-destructive transition-all disabled:opacity-20"
+              title="Eliminar"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
         );
@@ -180,53 +166,63 @@ export const ServicesPage: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-10 animate-in fade-in duration-700">
-      <div className="flex items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <Link to="/servicios/crear">
-            <Button>
-              <Plus className="h-5 w-5 stroke-[3]" />
-              Añadir Nuevo Servicio
-            </Button>
-          </Link>
+    <div className="space-y-6 md:space-y-8 max-w-[1400px] mx-auto pb-10 font-sans">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Servicios</h1>
+          <p className="text-muted-foreground text-xs md:text-sm">Gestiona el catálogo de servicios ofrecidos en la plataforma.</p>
+        </div>
 
-          <div className="flex bg-[#1a1c3d]/60 p-1.5 rounded-2xl border border-white/5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+          <div className="flex bg-secondary/50 p-1 rounded-xl border border-border overflow-x-auto no-scrollbar">
             {(['all', 'active', 'inactive'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => handleFilterChange(f)}
-                className={`px-6 py-2.5 text-sm font-bold rounded-xl transition-all capitalize ${filter === f
-                  ? 'bg-white/10 text-white shadow-lg'
-                  : 'text-slate-500 hover:text-slate-300'
+                className={`flex-1 sm:flex-none px-4 py-1.5 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider whitespace-nowrap ${filter === f
+                  ? 'bg-background text-primary shadow-sm border border-border/50'
+                  : 'text-muted-foreground hover:text-foreground'
                   }`}
               >
                 {f === 'all' ? 'Todos' : f === 'active' ? 'Activos' : 'Inactivos'}
               </button>
             ))}
           </div>
+          
+          <Link to="/servicios/crear" className="flex">
+            <Button className="flex-1 h-10 px-5 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+              <Plus className="h-4 w-4 mr-2" />
+              Nuevo Servicio
+            </Button>
+          </Link>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-2xl font-bold text-sm">
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
+          <XCircle className="h-4 w-4" />
           Error: {(error as Error).message}
         </div>
       )}
-      <p className="text-slate-500  text-sm font-bold italic">para poder borrar servicios primero debes cambiar su estado a inactivo</p>
-      <div className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden">
-        <DataTable
-          columns={columns}
-          data={services}
-          isLoading={isLoading}
-          emptyMessage="No se encontraron servicios con los criterios seleccionados."
-          className="border-none"
-        />
+
+      <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden relative">
+        <div className="overflow-x-auto custom-scrollbar">
+          <div className="min-w-[800px]">
+            <DataTable
+              columns={columns}
+              data={services}
+              isLoading={isLoading}
+              emptyMessage="No se encontraron servicios."
+              className="border-none"
+            />
+          </div>
+        </div>
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="p-6 border-t border-white/5 flex items-center justify-between bg-white/5">
-            <div className="text-sm text-slate-500 font-bold">
-              Mostrando <span className="text-white">{(page - 1) * limit + 1}</span> a <span className="text-white">{Math.min(page * limit, total)}</span> de <span className="text-white">{total}</span> servicios
+          <div className="p-4 border-t border-border bg-secondary/20 flex items-center justify-between">
+            <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+              Pag <span className="text-foreground">{page}</span> de <span className="text-foreground">{totalPages}</span>
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -234,27 +230,16 @@ export const ServicesPage: React.FC = () => {
                 size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="rounded-xl px-4"
+                className="h-8 rounded-lg text-xs"
               >
                 Anterior
               </Button>
-              <div className="flex items-center gap-1 px-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => setPage(p)}
-                    className={`h-8 w-8 rounded-lg text-xs font-bold transition-all ${p === page ? 'bg-dashboard-primary text-white shadow-lg' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="rounded-xl px-4"
+                className="h-8 rounded-lg text-xs"
               >
                 Siguiente
               </Button>
@@ -262,6 +247,10 @@ export const ServicesPage: React.FC = () => {
           </div>
         )}
       </div>
+      
+      <p className="text-[10px] text-muted-foreground font-medium italic px-2">
+        * Para eliminar un servicio, primero cámbialo a estado inactivo.
+      </p>
 
       <AnimatePresence>
         {statusConfirm && (
@@ -269,19 +258,19 @@ export const ServicesPage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setStatusConfirm(null)}
-              className="absolute inset-0 bg-[#0a0b1e]/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.98, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-[#1a1c3d] border border-white/10 p-8 rounded-[2rem] shadow-2xl space-y-6"
+              exit={{ opacity: 0, scale: 0.98, y: 10 }}
+              className="relative w-full max-w-sm bg-popover border border-border p-8 rounded-2xl shadow-2xl space-y-6 text-center"
             >
               <div className="space-y-2">
-                <h3 className="text-2xl font-bold text-white tracking-tight">¿Cambiar Estado?</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  Estás a punto de cambiar <span className="text-white font-bold">"{statusConfirm.title}"</span> a{' '}
-                  <span className={`font-bold ${statusConfirm.nextStatus ? 'text-green-500' : 'text-red-500'}`}>
+                <h3 className="text-xl font-bold text-foreground tracking-tight">¿Cambiar Estado?</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Vas a cambiar <span className="text-foreground font-bold">"{statusConfirm.title}"</span> a{' '}
+                  <span className={`font-bold ${statusConfirm.nextStatus ? 'text-emerald-500' : 'text-muted-foreground'}`}>
                     {statusConfirm.nextStatus ? 'ACTIVO' : 'INACTIVO'}
                   </span>.
                 </p>
@@ -290,15 +279,15 @@ export const ServicesPage: React.FC = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setStatusConfirm(null)}
-                  className="flex-1 px-6 py-3.5 rounded-xl bg-white/5 text-slate-400 font-bold hover:bg-white/10 transition-all text-sm"
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-secondary text-foreground font-bold hover:bg-secondary/80 transition-all text-xs uppercase tracking-widest"
                 >
-                  Cancelar
+                  Regresar
                 </button>
                 <button
                   onClick={confirmToggleStatus}
-                  className={`flex-1 px-6 py-3.5 rounded-xl font-bold text-primary shadow-lg transition-all text-sm ${statusConfirm.nextStatus ? 'bg-green-500 shadow-green-500/20' : 'bg-red-500 shadow-red-500/20'}`}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 transition-all text-xs uppercase tracking-widest"
                 >
-                  Confirmar Cambio
+                  Confirmar
                 </button>
               </div>
             </motion.div>

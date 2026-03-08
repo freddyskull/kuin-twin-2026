@@ -34,37 +34,40 @@ const requests = [
 
 export const NearbyRequests: React.FC = () => {
   return (
-    <div className="bg-card backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full overflow-hidden">
-      <div className="flex justify-between items-center mb-10">
-        <h2 className="text-2xl font-bold text-white tracking-tight">Solicitudes Profesionales Cercanas</h2>
-        <button className="text-sm font-bold text-primary hover:text-primary/80 transition-all uppercase tracking-widest">Ver Todo</button>
+    <div className="bg-card border border-border rounded-3xl p-6 md:p-8 h-full shadow-sm">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h2 className="text-lg md:text-xl font-bold text-foreground tracking-tight">Solicitudes Cercanas</h2>
+          <p className="text-xs text-muted-foreground font-medium">Servicios disponibles en tu zona</p>
+        </div>
+        <button className="text-[10px] font-bold text-primary hover:underline transition-all uppercase tracking-widest px-3 py-1 bg-primary/10 rounded-md">Ver Todo</button>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {requests.map((req) => (
           <motion.div
             key={req.id}
-            whileHover={{ scale: 1.01 }}
-            className="group flex items-center justify-between p-6 rounded-3xl bg-background/40 border border-white/5 hover:border-primary/30 transition-all"
+            whileHover={{ y: -2 }}
+            className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-secondary/30 border border-border/50 hover:border-primary/30 transition-all duration-200 gap-4"
           >
-            <div className="flex items-center gap-6">
-              <div className="h-16 w-16 rounded-2xl bg-card flex items-center justify-center text-primary shadow-lg border border-white/5 group-hover:bg-primary/10 transition-colors">
-                <req.icon className="h-7 w-7" />
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-background border border-border flex items-center justify-center text-primary group-hover:bg-primary/5 transition-colors shrink-0">
+                <req.icon className="h-5 w-5" />
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-white mb-1.5">{req.title}</h3>
-                <p className="text-sm text-slate-500 font-medium">
-                  {req.distance} <span className="mx-2">•</span> {req.time}
+              <div className="min-w-0">
+                <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors truncate">{req.title}</h3>
+                <p className="text-[11px] text-muted-foreground font-medium truncate">
+                  {req.distance} <span className="mx-1.5 opacity-30">•</span> {req.time}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-10">
-              <div className="text-right">
-                <p className="text-xl font-black text-white mb-1 tracking-tight">{req.price}</p>
-                <p className={`text-[11px] font-black tracking-[0.2em] ${req.status === 'URGENTE' ? 'text-red-500' : 'text-slate-500'} uppercase`}>{req.status}</p>
+            <div className="flex items-center justify-between sm:justify-end gap-6 border-t sm:border-t-0 border-border/50 pt-3 sm:pt-0">
+              <div className="text-left sm:text-right">
+                <p className="text-sm font-bold text-foreground">{req.price}</p>
+                <p className={`text-[9px] font-black tracking-widest ${req.status === 'URGENTE' ? 'text-destructive' : 'text-muted-foreground'} uppercase`}>{req.status}</p>
               </div>
-              <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3.5 rounded-2xl text-sm font-black shadow-xl shadow-primary/20 transition-all active:scale-95">
+              <button className="bg-primary hover:bg-primary/90 text-primary-foreground h-9 px-5 rounded-lg text-xs font-bold transition-all active:scale-95 shadow-sm whitespace-nowrap">
                 Aceptar
               </button>
             </div>
