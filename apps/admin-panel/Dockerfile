@@ -15,7 +15,8 @@ COPY libs/shared-types/package*.json ./libs/shared-types/
 COPY libs/api-client/package*.json ./libs/api-client/
 COPY libs/ui-components/package*.json ./libs/ui-components/
 
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps && \
+    npm install @rollup/rollup-linux-x64-gnu --save-optional --legacy-peer-deps
 
 # --- Etapa 2: Construcción ---
 FROM dependencies AS build
@@ -23,6 +24,9 @@ COPY . .
 
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
+
+# Compilar librerías locales primero
+RUN npm run build --workspace=shared-types
 
 # Construir Vite directamente desde el workspace
 RUN npm run build --workspace=admin-panel

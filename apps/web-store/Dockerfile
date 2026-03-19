@@ -24,6 +24,9 @@ COPY . .
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
+# Compilar librerías locales primero
+RUN npm run build --workspace=shared-types
+
 # Construir Next.js directamente desde el workspace
 RUN npm run build --workspace=web-store
 
@@ -34,6 +37,7 @@ WORKDIR /app
 ENV NODE_ENV production
 
 COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/apps/web-store/.next ./apps/web-store/.next
 COPY --from=build /app/apps/web-store/package.json ./apps/web-store/package.json
 COPY --from=build /app/apps/web-store/public ./apps/web-store/public
