@@ -147,6 +147,7 @@ export {
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption } from "./components/ui/table";
 export { Card, CardHeader, CardFooter, CardTitle, CardAction, CardDescription, CardContent } from "./components/ui/card";
 export { Badge, badgeVariants } from "./components/ui/badge";
+export { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar";
 export { ServiceCard } from "./components/service-card";
 export { ServiceGallery } from "./components/service-gallery";
 export { ServiceFaqs } from "./components/service-faqs";

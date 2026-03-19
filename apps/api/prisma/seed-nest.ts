@@ -65,6 +65,7 @@ async function bootstrap() {
     },
   });
 
+  /*
   // Create Company for Vendor
   await prisma.company.upsert({
     where: { rfc: 'KUI990101XYZ' },
@@ -85,6 +86,8 @@ async function bootstrap() {
     }
   });
   console.log('✅ Usuarios y Empresa creados.');
+  */
+  console.log('✅ Usuarios creados.');
 
   // 1. Create Service Units
   const units = [

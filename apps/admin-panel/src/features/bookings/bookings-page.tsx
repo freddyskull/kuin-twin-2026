@@ -8,7 +8,7 @@ import { ShoppingBag, ChevronRight, CheckCircle2, XCircle, Calendar } from 'luci
 import type { ColumnDef } from '@tanstack/react-table';
 import type { BookingDto } from 'shared-types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Modal } from '@/components/modal';
+import { Modal } from '@/components/Modal';
 
 export const BookingsPage: React.FC = () => {
   const user = useAuthStore((state) => state.user);

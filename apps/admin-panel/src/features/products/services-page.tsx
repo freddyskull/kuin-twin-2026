@@ -5,7 +5,7 @@ import { useServices, useDeleteService, useToggleServiceStatus } from './service
 import { Button, DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ServiceDto } from 'shared-types';
-import { Modal } from '@/components/modal';
+import { Modal } from '@/components/Modal';
 import { ServiceCompanyManager } from './components/service-company-manager';
 import { motion, AnimatePresence } from 'framer-motion';
 

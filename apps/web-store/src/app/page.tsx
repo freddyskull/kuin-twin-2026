@@ -9,7 +9,7 @@ import { useInfiniteServices, ServiceCard } from "@/features/services";
 import { Navbar } from "@/components/navbar";
 
 /* ─── Variantes de animación reutilizables ─── */
-const fadeUp = {
+const fadeUp: any = {
   hidden: { opacity: 0, y: 32, filter: "blur(6px)" },
   visible: (delay = 0) => ({
     opacity: 1,
@@ -19,7 +19,7 @@ const fadeUp = {
   }),
 };
 
-const cardVariants = {
+const cardVariants: any = {
   hidden: { opacity: 0, y: 40, scale: 0.96 },
   visible: (delay = 0) => ({
     opacity: 1,

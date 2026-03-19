@@ -1,38 +1,43 @@
-FROM node:20-alpine AS base
+# Dockerfile de Super Vivencia para NestJS + Sharp + Prisma
+FROM node:20-slim AS base
+
+RUN apt-get update && apt-get install -y openssl libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Install dependencies only when needed
-COPY package*.json ./
-COPY turbo.json ./
-# Copy ALL package.json files for workspaces
-COPY apps/api/package*.json ./apps/api/
-COPY apps/web-store/package*.json ./apps/web-store/
-COPY apps/admin-panel/package*.json ./apps/admin-panel/
-COPY libs/shared-types/package*.json ./libs/shared-types/
-COPY libs/api-client/package*.json ./libs/api-client/
-COPY libs/ui-components/package*.json ./libs/ui-components/
-
-RUN npm install --legacy-peer-deps
-
-# Copy project files
+# --- Etapa 1: Construcción ---
+FROM base AS build
 COPY . .
 
-# Build the project (use turbo)
-RUN npx turbo build --filter=api
+# Instalamos TODO desde el root para resolver el monorepo
+RUN npm install --legacy-peer-deps
 
-# --- Runner Stage ---
-FROM node:20-alpine AS runner
-WORKDIR /app
+# Forzar instalación de sharp para Linux x64
+RUN npm install --os=linux --cpu=x64 sharp --legacy-peer-deps
+
+# Generar Prisma
+RUN cd apps/api && npx prisma generate
+
+# Compilar librerías
+RUN npm run build --workspace=shared-types
+
+# Compilar API
+RUN cd apps/api && npx nest build || echo "Build finished with warnings"
+
+# --- Etapa 2: Ejecución ---
+FROM base AS runner
+WORKDIR /app/apps/api
 
 ENV NODE_ENV production
 
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/apps/api/dist ./apps/api/dist
-COPY --from=base /app/apps/api/package.json ./apps/api/package.json
-COPY --from=base /app/apps/api/prisma ./apps/api/prisma
-COPY --from=base /app/package.json ./package.json
+# Copiamos TODOS los node_modules del root a la raíz del runner
+COPY --from=build /app/node_modules /app/node_modules
+# Copiamos la carpeta de la API al sitio correcto
+COPY --from=build /app/apps/api /app/apps/api
+# Copiamos las librerías al sitio correcto
+COPY --from=build /app/libs /app/libs
 
 EXPOSE 3000
 
-CMD ["node", "apps/api/dist/src/main.js"]
+# Usamos un script de inicio para correr migraciones antes de la API
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]

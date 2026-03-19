@@ -5,7 +5,7 @@ import { useCompanies, useDeleteCompany } from './companies.hooks';
 import type { Company } from '../../stores/companies.store';
 import { Button, DataTable } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Modal } from '../../components/modal';
+import { Modal } from '../../components/Modal';
 import { BranchList } from './components/branch-list';
 
 export const CompaniesPage: React.FC = () => {
