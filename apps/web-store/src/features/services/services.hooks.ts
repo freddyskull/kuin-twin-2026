@@ -6,7 +6,8 @@ import {
   getReviews, 
   createReview, 
   getRelatedServices,
-  getNearbyServices
+  getNearbyServices,
+  getCategories
 } from './services.api';
 import { CreateReviewDto } from 'shared-types';
 
@@ -18,16 +19,31 @@ export const useServices = () => {
 };
 
 // Hook de scroll infinito — devuelve páginas acumuladas
-export const useInfiniteServices = (limit = 12) => {
+export const useInfiniteServices = (filters: { limit?: number; categoryId?: string; search?: string } = {}) => {
+  const { limit = 12, categoryId, search } = filters;
+  
   return useInfiniteQuery({
-    queryKey: ['services', 'infinite', limit],
-    queryFn: ({ pageParam }) => getServicesPaginated({ page: pageParam as number, limit }),
+    queryKey: ['services', 'infinite', limit, categoryId, search],
+    queryFn: ({ pageParam }) => getServicesPaginated({ 
+      page: pageParam as number, 
+      limit,
+      categoryId,
+      search 
+    }),
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
       const loaded = allPages.reduce((sum, p) => sum + p.items.length, 0);
       return loaded < lastPage.total ? lastPage.page + 1 : undefined;
     },
     staleTime: 1000 * 60 * 5, // 5 minutos
+  });
+};
+
+export const useCategories = () => {
+  return useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 };
 
