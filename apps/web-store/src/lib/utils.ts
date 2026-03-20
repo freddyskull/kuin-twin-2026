@@ -13,13 +13,16 @@ export function cn(...inputs: ClassValue[]) {
 export function getAbsoluteUrl(path: string | null | undefined): string | null {
   if (!path) return null;
   if (path.startsWith('http')) return path;
+  if (path.startsWith('blob:')) return path;
   
-  // Usar la variable de entorno o fallback a localhost:3001
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  // Usar la variable de entorno o fallback a la raíz actual (puerto 80)
+  const apiUrl = (typeof window !== 'undefined' && window.location.origin) || process.env.NEXT_PUBLIC_API_URL || '';
   
   // Asegurar que no haya doble slash
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  const cleanApiUrl = apiUrl.endsWith('/api') ? apiUrl.replace('/api', '') : apiUrl;
+  
+  // Si la URL termina en /api, la limpiamos para servir archivos estáticos desde la raíz del dominio
+  const cleanApiUrl = apiUrl.replace(/\/api$/, '');
   
   return `${cleanApiUrl}${cleanPath}`;
 }
