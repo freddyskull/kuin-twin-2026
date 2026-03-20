@@ -61,7 +61,7 @@ export default async function ServicePage({ params }: PageProps) {
     notFound();
   }
 
-  const destination = service.latitude && service.longitude 
+  const destination = service.latitude && service.longitude
     ? `${service.latitude},${service.longitude}`
     : encodeURIComponent(service.address || service.title || "");
 
@@ -200,11 +200,11 @@ export default async function ServicePage({ params }: PageProps) {
                     <p className="text-[10px] font-black tracking-widest uppercase opacity-40">Sin dirección especificada</p>
                   </div>
                 )}
-                
+
                 {/* How to get there Button Overlay */}
                 {googleMapsUrl && (
                   <div className="absolute bottom-4 right-4 animate-in fade-in slide-in-from-bottom-2 duration-1000">
-                    <a 
+                    <a
                       href={googleMapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -242,10 +242,10 @@ export default async function ServicePage({ params }: PageProps) {
 
         {/* Right Column: Details & Booking */}
         <div className="w-full md:w-1/2 lg:w-2/5 space-y-8 bg-card/[0.6] dark:bg-card/5 p-6 rounded-[32px] border border-border/40 shadow-inner">
-          <OwnerActions 
-            serviceId={service.id || ''} 
-            vendorId={service.vendorId || ''} 
-            title={service.title || ''} 
+          <OwnerActions
+            serviceId={service.id || ''}
+            vendorId={service.vendorId || ''}
+            title={service.title || ''}
           />
           <div className="flex flex-col">
             {service.category && (
@@ -309,7 +309,7 @@ export default async function ServicePage({ params }: PageProps) {
 
           {/* Call to Action Box - Sticky */}
           <div className="sticky top-24">
-            <Card className="p-6 border-primary/20 bg-card dark:bg-primary/5 backdrop-blur-sm shadow-xl shadow-primary/5">
+            <Card className="p-6 border-primary/20 bg-red-500 dark:bg-primary/5 backdrop-blur-sm shadow-xl shadow-primary/5">
               <h3 className="font-bold text-lg mb-4">
                 {service.showPrice ? 'Reservar este servicio' : 'Solicitar Cotización'}
               </h3>

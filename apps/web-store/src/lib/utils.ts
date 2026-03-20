@@ -15,8 +15,19 @@ export function getAbsoluteUrl(path: string | null | undefined): string | null {
   if (path.startsWith('http')) return path;
   if (path.startsWith('blob:')) return path;
   
-  // Usar la variable de entorno o fallback a la raíz actual (puerto 80)
-  const apiUrl = (typeof window !== 'undefined' && window.location.origin) || process.env.NEXT_PUBLIC_API_URL || '';
+  // Usar la variable de entorno o detectar el puerto de la API en local
+  let apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+  
+  if (!apiUrl && typeof window !== 'undefined') {
+    apiUrl = window.location.origin;
+    // Si estamos en localhost:3000 (Next.js), la API suele estar en 3001
+    if (apiUrl.includes('localhost:3000')) {
+      apiUrl = 'http://localhost:3001';
+    }
+  } else if (!apiUrl) {
+    // Fallback para SSR si no hay env var
+    apiUrl = 'http://localhost:3001';
+  }
   
   // Asegurar que no haya doble slash
   const cleanPath = path.startsWith('/') ? path : `/${path}`;

@@ -54,7 +54,7 @@
     --background: hsl(210 20% 98%);
     --foreground: hsl(222.2 84% 4.9%);
     
-    --card: hsl(0 0% 100%);
+    --card: hsl(0, 0%, 95%);
     --card-foreground: hsl(222.2 84% 4.9%);
     
     --popover: hsl(0 0% 100%);
