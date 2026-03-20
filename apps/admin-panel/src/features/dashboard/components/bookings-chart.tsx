@@ -14,12 +14,15 @@ const data = [
 
 export const BookingsChart: React.FC = () => {
   return (
-    <div className="bg-accent/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-[500px] flex flex-col relative overflow-hidden group">
+    <div className="glass-card bg-card/60 border border-border/40 rounded-[2.5rem] p-10 h-[500px] flex flex-col relative overflow-hidden group shadow-2xl">
       <div className="flex justify-between items-center mb-10 z-10">
-        <h2 className="text-2xl font-bold text-white tracking-tight">Reservas en el Tiempo</h2>
-        <div className="flex bg-[#0a0b1e]/60 p-1.5 rounded-xl border border-white/5">
+        <div>
+          <h2 className="text-2xl font-bold font-heading text-white tracking-tight">Reservas en el Tiempo</h2>
+          <p className="text-xs text-muted-foreground font-black uppercase tracking-widest mt-1">Actividad mensual de servicios</p>
+        </div>
+        <div className="flex bg-background/40 p-1.5 rounded-xl border border-white/5 backdrop-blur-md">
           <button className="px-5 py-2 text-sm text-slate-500 font-bold rounded-lg transition-all hover:text-slate-300">Semana</button>
-          <button className="px-5 py-2 text-sm text-white bg-primary/20 rounded-lg transition-all font-bold">Mes</button>
+          <button className="px-5 py-2 text-sm text-primary bg-primary/10 rounded-lg transition-all font-black uppercase tracking-wider">Mes</button>
         </div>
       </div>
 
@@ -44,22 +47,23 @@ export const BookingsChart: React.FC = () => {
             <Tooltip
               cursor={{ stroke: 'rgba(245, 192, 106, 0.2)', strokeWidth: 2 }}
               contentStyle={{
-                backgroundColor: '#11122d',
+                backgroundColor: 'rgba(17, 18, 45, 0.8)',
+                backdropFilter: 'blur(16px)',
                 border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '16px',
-                padding: '12px 16px',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+                borderRadius: '20px',
+                padding: '16px 20px',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
               }}
             />
             <Area
               type="monotone"
               dataKey="bookings"
-              stroke="#f5c06a"
+              stroke="hsl(43 96% 56%)"
               strokeWidth={4}
               fillOpacity={1}
               fill="url(#colorBookings)"
               dot={{ r: 0 }}
-              activeDot={{ r: 8, fill: '#f5c06a', stroke: '#11122d', strokeWidth: 3 }}
+              activeDot={{ r: 8, fill: 'hsl(43 96% 56%)', stroke: '#11122d', strokeWidth: 3 }}
             />
           </AreaChart>
         </ResponsiveContainer>

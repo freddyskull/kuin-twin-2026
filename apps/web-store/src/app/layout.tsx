@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer";
 import { BackgroundOrbs } from "@/components/background-orbs";
 import { ScrollTop } from "@/components/scroll-top";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthInitializer } from "@/providers/auth-initializer";
 
 /* Fuente moderna y tecnológica para títulos */
 const ubuntu = Ubuntu({
@@ -46,6 +47,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <BackgroundOrbs />
+            <AuthInitializer />
             <ScrollTop />
             <Toaster position="top-center" expand={false} richColors />
             {children}

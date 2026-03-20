@@ -16,6 +16,9 @@ export function SocketListener() {
     if (!socket) return;
 
     const handleNewMessage = (message: any, isGlobal: boolean) => {
+      // Protección extra si el usuario se vuelve null durante la ejecución
+      if (!user) return;
+
       console.log(`📩 Mensaje recibido en WebStore (${isGlobal ? 'Global' : 'Directo'}):`, message);
 
       // Notificar si el mensaje es para el usuario actual o es un mensaje global
@@ -23,8 +26,12 @@ export function SocketListener() {
         addNotification({ ...message, isGlobal });
 
         // Sonido de notificación
-        const audio = new Audio("/sounds/notification.mp3");
-        audio.play().catch(() => { });
+        try {
+          const audio = new Audio("/sounds/notification.mp3");
+          audio.play().catch(() => { });
+        } catch (e) {
+          console.warn('No se pudo reproducir el sonido de notificación');
+        }
       }
     };
 

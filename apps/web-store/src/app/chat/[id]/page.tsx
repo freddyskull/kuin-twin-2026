@@ -14,6 +14,19 @@ export default function IndividualChatPage() {
   const router = useRouter();
   const params = useParams();
   const otherUserId = params.id as string;
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-10 h-10 animate-spin text-primary opacity-20" />
+      </div>
+    );
+  }
 
   if (!user) {
     return (

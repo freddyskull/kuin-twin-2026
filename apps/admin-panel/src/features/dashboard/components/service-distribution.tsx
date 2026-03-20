@@ -8,8 +8,8 @@ const data = [
 
 export const ServiceDistribution: React.FC = () => {
   return (
-    <div className="bg-card backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full flex flex-col">
-      <h2 className="text-2xl font-bold text-white mb-10 tracking-tight">Distribución de Servicios</h2>
+    <div className="glass-card bg-card/40 border border-border/40 rounded-[2.5rem] p-10 h-full flex flex-col shadow-2xl">
+      <h2 className="text-2xl font-bold font-heading text-white tracking-tight mb-8">Uso del Servicio</h2>
 
       <div className="flex-1 relative min-h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -33,8 +33,8 @@ export const ServiceDistribution: React.FC = () => {
         </ResponsiveContainer>
 
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-5xl font-black text-white leading-none mb-2">72%</span>
-          <span className="text-xs text-slate-500 font-bold tracking-[0.3em] uppercase">A Domicilio</span>
+          <span className="text-5xl font-black text-white leading-none mb-1">72%</span>
+          <span className="text-[10px] text-primary font-black tracking-[0.2em] uppercase">Local</span>
         </div>
       </div>
 

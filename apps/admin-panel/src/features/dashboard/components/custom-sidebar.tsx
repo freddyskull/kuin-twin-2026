@@ -56,13 +56,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       isMobile && !isOpen ? "-translate-x-full" : "translate-x-0"
     )}>
       {/* Logo & Close Button */}
-      <div className="flex items-center justify-between mb-10 px-2">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-            <span className="text-primary-foreground font-black text-lg">K</span>
+      <div className="flex items-center justify-between mb-12 px-2">
+        <Link to="/" className="flex items-center gap-2 group/logo">
+          <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25 group-hover/logo:scale-105 transition-transform duration-300">
+            <span className="text-primary-foreground font-black text-xl">K</span>
           </div>
-          <span className="font-bold text-white tracking-tight text-lg">Kuin Twin</span>
-        </div>
+          <div className="flex flex-col">
+            <span className="text-xl font-bold font-heading tracking-tighter text-primary leading-none">
+              KUIN<span className="text-white">TWIN</span>
+            </span>
+            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-0.5 opacity-60">Admin Panel</span>
+          </div>
+        </Link>
         
         {isMobile && (
           <button 

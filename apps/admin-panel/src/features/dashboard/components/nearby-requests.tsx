@@ -34,13 +34,13 @@ const requests = [
 
 export const NearbyRequests: React.FC = () => {
   return (
-    <div className="bg-card border border-border rounded-3xl p-6 md:p-8 h-full shadow-sm">
-      <div className="flex justify-between items-center mb-8">
+    <div className="glass-card bg-card/40 border border-border/40 rounded-[2.5rem] p-8 h-full shadow-2xl">
+      <div className="flex justify-between items-center mb-10">
         <div>
-          <h2 className="text-lg md:text-xl font-bold text-foreground tracking-tight">Solicitudes Cercanas</h2>
-          <p className="text-xs text-muted-foreground font-medium">Servicios disponibles en tu zona</p>
+          <h2 className="text-xl font-bold font-heading text-white tracking-tight">Solicitudes Cercanas</h2>
+          <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-1">Servicios disponibles en tu zona</p>
         </div>
-        <button className="text-[10px] font-bold text-primary hover:underline transition-all uppercase tracking-widest px-3 py-1 bg-primary/10 rounded-md">Ver Todo</button>
+        <button className="text-[10px] font-black text-primary hover:bg-primary/20 transition-all uppercase tracking-[0.2em] px-4 py-2 bg-primary/10 rounded-xl border border-primary/20">Ver Todo</button>
       </div>
 
       <div className="space-y-4">

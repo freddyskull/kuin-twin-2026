@@ -109,27 +109,32 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         />
 
         {/* User Profile */}
-        <div className="flex items-center gap-2 pl-2 group cursor-pointer relative">
-          <div className="h-8 w-8 rounded-lg bg-secondary border border-border flex items-center justify-center overflow-hidden transition-all group-hover:border-primary/50 shadow-sm">
+        <div className="flex items-center gap-3 pl-2 group cursor-pointer relative">
+          <div className="text-right hidden sm:block">
+            <p className="text-[10px] font-bold text-foreground line-clamp-1">
+              {profile?.displayName || user?.email?.split('@')[0] || 'Usuario'}
+            </p>
+            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-black opacity-60">
+              {user?.role || 'Vendedor'}
+            </p>
+          </div>
+          <div className="h-10 w-10 rounded-xl bg-primary/10 border-2 border-primary/20 ring-4 ring-primary/5 flex items-center justify-center overflow-hidden transition-all group-hover:ring-primary/10 shadow-sm relative">
             {profile?.avatarUrl ? (
               <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
             ) : (
-              <User className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              <span className="text-primary font-bold text-xs">
+                {(profile?.displayName || user?.email || 'U').substring(0, 2).toUpperCase()}
+              </span>
             )}
+            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full" />
           </div>
 
-          {!isMobile && (
-            <span className="text-xs font-semibold text-foreground leading-none">
-              {profile?.displayName || user?.email?.split('@')[0] || 'Usuario'}
-            </span>
-          )}
-
           {/* User Menu Dropdown */}
-          <div className="absolute right-0 top-full pt-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 transform translate-y-1 group-hover:translate-y-0 z-50">
-            <div className="w-48 bg-popover border border-border rounded-xl shadow-xl p-1.5">
-              <div className="px-3 py-2 border-b border-border/50 mb-1">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Cuenta</p>
-                <p className="text-[11px] font-medium truncate opacity-70">{user?.email}</p>
+          <div className="absolute right-0 top-full pt-3 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50">
+            <div className="w-56 glass-card bg-popover border border-border/50 rounded-2xl shadow-2xl p-2">
+              <div className="px-4 py-3 border-b border-border/10 mb-2">
+                <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Cuenta Kuin</p>
+                <p className="text-xs font-bold truncate text-foreground">{user?.email}</p>
               </div>
               <Link to="/perfil" className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-secondary text-sm font-medium text-foreground/80 hover:text-foreground transition-all">
                 <SettingsIcon className="h-3.5 w-3.5" />

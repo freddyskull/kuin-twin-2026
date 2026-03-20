@@ -3,7 +3,7 @@ import { CreditCard, TrendingUp } from 'lucide-react';
 
 export const RevenueCard: React.FC = () => {
   return (
-    <div className="bg-gradient-to-br from-[#e5bc68] to-[#9c783c] rounded-[2.5rem] p-8 h-full flex flex-col justify-between shadow-2xl relative overflow-hidden group">
+    <div className="bg-gradient-to-br from-primary to-primary/60 rounded-[2.5rem] p-8 h-full flex flex-col justify-between shadow-2xl relative overflow-hidden group border border-white/10">
       {/* Glossy overlay */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl opacity-50 group-hover:scale-110 transition-transform duration-1000" />
 
@@ -35,7 +35,7 @@ export const ActiveUsers: React.FC = () => {
   ];
 
   return (
-    <div className="bg-accent/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 h-full">
+    <div className="glass-card bg-card border border-white/5 rounded-[2.5rem] p-10 h-full">
       <h2 className="text-2xl font-bold text-white mb-10 tracking-tight">Actividad de Usuarios</h2>
 
       <div className="space-y-10">
