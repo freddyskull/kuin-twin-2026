@@ -51,7 +51,7 @@
 
 @layer base {
   :root {
-    --background: hsl(210 40% 96.5%);
+    --background: hsl(210 20% 98%);
     --foreground: hsl(222.2 84% 4.9%);
     
     --card: hsl(0 0% 100%);
@@ -63,20 +63,20 @@
     --primary: hsl(43 96% 56%); /* Oro Kuin */
     --primary-foreground: hsl(222.2 47.4% 11.2%);
     
-    --secondary: hsl(210 40% 94%);
+    --secondary: hsl(210 40% 96.1%);
     --secondary-foreground: hsl(222.2 47.4% 11.2%);
     
-    --muted: hsl(210 40% 94%);
-    --muted-foreground: hsl(215.4 16.3% 46.9%);
+    --muted: hsl(210 40% 92%);
+    --muted-foreground: hsl(215.4 16.3% 40%);
     
-    --accent: hsl(210 40% 94%); 
+    --accent: hsl(210 40% 96.1%); 
     --accent-foreground: hsl(222.2 47.4% 11.2%);
     
     --destructive: hsl(0 84.2% 60.2%);
     --destructive-foreground: hsl(210 40% 98%);
     
-    --border: hsl(214.3 31.8% 88%);
-    --input: hsl(214.3 31.8% 88%);
+    --border: hsl(214.3 31.8% 85%);
+    --input: hsl(214.3 31.8% 85%);
     --ring: hsl(43 96% 56%);
     
     --radius: 0.75rem;
@@ -202,7 +202,11 @@
 
   /* Enhancing standard cards in Light mode via layer to ensure visibility */
   :not(.dark) [data-slot="card"] {
-    @apply shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/60;
+    @apply shadow-[0_8px_40px_rgb(0,0,0,0.06)] border-border/60;
+  }
+
+  :not(.dark) .bg-card {
+    @apply shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-border/40;
   }
 
   .container-app {
@@ -222,5 +226,13 @@
   }
   .text-shadow-gold {
      text-shadow: 0 0 10px rgba(245, 192, 106, 0.5);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

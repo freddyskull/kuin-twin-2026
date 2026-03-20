@@ -38,6 +38,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body
         className={`${ubuntu.variable} ${jakarta.variable} font-sans antialiased`}
+        suppressHydrationWarning
       >
         <Providers>
           <ThemeProvider

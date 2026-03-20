@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Building2, CheckCircle, XCircle, Store } from 'lucide-react';
 import { useCompanies, useDeleteCompany } from './companies.hooks';
 import type { Company } from '../../stores/companies.store';
-import { Button, DataTable } from 'ui-components';
+import { Button, DataTable, getAbsoluteUrl } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Modal } from '../../components/Modal';
 import { BranchList } from './components/branch-list';
@@ -50,7 +50,7 @@ export const CompaniesPage: React.FC = () => {
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-secondary overflow-hidden flex items-center justify-center border border-border flex-shrink-0">
               {company.logoUrl ? (
-                <img src={company.logoUrl} alt={company.businessName} className="h-full w-full object-cover" />
+                <img src={getAbsoluteUrl(company.logoUrl) || ''} alt={company.businessName} className="h-full w-full object-cover" />
               ) : (
                 <Building2 className="h-5 w-5 text-muted-foreground" />
               )}

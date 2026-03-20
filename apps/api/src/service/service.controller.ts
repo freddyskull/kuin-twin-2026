@@ -27,6 +27,10 @@ export class ServiceController {
     @Query('isActive') isActive?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('search') search?: string,
+    @Query('lat') lat?: string,
+    @Query('lng') lng?: string,
+    @Query('radius') radius?: string,
   ) {
     return this.serviceService.findAll({
       vendorId,
@@ -34,6 +38,10 @@ export class ServiceController {
       isActive: isActive === 'true' ? true : isActive === 'false' ? false : undefined,
       page: page ? parseInt(page) : undefined,
       limit: limit ? parseInt(limit) : undefined,
+      search,
+      lat: lat ? parseFloat(lat) : undefined,
+      lng: lng ? parseFloat(lng) : undefined,
+      radiusKm: radius ? parseFloat(radius) : undefined,
     });
   }
 

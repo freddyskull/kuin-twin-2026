@@ -7,7 +7,8 @@ import {
   createReview, 
   getRelatedServices,
   getNearbyServices,
-  getCategories
+  getCategories,
+  deleteService
 } from './services.api';
 import { CreateReviewDto } from 'shared-types';
 
@@ -19,16 +20,26 @@ export const useServices = () => {
 };
 
 // Hook de scroll infinito — devuelve páginas acumuladas
-export const useInfiniteServices = (filters: { limit?: number; categoryId?: string; search?: string } = {}) => {
-  const { limit = 12, categoryId, search } = filters;
+export const useInfiniteServices = (filters: { 
+  limit?: number; 
+  categoryId?: string; 
+  search?: string;
+  lat?: number;
+  lng?: number;
+  radius?: number;
+} = {}) => {
+  const { limit = 12, categoryId, search, lat, lng, radius } = filters;
   
   return useInfiniteQuery({
-    queryKey: ['services', 'infinite', limit, categoryId, search],
+    queryKey: ['services', 'infinite', limit, categoryId, search, lat, lng, radius],
     queryFn: ({ pageParam }) => getServicesPaginated({ 
       page: pageParam as number, 
       limit,
       categoryId,
-      search 
+      search,
+      lat,
+      lng,
+      radius
     }),
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
@@ -90,5 +101,16 @@ export const useNearbyServices = (params: { lat: number; lng: number; radius?: n
     queryFn: () => getNearbyServices(params),
     enabled: !!params.lat && !!params.lng,
     staleTime: 1000 * 60 * 5, // 5 mins
+  });
+};
+
+export const useDeleteService = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (id: string) => deleteService(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['services'] });
+    },
   });
 };

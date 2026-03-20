@@ -7,3 +7,5 @@ export * from './service-card';
 export * from './service-faqs';
 export * from './service-gallery';
 export * from './service-header';
+export * from './owner-actions';
+export * from './service-distance';

@@ -5,10 +5,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Button, Card } from '@/components/ui';
-import { ArrowLeft, Star, MapPin, Calendar, MessageCircle, Share2, Heart, ShieldCheck, Clock } from 'lucide-react';
+import { ArrowLeft, Star, MapPin, Calendar, MessageCircle, Share2, Heart, ShieldCheck, Clock, Navigation } from 'lucide-react';
 import { ServiceDto } from 'shared-types';
 import { StatusIndicator } from '@/features/chat/components';
-import { ServiceGallery, CompanySection, ReviewForm, ReviewList, RelatedServices, ServiceFaqs, ServiceHeader, FloatingVendorBadge } from '@/features/services';
+import { ServiceGallery, CompanySection, ReviewForm, ReviewList, RelatedServices, ServiceFaqs, ServiceHeader, FloatingVendorBadge, OwnerActions, ServiceDistance } from '@/features/services';
 import { BookingDialog } from '@/features/bookings';
 
 interface PageProps {
@@ -61,16 +61,22 @@ export default async function ServicePage({ params }: PageProps) {
     notFound();
   }
 
+  const destination = service.latitude && service.longitude 
+    ? `${service.latitude},${service.longitude}`
+    : encodeURIComponent(service.address || service.title || "");
+
+  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+
   const imageUrl = getAbsoluteUrl(service.imageUrl);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-muted/30 dark:bg-background pb-20">
 
       {/* Navigation Bar Improved */}
       <ServiceHeader
-        serviceId={service.id}
-        vendorId={service.vendorId}
-        title={service.title}
+        serviceId={service.id || ''}
+        vendorId={service.vendorId || ''}
+        title={service.title || ''}
         description={service.description || undefined}
       />
 
@@ -82,7 +88,7 @@ export default async function ServicePage({ params }: PageProps) {
           <ServiceGallery
             mainImage={service.imageUrl ?? null}
             gallery={service.imageGallery || []}
-            title={service.title}
+            title={service.title || ''}
           />
 
           <Card className="mt-8 flex items-center gap-2 p-4 rounded-2xl bg-card border-border/40 shadow-sm mb-6">
@@ -92,15 +98,22 @@ export default async function ServicePage({ params }: PageProps) {
             </p>
           </Card>
 
-          {/* Service Attributes (Metadata) */}
+          {/* Specifications Grid */}
           {service.metadata && service.metadata.length > 0 && (
-            <div className="space-y-4 mb-10 text-center">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Especificaciones</h3>
-              <div className="grid grid-cols-2 gap-4">
-                {service.metadata.map((item, idx) => (
-                  <Card key={idx} className="p-3 rounded-xl bg-card/60 dark:bg-secondary/5 border border-border/40 hover:border-primary/20 transition-all hover:shadow-md group flex items-center gap-2">
-                    <span className="text-xs font-semibold text-muted-foreground uppercase text-nowrap">{item.key}:</span>
-                    <span className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">{item.value}</span>
+            <div className="space-y-6 mt-12 mb-10">
+              <div className="flex items-center gap-2 justify-center">
+                <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Especificaciones</h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {service.metadata.map((meta: any) => (
+                  <Card key={meta.key} className="p-5 border-border/60 bg-card shadow-sm hover:shadow-md transition-shadow group flex flex-col items-center text-center">
+                    <span className="text-[10px] font-black uppercase text-primary/60 tracking-widest mb-1 group-hover:text-primary transition-colors">
+                      {meta.key}:
+                    </span>
+                    <span className="text-sm font-bold text-foreground">
+                      {meta.value}
+                    </span>
                   </Card>
                 ))}
               </div>
@@ -115,7 +128,7 @@ export default async function ServicePage({ params }: PageProps) {
                   <Clock className="w-3.5 h-3.5 text-primary" />
                   <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Horarios de Atención</h3>
                 </div>
-                <Card className="p-6 border-border/40 bg-card/80 dark:bg-secondary/5 shadow-sm">
+                <Card className="p-6 border-border/60 bg-card shadow-md">
                   {(service.workSchedule as any).schedule.map((day: any) => {
                     const dayLabels: Record<string, string> = {
                       Monday: 'Lunes',
@@ -163,7 +176,7 @@ export default async function ServicePage({ params }: PageProps) {
                   <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold flex items-center gap-2">
                     <span>Zona de Disponibilidad</span>
                     <span className="h-1 w-1 rounded-full bg-primary" />
-                    <span>A 2.5 km de tu ubicación</span>
+                    <ServiceDistance lat={service.latitude} lng={service.longitude} />
                   </p>
                 </div>
               </div>
@@ -178,27 +191,33 @@ export default async function ServicePage({ params }: PageProps) {
                     allowFullScreen
                     referrerPolicy="no-referrer-when-downgrade"
                     src={`https://maps.google.com/maps?q=${encodeURIComponent(service.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                  ></iframe>
+                  />
                 ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-30">
-                    <MapPin className="w-8 h-8" />
-                    <span className="text-xs font-bold uppercase tracking-tighter">Mapa no disponible</span>
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-muted/50 gap-4">
+                    <div className="p-4 rounded-full bg-background/80 shadow-inner flex items-center justify-center">
+                      <MapPin className="w-8 h-8 text-muted-foreground opacity-30" />
+                    </div>
+                    <p className="text-[10px] font-black tracking-widest uppercase opacity-40">Sin dirección especificada</p>
                   </div>
                 )}
-
+                
+                {/* How to get there Button Overlay */}
+                {googleMapsUrl && (
+                  <div className="absolute bottom-4 right-4 animate-in fade-in slide-in-from-bottom-2 duration-1000">
+                    <a 
+                      href={googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="default" size="sm" className="rounded-full shadow-2xl h-10 px-5 gap-2 text-xs font-black uppercase tracking-wider bg-primary hover:bg-primary/90 text-primary-foreground border-4 border-background/20 backdrop-blur-sm">
+                        <Navigation className="w-4 h-4 fill-current" />
+                        Cómo llegar
+                      </Button>
+                    </a>
+                  </div>
+                )}
                 {/* Overlay for better integration */}
                 <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5" />
-
-                {service.address && (
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(service.address)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute bottom-4 right-4 bg-background/90 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-border/50 shadow-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all active:scale-95"
-                  >
-                    Abrir en Mapas
-                  </a>
-                )}
               </div>
             </Card>
           </div>
@@ -210,24 +229,32 @@ export default async function ServicePage({ params }: PageProps) {
 
           {/* FAQs Section */}
           {service.faqs && service.faqs.length > 0 && (
-            <ServiceFaqs faqs={service.faqs} />
+            <ServiceFaqs faqs={service.faqs as any} />
           )}
 
           {/* Section: Reviews */}
           <div className="mt-12 space-y-8">
             <h2 className="text-2xl font-bold border-l-4 border-primary pl-4">Experiencias y Opiniones</h2>
-            <ReviewForm serviceId={service.id} />
-            <ReviewList serviceId={service.id} />
+            <ReviewForm serviceId={service.id || ''} />
+            <ReviewList serviceId={service.id || ''} />
           </div>
         </div>
 
         {/* Right Column: Details & Booking */}
-        <div className="w-full md:w-1/2 lg:w-2/5 space-y-8">
+        <div className="w-full md:w-1/2 lg:w-2/5 space-y-8 bg-card/[0.6] dark:bg-card/5 p-6 rounded-[32px] border border-border/40 shadow-inner">
+          <OwnerActions 
+            serviceId={service.id || ''} 
+            vendorId={service.vendorId || ''} 
+            title={service.title || ''} 
+          />
           <div className="flex flex-col">
             {service.category && (
-              <span className="text-xs font-bold text-primary uppercase tracking-widest mb-2 px-3 py-1 bg-primary/10 rounded-full w-fit">
+              <Link
+                href={`/?category=${service.category.id}`}
+                className="text-xs font-bold text-primary uppercase tracking-widest mb-2 px-3 py-1 bg-primary/10 rounded-full w-fit hover:bg-primary hover:text-primary-foreground transition-all active:scale-95 cursor-pointer"
+              >
                 {service.category.name}
-              </span>
+              </Link>
             )}
             <div className="flex items-start justify-between">
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">{service.title}</h1>
@@ -237,12 +264,13 @@ export default async function ServicePage({ params }: PageProps) {
             {service.tags && service.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-6">
                 {service.tags.map((tag, idx) => (
-                  <span
+                  <Link
                     key={idx}
-                    className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-card border border-border/40 text-muted-foreground shadow-sm"
+                    href={`/?search=${encodeURIComponent(tag)}`}
+                    className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-card border border-border/40 text-muted-foreground shadow-sm hover:border-primary/50 hover:text-primary transition-all active:scale-95 cursor-pointer"
                   >
                     #{tag}
-                  </span>
+                  </Link>
                 ))}
               </div>
             )}
@@ -252,12 +280,9 @@ export default async function ServicePage({ params }: PageProps) {
                 <Star className="w-4 h-4 fill-current" />
                 {service.starsRate} <span className="text-muted-foreground font-normal">({service.reviewsCount} reseñas)</span>
               </div>
-              <span className="text-muted-foreground flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-primary" />
-                A 2.5 km de ti
-              </span>
+              <ServiceDistance lat={service.latitude} lng={service.longitude} />
               <div className="h-4 w-px bg-border/50 mx-1" />
-              <StatusIndicator userId={service.vendorId} showText />
+              <StatusIndicator userId={service.vendorId || ''} showText />
             </div>
 
             <div className="flex items-end gap-2 mb-8">
@@ -305,8 +330,8 @@ export default async function ServicePage({ params }: PageProps) {
 
                   <div className="flex gap-3">
                     <BookingDialog
-                      serviceId={service.id}
-                      serviceTitle={service.title}
+                      serviceId={service.id || ''}
+                      serviceTitle={service.title || ''}
                       basePrice={service.basePrice ? Number(service.basePrice) : null}
                       unitName={service.unit?.name}
                     >
@@ -345,14 +370,14 @@ export default async function ServicePage({ params }: PageProps) {
       </div>
 
       <div className="container-app z-10 relative">
-        <RelatedServices serviceId={service.id} />
+        <RelatedServices serviceId={service.id || ''} />
       </div>
 
       {/* Floating UI Elements */}
       {service.vendor && (
         <FloatingVendorBadge
           vendor={service.vendor as any}
-          serviceId={service.id}
+          serviceId={service.id || ''}
         />
       )}
     </div>

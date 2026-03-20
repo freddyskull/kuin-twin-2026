@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCompanies, useBranches } from '../../../companies';
 import { Building2, Check, Store } from 'lucide-react';
-import { cn } from 'ui-components';
+import { cn, getAbsoluteUrl } from 'ui-components';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CompanySelectorProps {
@@ -56,7 +56,7 @@ const CompanyItem: React.FC<{
           isSelected ? "border-primary/30" : "border-white/5 bg-[#0a0b1e]"
         )}>
           {company.logoUrl ? (
-            <img src={company.logoUrl} alt={company.businessName} className="h-full w-full object-cover" />
+            <img src={getAbsoluteUrl(company.logoUrl) || ''} alt={company.businessName} className="h-full w-full object-cover" />
           ) : (
             <Building2 className={cn("h-5 w-5", isSelected ? "text-primary" : "text-slate-600")} />
           )}

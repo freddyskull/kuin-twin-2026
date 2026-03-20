@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, LayoutDashboard, Building2, XCircle } from 'lucide-react';
 import { useServices, useDeleteService, useToggleServiceStatus } from './services.hooks';
-import { Button, DataTable } from 'ui-components';
+import { Button, DataTable, getAbsoluteUrl } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ServiceDto } from 'shared-types';
 import { Modal } from '@/components/Modal';
@@ -70,7 +70,7 @@ export const ServicesPage: React.FC = () => {
           <div className="flex items-center gap-3" title={service.title}>
             <div className="h-10 w-10 rounded-lg bg-secondary overflow-hidden flex items-center justify-center border border-border flex-shrink-0">
               {service.imageUrl ? (
-                <img src={service.imageUrl.startsWith('http') ? service.imageUrl : `http://localhost:3001${service.imageUrl}`} alt={service.title} className="h-full w-full object-cover" />
+                <img src={getAbsoluteUrl(service.imageUrl) || ''} alt={service.title} className="h-full w-full object-cover" />
               ) : (
                 <LayoutDashboard className="h-5 w-5 text-muted-foreground" />
               )}
@@ -106,7 +106,7 @@ export const ServicesPage: React.FC = () => {
         const service = row.original;
         return (
           <button
-            onClick={() => handleToggleStatus(service.id, service.title, service.isActive)}
+            onClick={() => handleToggleStatus(service.id as string, service.title, service.isActive)}
             className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase transition-all border ${service.isActive 
               ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
               : 'bg-muted text-muted-foreground border-border'}`}
@@ -152,7 +152,7 @@ export const ServicesPage: React.FC = () => {
               </button>
             </Link>
             <button
-              onClick={() => handleDelete(service.id, service.title)}
+              onClick={() => handleDelete(service.id as string, service.title)}
               disabled={deleteMutation.isPending || service.isActive}
               className="p-1.5 rounded-lg bg-secondary text-muted-foreground hover:text-destructive transition-all disabled:opacity-20"
               title="Eliminar"

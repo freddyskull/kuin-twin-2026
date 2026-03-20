@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Star, ArrowRight, MapPin } from 'lucide-react';
+import { Star, ArrowRight, MapPin, Pencil, Trash2, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn, getAbsoluteUrl, formatCurrency } from '../lib/utils';
 import { Card } from './ui/card';
@@ -18,6 +18,7 @@ interface ServiceDtoLite {
   reviewsCount?: number;
   tags?: string[];
   company?: { businessName: string };
+  vendorId?: string;
   unit?: { name: string; abbreviation: string };
 }
 
@@ -25,6 +26,9 @@ interface ServiceCardProps {
   service: ServiceDtoLite;
   LinkComponent?: any;
   ImageComponent?: any;
+  currentUserId?: string;
+  onEdit?: (service: ServiceDtoLite) => void;
+  onDelete?: (service: ServiceDtoLite) => void;
   className?: string;
 }
 
@@ -32,9 +36,13 @@ export const ServiceCard = ({
   service,
   LinkComponent: Link = 'a',
   ImageComponent: Image = 'img',
+  currentUserId,
+  onEdit,
+  onDelete,
   className
 }: ServiceCardProps) => {
   const [imgError, setImgError] = useState(false);
+  const isOwner = service.vendorId && currentUserId === service.vendorId;
   const imageUrl = getAbsoluteUrl(service.imageUrl);
 
   const wrapperProps = Link === 'a' ? { href: `/services/${service.slug || ''}` } : { href: `/services/${service.slug || ''}` };
@@ -76,8 +84,16 @@ export const ServiceCard = ({
                 )}
               </div>
             ) : service.showPrice === false && (
-              <div className="absolute top-3 right-3 bg-primary/10 dark:bg-primary/20 backdrop-blur-md px-3 py-1.5 rounded-2xl text-[9px] font-black shadow-lg border border-primary/40 z-10 text-primary uppercase tracking-widest">
+              <div className="absolute top-3 right-3 bg-yellow-400 dark:bg-yellow-500 shadow-[0_0_20px_rgba(250,204,21,0.4)] backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-black z-10 text-black uppercase tracking-[0.05em] border border-yellow-200/50 animate-in fade-in zoom-in duration-500">
                 Por Cotizar
+              </div>
+            )}
+
+            {/* Owner Badge */}
+            {isOwner && (
+              <div className="absolute top-3 left-3 bg-black/60 shadow-xl backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 z-10 flex items-center gap-1.5 animate-in fade-in zoom-in duration-500">
+                <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[10px] font-black text-white uppercase tracking-[0.1em]">Tú Servicio</span>
               </div>
             )}
           </div>
@@ -133,9 +149,36 @@ export const ServiceCard = ({
                 <span>Disponible</span>
               </div>
 
-              <span className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform ml-auto">
-                Ver detalles <ArrowRight className="w-3.5 h-3.5" />
-              </span>
+              {isOwner ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onEdit?.(service);
+                    }}
+                    className="p-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-primary/30 text-slate-400 hover:text-primary transition-all group/btn"
+                    title="Editar servicio"
+                  >
+                    <Pencil className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onDelete?.(service);
+                    }}
+                    className="p-2 rounded-xl bg-white/5 border border-white/5 hover:bg-red-500/10 hover:border-red-500/30 text-slate-400 hover:text-red-500 transition-all group/btn"
+                    title="Eliminar servicio"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
+                  </button>
+                </div>
+              ) : (
+                <span className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform ml-auto">
+                  Ver detalles <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              )}
             </div>
           </div>
         </Card>

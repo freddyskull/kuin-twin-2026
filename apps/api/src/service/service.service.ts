@@ -66,7 +66,17 @@ export class ServiceService {
     return service;
   }
 
-  async findAll(filters?: { vendorId?: string; categoryId?: string; isActive?: boolean; page?: number; limit?: number }): Promise<{ items: Service[]; total: number }> {
+  async findAll(filters?: { 
+    vendorId?: string; 
+    categoryId?: string; 
+    isActive?: boolean; 
+    page?: number; 
+    limit?: number;
+    search?: string;
+    lat?: number;
+    lng?: number;
+    radiusKm?: number;
+  }): Promise<{ items: Service[]; total: number }> {
     const page = filters?.page || 1;
     const limit = filters?.limit || 10;
     const skip = (page - 1) * limit;
@@ -74,9 +84,73 @@ export class ServiceService {
     const where: Prisma.ServiceWhereInput = { 
       vendorId: filters?.vendorId, 
       categoryId: filters?.categoryId, 
-      isActive: filters?.isActive 
+      isActive: filters?.isActive,
+      ...(filters?.search ? {
+        OR: [
+          { title: { contains: filters.search, mode: 'insensitive' } },
+          { slug: { contains: filters.search, mode: 'insensitive' } },
+          { description: { contains: filters.search, mode: 'insensitive' } },
+          { tags: { hasSome: [filters.search] } },
+          // Búsqueda aproximada en tags (si el backend lo soporta vía JSON o si tags fuera un string simple)
+          // Como tags es string[], hasSome es lo más cercano, pero podemos añadir más campos
+        ]
+      } : {})
     };
 
+    // Si hay coordenadas, usamos una query diferente para ordenar por proximidad + azar
+    if (filters?.lat !== undefined && filters?.lng !== undefined) {
+      const radiusMeters = (filters.radiusKm || 50) * 1000;
+      const lng = filters.lng;
+      const lat = filters.lat;
+
+      // Query que trae TODOS los servicios pero los ordena: 
+      // 1. Cercanos dentro del radio (ordenados por distancia decrescente)
+      // 2. El resto (ordenados al azar)
+      const items: any[] = await this.prisma.$queryRaw`
+        SELECT s.id, 
+               ST_Distance(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326)) as distance,
+               CASE 
+                 WHEN s.location IS NOT NULL AND ST_DWithin(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326), ${radiusMeters}) THEN 1
+                 ELSE 0 
+               END as is_nearby
+        FROM "Service" s
+        WHERE s."isActive" = ${filters.isActive ?? true}
+        ${filters.categoryId ? Prisma.sql`AND s."categoryId" = ${filters.categoryId}` : Prisma.empty}
+        ${filters.vendorId ? Prisma.sql`AND s."vendorId" = ${filters.vendorId}` : Prisma.empty}
+        ${filters.search ? Prisma.sql`AND (s."title" ILIKE ${`%${filters.search}%`} OR s."description" ILIKE ${`%${filters.search}%`})` : Prisma.empty}
+        ORDER BY is_nearby DESC, distance ASC NULLS LAST, RANDOM()
+        LIMIT ${limit} OFFSET ${skip}
+      `;
+
+      const total: any[] = await this.prisma.$queryRaw`
+        SELECT COUNT(*)::int as count
+        FROM "Service" s
+        WHERE s."isActive" = ${filters.isActive ?? true}
+        ${filters.categoryId ? Prisma.sql`AND s."categoryId" = ${filters.categoryId}` : Prisma.empty}
+      `;
+
+      if (items.length === 0) return { items: [], total: 0 };
+
+      const ids = items.map(i => i.id);
+      const services = await this.prisma.service.findMany({
+        where: { id: { in: ids } },
+        include: { 
+          category: true, 
+          unit: true, 
+          company: true, 
+          branches: true, 
+          metadata: true, 
+          faqs: { orderBy: { order: 'asc' } },
+          vendor: { select: { id: true, email: true, profile: true } } 
+        }
+      });
+
+      // Reordenar por distancia
+      const sortedItems = ids.map(id => services.find(s => s.id === id)).filter(Boolean);
+      return { items: sortedItems as Service[], total: total[0]?.count || 0 };
+    }
+
+    // Comportamiento estándar sin proximidad
     const [items, total] = await Promise.all([
       this.prisma.service.findMany({
         where,
