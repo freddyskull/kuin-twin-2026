@@ -123,7 +123,7 @@ export const ServiceMediaStep: React.FC = () => {
   return (
     <motion.section
       key="step3" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
-      className="bg-card/40 backdrop-blur-2xl border border-border rounded-[2rem] p-8 space-y-10"
+      className="bg-card backdrop-blur-2xl border border-border rounded-[2rem] p-8 space-y-10"
     >
       <input type="file" ref={featuredInputRef} onChange={handleFeaturedChange} className="hidden" accept="image/*" />
       <input type="file" ref={galleryInputRef} onChange={handleGalleryChange} className="hidden" accept="image/*" multiple />

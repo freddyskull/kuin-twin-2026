@@ -83,7 +83,71 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
     }
   });
 
-  const { trigger, handleSubmit, formState: { errors }, setValue, watch, reset } = methods;
+  const { trigger, handleSubmit, formState: { errors }, setValue, watch, reset, getValues } = methods;
+
+  // --- Draft Logic ---
+  const DRAFT_KEY = 'kuintwin_service_draft';
+
+  // Save draft on change (throttled by watch)
+  const watchedValues = watch();
+  useEffect(() => {
+    if (!isEditMode) {
+      const timeoutId = setTimeout(() => {
+        // We don't save File objects to localStorage, just the metadata
+        const values = getValues();
+        const draftData = {
+          ...values,
+          imageFile: undefined, // Skip files
+          imageGalleryFiles: [], // Skip files
+        };
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({
+          data: draftData,
+          step: currentStep,
+          timestamp: Date.now()
+        }));
+      }, 1000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [watchedValues, currentStep, isEditMode, getValues]);
+
+  // Load draft on mount
+  useEffect(() => {
+    if (!isEditMode) {
+      const savedDraft = localStorage.getItem(DRAFT_KEY);
+      if (savedDraft) {
+        try {
+          const { data, step, timestamp } = JSON.parse(savedDraft);
+          const hoursOld = (Date.now() - timestamp) / (1000 * 60 * 60);
+          
+          // Only offer to recover if draft is less than 24 hours old
+          if (hoursOld < 24) {
+            toast({
+              title: "Borrador encontrado",
+              description: "¿Deseas recuperar la información guardada automáticamente?",
+              action: (
+                <Button 
+                  size="sm" 
+                  onClick={() => {
+                    reset(data);
+                    setCurrentStep(step || 1);
+                    toast({ title: "Borrador cargado" });
+                  }}
+                >
+                  Recuperar
+                </Button>
+              ),
+            });
+          }
+        } catch (e) {
+          console.error("Failed to parse draft", e);
+        }
+      }
+    }
+  }, []); // Run once on mount
+
+  const clearDraft = () => {
+    localStorage.removeItem(DRAFT_KEY);
+  };
 
   // Reset form when initialValues change (for edit mode)
   useEffect(() => {
@@ -113,6 +177,11 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
       trigger();
     }
   }, [currentStep, trigger]);
+
+  const handleOnSubmit = async (data: ServiceFormValues) => {
+    await onSubmit(data);
+    if (!isEditMode) clearDraft();
+  };
 
   const handleNext = async (e?: React.MouseEvent<HTMLButtonElement>) => {
     // Prevent form submission
@@ -174,8 +243,9 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
         </div>
 
         {/* Stepper */}
-        <div className="flex items-center justify-between max-w-2xl mx-auto py-4 relative">
-          <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/5 -translate-y-1/2 z-0" />
+        <div className="flex items-center justify-start gap-12 py-4 relative">
+          {/* Línea conectora ajustada al ancho del stepper aproximado */}
+          <div className="absolute top-1/2 left-0 w-[450px] h-[1px] bg-white/5 -translate-y-1/2 z-0" />
           {steps.map((step) => (
             <div
               key={step.id}
@@ -196,7 +266,7 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
           ))}
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-12 gap-8">
+        <form onSubmit={handleSubmit(handleOnSubmit)} className="grid grid-cols-1 md:grid-cols-12 gap-8">
           <div className="col-span-1 md:col-span-8 space-y-6 md:space-y-8">
             <AnimatePresence mode="wait">
               {currentStep === 1 && <ServiceInfoStep />}

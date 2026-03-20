@@ -50,7 +50,7 @@ interface ServicesState {
   updateService: (id: string, data: any) => Promise<void>;
   deleteService: (id: string) => Promise<void>;
   toggleServiceStatus: (id: string, isActive: boolean) => Promise<void>;
-  uploadMedia: (userId: string, file: File) => Promise<any>;
+  uploadMedia: (userId: string, file: File, onProgress?: (progress: number) => void) => Promise<any>;
 }
 
 export const useServicesStore = create<ServicesState>((set) => ({
@@ -140,13 +140,19 @@ export const useServicesStore = create<ServicesState>((set) => ({
     }
   },
 
-  uploadMedia: async (userId, file) => {
+  uploadMedia: async (userId, file, onProgress) => {
     const formData = new FormData();
     formData.append('file', file);
     try {
       const response = await api.post(`/media/${userId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          if (onProgress && progressEvent.total) {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(progress);
+          }
         },
       });
       return response.data;
