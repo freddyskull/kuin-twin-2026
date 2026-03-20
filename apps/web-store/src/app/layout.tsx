@@ -47,11 +47,12 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <BackgroundOrbs />
-            <AuthInitializer />
-            <ScrollTop />
-            <Toaster position="top-center" expand={false} richColors />
-            {children}
-            <Footer />
+            <AuthInitializer>
+              <ScrollTop />
+              <Toaster position="top-center" expand={false} richColors />
+              {children}
+              <Footer />
+            </AuthInitializer>
           </ThemeProvider>
         </Providers>
       </body>

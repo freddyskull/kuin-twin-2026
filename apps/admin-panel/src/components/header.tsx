@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { Search, User, ChevronRight, LogOut, Settings as SettingsIcon, Menu } from 'lucide-react';
+import { Search, ChevronRight, LogOut, Settings as SettingsIcon, Menu } from 'lucide-react';
 import { useAuthStore } from '../stores/auth.store';
 import { useMessagesStore } from '../stores/messages.store';
 import { NotificationBell } from 'ui-components';
@@ -43,9 +43,10 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
   return (
     <motion.header
-      initial={{ y: -10, opacity: 0 }}
+      initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="sticky top-0 z-40 flex h-16 w-full items-center justify-between px-4 md:px-8 bg-background/60 backdrop-blur-md border-b border-border/50"
+      transition={{ duration: 0.8, ease: "circOut" }}
+      className="sticky top-6 z-40 flex h-20 w-[96%] mx-auto items-center justify-between px-6 md:px-10 glass-card bg-card/40 border border-white/10 rounded-[2.5rem] shadow-2xl backdrop-blur-2xl mb-4"
     >
       {/* Left Side: Menu Toggle (Mobile) or Breadcrumbs (Desktop) */}
       <div className="flex items-center gap-4">
@@ -83,13 +84,16 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
       <div className="flex items-center gap-2 md:gap-4">
         {/* Search Bar - Desktop Only */}
         {!isMobile && (
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+          <div className="relative group/search">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within/search:text-primary transition-all duration-300" />
             <input
               type="text"
-              placeholder="Buscar..."
-              className="bg-secondary/50 border border-border rounded-lg py-1.5 pl-9 pr-4 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 w-48 transition-all focus:w-64 focus:bg-secondary"
+              placeholder="Explorar inteligencia..."
+              className="bg-white/5 border border-white/5 rounded-2xl py-2.5 pl-11 pr-6 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 w-48 transition-all duration-500 focus:w-80 focus:bg-white/10 placeholder:opacity-50 font-medium"
             />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-8 rounded-md bg-white/5 border border-white/10 flex items-center justify-center pointer-events-none group-focus-within/search:opacity-0 transition-opacity">
+               <span className="text-[10px] font-black text-white/30">⌘K</span>
+            </div>
           </div>
         )}
 
@@ -118,15 +122,15 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               {user?.role || 'Vendedor'}
             </p>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-primary/10 border-2 border-primary/20 ring-4 ring-primary/5 flex items-center justify-center overflow-hidden transition-all group-hover:ring-primary/10 shadow-sm relative">
+          <div className="h-12 w-12 rounded-2xl bg-primary/10 border-2 border-primary/20 ring-4 ring-primary/5 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:ring-primary/20 shadow-lg relative">
             {profile?.avatarUrl ? (
-              <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+              <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500" />
             ) : (
-              <span className="text-primary font-bold text-xs">
+              <span className="text-primary font-black text-sm">
                 {(profile?.displayName || user?.email || 'U').substring(0, 2).toUpperCase()}
               </span>
             )}
-            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full" />
+            <div className="absolute bottom-1 right-1 w-3 h-3 bg-primary border-2 border-black rounded-full shadow-[0_0_10px_rgba(245,192,106,0.5)]" />
           </div>
 
           {/* User Menu Dropdown */}

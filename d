@@ -1,11 +1,4 @@
-user.name=Black WSL
-user.email=freddyskull11@gmail.com
-core.repositoryformatversion=0
-core.filemode=true
-core.bare=false
-core.logallrefupdates=true
-remote.origin.url=https://github.com/freddyskull/kuin-twin-2026.git
-remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
-branch.master.remote=origin
-branch.master.merge=refs/heads/master
-branch.master.vscode-merge-base=origin/master
+#!/bin/bash
+# Script para iniciar en modo Desarrollo
+cp nginx/gateway.dev.conf nginx/gateway.conf
+docker compose up -d

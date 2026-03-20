@@ -68,7 +68,13 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({ token: state.token }),
+      // Persistimos tanto el token como el usuario y el estado de autenticación
+      // para una experiencia de usuario instantánea al recargar.
+      partialize: (state) => ({ 
+        token: state.token,
+        user: state.user,
+        isAuthenticated: state.isAuthenticated
+      }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },

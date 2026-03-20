@@ -1,0 +1,27 @@
+services:
+  api:
+    image: kuin-twin-2026-api:latest
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+    volumes:
+      - .:/app
+    command: npx turbo dev --filter=api
+
+  web-store:
+    image: kuin-twin-2026-web-store:latest
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/app
+    command: npx turbo dev --filter=web-store
+
+  admin-panel:
+    # Usamos la imagen de la API porque tiene Node.js y npx
+    image: kuin-twin-2026-api:latest
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=/api
+    volumes:
+      - .:/app
+    command: npx turbo dev --filter=admin-panel
