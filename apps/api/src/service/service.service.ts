@@ -97,28 +97,33 @@ export class ServiceService {
       } : {})
     };
 
-    // Si hay coordenadas, usamos una query diferente para ordenar por proximidad + azar
+    // Si hay coordenadas, usamos una query diferente para ordenar por relevancia + proximidad
     if (filters?.lat !== undefined && filters?.lng !== undefined) {
       const radiusMeters = (filters.radiusKm || 50) * 1000;
       const lng = filters.lng;
       const lat = filters.lat;
+      const searchTerm = filters.search ? `%${filters.search}%` : null;
 
-      // Query que trae TODOS los servicios pero los ordena: 
-      // 1. Cercanos dentro del radio (ordenados por distancia decrescente)
-      // 2. El resto (ordenados al azar)
+      // Query con sistema de puntuación:
+      // - Score 100: Título coincide exactamente (ignore case)
+      // - Score 50: Título contiene la palabra
+      // - Score 20: Descripción contiene la palabra
       const items: any[] = await this.prisma.$queryRaw`
         SELECT s.id, 
                ST_Distance(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326)) as distance,
                CASE 
-                 WHEN s.location IS NOT NULL AND ST_DWithin(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326), ${radiusMeters}) THEN 1
-                 ELSE 0 
-               END as is_nearby
+                 WHEN ${filters.search || ''} = '' THEN 1
+                 WHEN s."title" ILIKE ${filters.search || ''} THEN 100
+                 WHEN s."title" ILIKE ${searchTerm || ''} THEN 50
+                 WHEN s."description" ILIKE ${searchTerm || ''} THEN 20
+                 ELSE 0
+               END as relevance_score
         FROM "Service" s
         WHERE s."isActive" = ${filters.isActive ?? true}
         ${filters.categoryId ? Prisma.sql`AND s."categoryId" = ${filters.categoryId}` : Prisma.empty}
         ${filters.vendorId ? Prisma.sql`AND s."vendorId" = ${filters.vendorId}` : Prisma.empty}
-        ${filters.search ? Prisma.sql`AND (s."title" ILIKE ${`%${filters.search}%`} OR s."description" ILIKE ${`%${filters.search}%`})` : Prisma.empty}
-        ORDER BY is_nearby DESC, distance ASC NULLS LAST, RANDOM()
+        ${filters.search ? Prisma.sql`AND (s."title" ILIKE ${searchTerm} OR s."description" ILIKE ${searchTerm} OR ${filters.search} = ANY(s."tags"))` : Prisma.empty}
+        ORDER BY relevance_score DESC, distance ASC NULLS LAST
         LIMIT ${limit} OFFSET ${skip}
       `;
 
@@ -127,6 +132,7 @@ export class ServiceService {
         FROM "Service" s
         WHERE s."isActive" = ${filters.isActive ?? true}
         ${filters.categoryId ? Prisma.sql`AND s."categoryId" = ${filters.categoryId}` : Prisma.empty}
+        ${filters.search ? Prisma.sql`AND (s."title" ILIKE ${searchTerm} OR s."description" ILIKE ${searchTerm})` : Prisma.empty}
       `;
 
       if (items.length === 0) return { items: [], total: 0 };
