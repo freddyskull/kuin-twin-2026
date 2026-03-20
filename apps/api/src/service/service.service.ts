@@ -239,6 +239,47 @@ export class ServiceService {
     return related as Service[];
   }
 
+  async findNearby(lat: number, lng: number, radiusKm: number = 10, limit: number = 10): Promise<Service[]> {
+    // Usamos SQL puro para aprovechar PostGIS ST_DWithin
+    // 1 km = 1000 metros
+    const radiusMeters = radiusKm * 1000;
+
+    // Nota: Prisma queryRaw devuelve una lista de objetos.
+    // Necesitamos asegurarnos de que el esquema coincida con lo que esperamos.
+    const nearbyServices: any[] = await this.prisma.$queryRaw`
+      SELECT s.*, 
+             ST_Distance(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326)) as distance
+      FROM "Service" s
+      WHERE ST_DWithin(
+        s.location, 
+        ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326), 
+        ${radiusMeters}
+      ) AND s."isActive" = true
+      ORDER BY distance ASC
+      LIMIT ${limit}
+    `;
+
+    // Como queryRaw no hace "include" de forma automática, 
+    // si necesitamos relaciones podemos hacer una segunda consulta 
+    // o refinar la query SQL. Por simplicidad y consistencia con el resto de la app,
+    // usaremos los IDs obtenidos para traer los objetos completos con Prisma.
+    if (nearbyServices.length === 0) return [];
+
+    const ids = nearbyServices.map(s => s.id);
+    const services = await this.prisma.service.findMany({
+      where: { id: { in: ids } },
+      include: { 
+        category: true, 
+        unit: true, 
+        company: true,
+        vendor: { select: { id: true, profile: { select: { displayName: true, avatarUrl: true } } } }
+      }
+    });
+
+    // Reordenar para mantener la distancia (ya que findMany no garantiza orden de IN)
+    return ids.map(id => services.find(s => s.id === id)).filter(Boolean) as Service[];
+  }
+
   private async clearServiceCache(vId: string, cId: string, sId?: string) {
     if (sId) await this.cacheManager.del(`service:${sId}`);
     // Limpiar variantes de caché incluyendo filtros de isActive

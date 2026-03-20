@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
 
 interface ProtectedRouteProps {
@@ -13,7 +13,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { isAuthenticated, user, checkAuth, isLoading } = useAuthStore();
   const [isChecking, setIsChecking] = useState(true);
-  const location = useLocation();
+
 
   useEffect(() => {
     const initAuth = async () => {
@@ -38,7 +38,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Si requiere auth y no está autenticado
   if (requireAuth && !isAuthenticated) {
-    return <Navigate to="/iniciar-sesion" state={{ from: location }} replace />;
+    // Redirección fuera de la SPA hacia la web-store (URL raíz /login)
+    window.location.href = '/login';
+    return null;
   }
 
   // Si NO requiere auth (ej: login/register) y YA está autenticado

@@ -37,6 +37,21 @@ export class ServiceController {
     });
   }
 
+  @Get('nearby')
+  async findNearby(
+    @Query('lat') lat: string,
+    @Query('lng') lng: string,
+    @Query('radius') radius?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.serviceService.findNearby(
+      parseFloat(lat),
+      parseFloat(lng),
+      radius ? parseFloat(radius) : 10,
+      limit ? parseInt(limit) : 10,
+    );
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.serviceService.findOne(id);

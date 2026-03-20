@@ -1,5 +1,13 @@
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getServices, getServicesPaginated, getServiceBySlug, getReviews, createReview, getRelatedServices } from './services.api';
+import { 
+  getServices, 
+  getServicesPaginated, 
+  getServiceBySlug, 
+  getReviews, 
+  createReview, 
+  getRelatedServices,
+  getNearbyServices
+} from './services.api';
 import { CreateReviewDto } from 'shared-types';
 
 export const useServices = () => {
@@ -57,5 +65,14 @@ export const useRelatedServices = (serviceId: string, limit: number = 4) => {
     queryKey: ['services', serviceId, 'related'],
     queryFn: () => getRelatedServices(serviceId, limit),
     enabled: !!serviceId,
+  });
+};
+
+export const useNearbyServices = (params: { lat: number; lng: number; radius?: number; limit?: number }) => {
+  return useQuery({
+    queryKey: ['services', 'nearby', params.lat, params.lng, params.radius, params.limit],
+    queryFn: () => getNearbyServices(params),
+    enabled: !!params.lat && !!params.lng,
+    staleTime: 1000 * 60 * 5, // 5 mins
   });
 };

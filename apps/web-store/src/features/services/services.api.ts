@@ -39,3 +39,14 @@ export const getRelatedServices = async (serviceId: string, limit: number = 4): 
   const { data } = await api.get<ServiceDto[]>(`/services/${serviceId}/related?limit=${limit}`);
   return data;
 };
+
+export const getNearbyServices = async (params: {
+  lat: number;
+  lng: number;
+  radius?: number;
+  limit?: number;
+}): Promise<ServiceDto[]> => {
+  const { lat, lng, radius = 10, limit = 10 } = params;
+  const { data } = await api.get<ServiceDto[]>(`/services/nearby?lat=${lat}&lng=${lng}&radius=${radius}&limit=${limit}`);
+  return data;
+};

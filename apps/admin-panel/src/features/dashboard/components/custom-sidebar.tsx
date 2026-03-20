@@ -52,9 +52,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     <aside 
       data-sidebar="sidebar"
       className={cn(
-      "fixed left-0 top-0 h-screen w-72 bg-sidebar border-r border-sidebar-border flex flex-col p-6 z-50 transition-transform duration-300 ease-in-out",
-      isMobile && !isOpen ? "-translate-x-full" : "translate-x-0"
-    )}>
+        "fixed left-6 top-6 bottom-6 w-64 glass-card bg-card/60 border border-white/10 flex flex-col p-6 z-[60] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] rounded-[2.5rem] shadow-2xl",
+        isMobile && !isOpen ? "-translate-x-[120%]" : "translate-x-0",
+        !isMobile && "hover:bg-card/70 hover:scale-[1.02]"
+      )}>
+      {/* Background Glow */}
+      <div className="absolute -top-10 -left-10 w-32 h-32 bg-primary/20 rounded-full blur-[60px] pointer-events-none" />
       {/* Logo & Close Button */}
       <div className="flex items-center justify-between mb-12 px-2">
         <Link to="/" className="flex items-center gap-2 group/logo">
@@ -94,34 +97,46 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 whileHover={{ x: 4 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 className={cn(
-                  "flex items-center gap-3 w-full px-4 py-2.5 rounded-xl transition-all duration-200 relative group/item",
+                  "flex items-center gap-3 w-full px-4 py-3 rounded-2xl transition-all duration-500 relative group/item",
                   isActive
-                    ? 'bg-primary/10 text-primary border border-primary/20'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50 border border-transparent'
+                    ? 'bg-primary text-black shadow-xl shadow-primary/25 border border-primary/50'
+                    : 'text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent'
                 )}
               >
-                <item.icon className={`h-4.5 w-4.5 ${isActive ? 'text-primary' : 'text-muted-foreground group-hover/item:text-foreground'}`} />
-                <span className="font-medium text-sm flex-1">{item.label}</span>
+                <item.icon className={cn(
+                  "h-5 w-5 transition-transform duration-300 group-hover/item:scale-110",
+                  isActive ? 'text-black' : 'text-muted-foreground group-hover/item:text-primary'
+                )} />
+                <span className={cn(
+                  "text-xs font-black uppercase tracking-widest flex-1",
+                  isActive ? "text-shadow-none" : "opacity-70 group-hover/item:opacity-100"
+                )}>
+                   {item.label}
+                </span>
 
                 {item.badge && (
-                  <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-primary text-[10px] font-black text-primary-foreground shadow-lg shadow-primary/20">
+                  <span className={cn(
+                    "flex h-5 w-5 items-center justify-center rounded-lg text-[10px] font-black shadow-lg",
+                    isActive ? "bg-black text-primary" : "bg-primary text-primary-foreground shadow-primary/20"
+                  )}>
                     {item.badge}
                   </span>
                 )}
               </motion.div>
+
             </Link>
           );
         })}
       </nav>
 
       {/* Logout */}
-      <div className="mt-auto pt-6 border-t border-sidebar-border">
+      <div className="mt-auto pt-6 border-t border-white/5">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 text-muted-foreground hover:text-destructive transition-colors px-4 py-2.5 rounded-xl hover:bg-destructive/5 group"
+          className="w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-destructive transition-all py-3 rounded-2xl hover:bg-destructive/5 group"
         >
-          <LogOut className="h-4.5 w-4.5 group-hover:translate-x-0.5 transition-transform" />
-          <span className="font-semibold text-sm">Cerrar Sesión</span>
+          <LogOut className="h-4 w-4 group-hover:scale-110 transition-transform" />
+          <span>Finalizar Sesión</span>
         </button>
       </div>
     </aside>

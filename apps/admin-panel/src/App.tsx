@@ -13,10 +13,6 @@ const PageLoader = () => (
   </div>
 );
 
-// Auth Pages (Lazy Loading - Rule 11)
-const LoginPage = lazy(() => import('./features/auth').then(m => ({ default: m.LoginPage })));
-const RegisterPage = lazy(() => import('./features/auth').then(m => ({ default: m.RegisterPage })));
-
 // Feature Pages (Lazy Loading - Rule 11)
 const DashboardPage = lazy(() => import('./features/dashboard').then(m => ({ default: m.DashboardPage })));
 const ServicesPage = lazy(() => import('./features/products').then(m => ({ default: m.ServicesPage })));
@@ -37,11 +33,8 @@ const App: React.FC = () => {
       <SocketListener />
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          {/* Public Routes (only accessible if NOT authenticated) */}
-          <Route element={<ProtectedRoute requireAuth={false} />}>
-            <Route path="/iniciar-sesion" element={<LoginPage />} />
-            <Route path="/registro" element={<RegisterPage />} />
-          </Route>
+          {/* Redirigir siempre a web-store para login/registro si no estamos autenticados */}
+          {/* ProtectedRoute ahora se encarga de la redirección externa si falta auth */}
 
           {/* Private Routes (only accessible if authenticated) */}
           <Route element={<ProtectedRoute requireAuth={true} allowedRoles={['ADMIN', 'VENDOR']} />}>

@@ -4,10 +4,12 @@ import React, { useEffect } from "react";
 import { useAuthStore } from "@/features/auth/auth.store";
 import { useMessagesStore } from "@/features/chat/messages.store";
 import { getSocket } from "@/lib/socket";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function SocketListener() {
   const { user } = useAuthStore();
   const { addNotification } = useMessagesStore();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!user) return;
@@ -20,6 +22,10 @@ export function SocketListener() {
       if (!user) return;
 
       console.log(`📩 Mensaje recibido en WebStore (${isGlobal ? 'Global' : 'Directo'}):`, message);
+
+      // Invalidad consultas globales de chat
+      queryClient.invalidateQueries({ queryKey: ['chat', 'conversations', user.id] });
+      queryClient.invalidateQueries({ queryKey: ['chat', 'messages', user.id] });
 
       // Notificar si el mensaje es para el usuario actual o es un mensaje global
       if (message.receiverId === user.id || isGlobal) {
@@ -42,7 +48,7 @@ export function SocketListener() {
       socket.off("new_message");
       socket.off("admin_new_message");
     };
-  }, [user, addNotification]);
+  }, [user, addNotification, queryClient]);
 
   return null; // Este componente no renderiza nada visual
 }

@@ -5,9 +5,6 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui';
 import { Loader2 } from 'lucide-react';
 import { StatusIndicator } from './status-indicator';
-import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { getSocket } from '@/lib/socket';
 
 interface ConversationListProps {
   userId: string;
@@ -17,22 +14,6 @@ interface ConversationListProps {
 
 export const ConversationList = ({ userId, selectedUserId, onSelect }: ConversationListProps) => {
   const { data: conversations, isLoading } = useConversations(userId);
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    const socket = getSocket(userId);
-    if (socket) {
-      const handleGlobalMessage = () => {
-        // Invalidate conversation list whenever any new message arrives
-        queryClient.invalidateQueries({ queryKey: ['chat', 'conversations', userId] });
-      };
-
-      socket.on('new_message', handleGlobalMessage);
-      return () => {
-        socket.off('new_message', handleGlobalMessage);
-      };
-    }
-  }, [userId, queryClient]);
 
   if (isLoading) {
     return (

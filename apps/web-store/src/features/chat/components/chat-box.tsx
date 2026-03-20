@@ -5,8 +5,6 @@ import { useChatMessages, useSendMessage, useMarkAsRead, useMessagesStore } from
 import { ChatMessage } from './chat-message';
 import { Button, Input } from '@/components/ui';
 import { Send, Loader2 } from 'lucide-react';
-import { getSocket, disconnectSocket } from '@/lib/socket';
-import { useQueryClient } from '@tanstack/react-query';
 
 interface ChatBoxProps {
   userId: string;
@@ -20,31 +18,7 @@ export const ChatBox = ({ userId, otherUserId }: ChatBoxProps) => {
   const { data: messages, isLoading } = useChatMessages(userId, otherUserId);
   const sendMessageMutation = useSendMessage(userId);
   const markAsReadMutation = useMarkAsRead(userId);
-  const queryClient = useQueryClient();
   const { removeNotificationsBySender } = useMessagesStore();
-
-  // Socket for real-time messages
-  useEffect(() => {
-    const socket = getSocket(userId);
-
-    if (socket) {
-      const handleNewMessage = (payload: any) => {
-        // Only invalidate if the message is from the user we are talking to
-        if (payload.senderId === otherUserId) {
-          queryClient.invalidateQueries({ queryKey: ['chat', 'messages', userId, otherUserId] });
-          queryClient.invalidateQueries({ queryKey: ['chat', 'conversations', userId] });
-          // También limpiamos notificaciones globales si estamos en el chat con esa persona
-          removeNotificationsBySender(otherUserId);
-        }
-      };
-
-      socket.on('new_message', handleNewMessage);
-
-      return () => {
-        socket.off('new_message', handleNewMessage);
-      };
-    }
-  }, [userId, otherUserId, queryClient, removeNotificationsBySender]);
 
   // Auto-scroll to bottom
   useEffect(() => {
