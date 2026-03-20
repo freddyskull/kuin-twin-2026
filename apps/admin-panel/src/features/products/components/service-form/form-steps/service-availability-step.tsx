@@ -82,7 +82,7 @@ export const ServiceAvailabilityStep: React.FC = () => {
       className="bg-accent/40 backdrop-blur-2xl border border-white/5 rounded-3xl p-8 space-y-8"
     >
       <div className="flex items-center gap-3">
-        <Calendar className="h-5 w-5 text-dashboard-primary" />
+        <Calendar className="h-5 w-5 text-primary" />
         <h2 className="text-xl font-bold text-white tracking-tight">Horario de Trabajo</h2>
       </div>
 
@@ -94,7 +94,7 @@ export const ServiceAvailabilityStep: React.FC = () => {
             {schedule && schedule.map((item: any, index: number) => {
               const dayLabel = DAYS.find(d => d.key === item.day)?.label || item.day;
               return (
-                <div key={item.day} className={`p-4 rounded-xl border transition-all ${item.enabled ? 'bg-[#0a0b1e]/60 border-dashboard-primary/30' : 'bg-[#0a0b1e]/20 border-white/5 opacity-60'}`}>
+                <div key={item.day} className={`p-4 rounded-xl border transition-all ${item.enabled ? 'bg-[#0a0b1e]/60 border-primary/30' : 'bg-[#0a0b1e]/20 border-white/5 opacity-60'}`}>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-3 w-32">
                       <Controller
@@ -164,13 +164,13 @@ export const ServiceAvailabilityStep: React.FC = () => {
                 <div
                   key={holiday.date}
                   onClick={() => toggleHoliday(holiday.date)}
-                  className={`cursor-pointer p-3 rounded-xl border flex items-center justify-between transition-all group ${worked ? 'bg-dashboard-primary/10 border-dashboard-primary/30' : 'bg-[#0a0b1e]/30 border-white/5'}`}
+                  className={`cursor-pointer p-3 rounded-xl border flex items-center justify-between transition-all group ${worked ? 'bg-primary/10 border-primary/30' : 'bg-[#0a0b1e]/30 border-white/5'}`}
                 >
                   <div className="flex flex-col">
                     <span className={`text-xs font-bold ${worked ? 'text-white' : 'text-slate-500'}`}>{holiday.name}</span>
                     <span className="text-[10px] text-slate-600">{holiday.date}</span>
                   </div>
-                  <div className={`h-6 w-6 rounded-lg flex items-center justify-center border transition-all ${worked ? 'bg-dashboard-primary text-primary border-dashboard-primary' : 'bg-transparent border-white/10 text-transparent'}`}>
+                  <div className={`h-6 w-6 rounded-lg flex items-center justify-center border transition-all ${worked ? 'bg-primary text-primary border-primary' : 'bg-transparent border-white/10 text-transparent'}`}>
                     <Check className="h-3.5 w-3.5" />
                   </div>
                 </div>

@@ -29,8 +29,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   if (isChecking || isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-dashboard-bg">
-        <div className="text-white text-xl font-bold animate-pulse">Verificando sesión...</div>
+      <div className="flex items-center justify-center min-h-screen bg-background relative overflow-hidden">
+        <div className="absolute inset-0 bg-primary/5 animate-pulse" />
+        <div className="text-primary text-xl font-heading font-bold animate-pulse z-10">Verificando sesión...</div>
       </div>
     );
   }

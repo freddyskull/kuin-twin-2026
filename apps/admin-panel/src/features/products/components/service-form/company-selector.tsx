@@ -43,7 +43,7 @@ const CompanyItem: React.FC<{
       className={cn(
         "rounded-2xl border transition-all cursor-pointer group overflow-hidden",
         isSelected
-          ? "bg-dashboard-primary/5 border-dashboard-primary/50 shadow-lg shadow-dashboard-primary/5"
+          ? "bg-primary/5 border-primary/50 shadow-lg shadow-primary/5"
           : "bg-[#0a0b1e]/40 border-white/5 hover:border-white/10"
       )}
     >
@@ -53,12 +53,12 @@ const CompanyItem: React.FC<{
       >
         <div className={cn(
           "h-10 w-10 rounded-xl overflow-hidden flex items-center justify-center border transition-all flex-shrink-0",
-          isSelected ? "border-dashboard-primary/30" : "border-white/5 bg-[#0a0b1e]"
+          isSelected ? "border-primary/30" : "border-white/5 bg-[#0a0b1e]"
         )}>
           {company.logoUrl ? (
             <img src={company.logoUrl} alt={company.businessName} className="h-full w-full object-cover" />
           ) : (
-            <Building2 className={cn("h-5 w-5", isSelected ? "text-dashboard-primary" : "text-slate-600")} />
+            <Building2 className={cn("h-5 w-5", isSelected ? "text-primary" : "text-slate-600")} />
           )}
         </div>
 
@@ -75,7 +75,7 @@ const CompanyItem: React.FC<{
         <div className={cn(
           "h-5 w-5 rounded-full border flex items-center justify-center transition-all",
           isSelected
-            ? "bg-dashboard-primary border-dashboard-primary text-primary"
+            ? "bg-primary border-primary text-primary"
             : "border-white/10"
         )}>
           {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
@@ -98,7 +98,7 @@ const CompanyItem: React.FC<{
                 {branches.length > 0 && (
                   <button
                     onClick={handleSelectAllBranches}
-                    className="hover:text-dashboard-primary transition-colors cursor-pointer"
+                    className="hover:text-primary transition-colors cursor-pointer"
                   >
                     {areAllSelected ? 'Deseleccionar todas' : 'Seleccionar todas'}
                   </button>
@@ -121,12 +121,12 @@ const CompanyItem: React.FC<{
                         onClick={(e) => { e.stopPropagation(); onToggleBranch(String(branch.id)); }}
                         className={cn(
                           "flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all",
-                          isBranchSelected ? "bg-dashboard-primary/10 text-white" : "hover:bg-white/5 text-slate-400"
+                          isBranchSelected ? "bg-primary/10 text-white" : "hover:bg-white/5 text-slate-400"
                         )}
                       >
                         <div className={cn(
                           "w-4 h-4 rounded border flex items-center justify-center transition-all",
-                          isBranchSelected ? "bg-dashboard-primary border-dashboard-primary" : "border-white/20"
+                          isBranchSelected ? "bg-primary border-primary" : "border-white/20"
                         )}>
                           {isBranchSelected && <Check className="h-3 w-3 text-primary stroke-[3]" />}
                         </div>

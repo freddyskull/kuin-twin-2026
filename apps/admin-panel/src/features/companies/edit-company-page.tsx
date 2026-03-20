@@ -163,7 +163,7 @@ export const EditCompanyPage: React.FC = () => {
                 className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
               >
                 <div className="flex items-center gap-3 mb-6">
-                  <Building2 className="h-6 w-6 text-dashboard-primary" />
+                  <Building2 className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-bold text-white">Información Comercial</h2>
                 </div>
 
@@ -191,7 +191,7 @@ export const EditCompanyPage: React.FC = () => {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <FileText className="h-6 w-6 text-dashboard-primary" />
+                    <FileText className="h-6 w-6 text-primary" />
                     <h2 className="text-2xl font-bold text-white">Datos Fiscales (SAT)</h2>
                   </div>
                   {isVerified && (
@@ -216,7 +216,7 @@ export const EditCompanyPage: React.FC = () => {
                         type="button"
                         onClick={() => handleVerifySat(currentRfc, setValue)}
                         disabled={verifySatMutation.isPending}
-                        className="absolute right-2 bottom-1.5 p-2 rounded-lg bg-dashboard-primary/10 text-dashboard-primary hover:bg-dashboard-primary hover:text-primary transition-all active:scale-95 disabled:opacity-50"
+                        className="absolute right-2 bottom-1.5 p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary transition-all active:scale-95 disabled:opacity-50"
                         title="Verificar ante el SAT"
                       >
                         {verifySatMutation.isPending ? (
@@ -235,8 +235,8 @@ export const EditCompanyPage: React.FC = () => {
                   </div>
 
                   <div className="col-span-2">
-                    <div className="p-4 rounded-2xl bg-dashboard-primary/5 border border-dashboard-primary/10 flex items-start gap-3">
-                      <ShieldAlert className="h-5 w-5 text-dashboard-primary mt-0.5" />
+                    <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 flex items-start gap-3">
+                      <ShieldAlert className="h-5 w-5 text-primary mt-0.5" />
                       <div>
                         <p className="text-xs text-slate-300 font-medium leading-relaxed">
                           La verificación ante el SAT garantiza que la empresa está activa y cumple con sus obligaciones fiscales. Al verificar, se auto-completarán algunos campos oficiales.
@@ -256,7 +256,7 @@ export const EditCompanyPage: React.FC = () => {
                 className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
               >
                 <div className="flex items-center gap-3 mb-6">
-                  <MapPin className="h-6 w-6 text-dashboard-primary" />
+                  <MapPin className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-bold text-white">Domicilio Fiscal</h2>
                 </div>
 
@@ -289,7 +289,7 @@ export const EditCompanyPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={updateMutation.isPending || isSubmitting || !isValid || !isDirty}
-                  className="px-8 py-3.5 rounded-2xl bg-dashboard-primary text-primary font-black shadow-xl shadow-dashboard-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-8 py-3.5 rounded-2xl bg-primary text-primary font-black shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {(updateMutation.isPending || isSubmitting) ? 'Guardando...' : 'Actualizar Empresa'}
                 </button>

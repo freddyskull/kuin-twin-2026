@@ -82,7 +82,7 @@ export const BranchForm: React.FC<BranchFormProps> = ({
             </div>
 
             <div className="col-span-2">
-              <div className="text-sm font-bold text-dashboard-primary flex items-center gap-2 mb-2">
+              <div className="text-sm font-bold text-primary flex items-center gap-2 mb-2">
                 <MapPin className="h-4 w-4" /> Ubicación Física
               </div>
               <FormInput name="address" label="Dirección" required placeholder="Calle y número" />
@@ -93,14 +93,14 @@ export const BranchForm: React.FC<BranchFormProps> = ({
             <FormInput name="zipCode" label="Código Postal" required maxLength={5} />
 
             <div className="col-span-1">
-              <div className="text-sm font-bold text-dashboard-primary flex items-center gap-2 mb-2">
+              <div className="text-sm font-bold text-primary flex items-center gap-2 mb-2">
                 <Phone className="h-4 w-4" /> Teléfono
               </div>
               <FormInput name="phone" label="Teléfono" />
             </div>
 
             <div className="col-span-1">
-              <div className="text-sm font-bold text-dashboard-primary flex items-center gap-2 mb-2">
+              <div className="text-sm font-bold text-primary flex items-center gap-2 mb-2">
                 <Mail className="h-4 w-4" /> Email
               </div>
               <FormInput name="email" label="Email de contacto" type="email" />
@@ -122,7 +122,7 @@ export const BranchForm: React.FC<BranchFormProps> = ({
             <button
               type="submit"
               disabled={isLoading || !isValid || !isDirty}
-              className="px-6 py-3 rounded-xl bg-dashboard-primary text-primary font-black shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 rounded-xl bg-primary text-primary font-black shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Guardando...' : initialData ? 'Actualizar Sucursal' : 'Crear Sucursal'}
             </button>

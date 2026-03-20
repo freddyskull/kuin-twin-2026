@@ -17,7 +17,7 @@ export const ServicePriceStep: React.FC = () => {
       className="bg-accent/40 backdrop-blur-2xl border border-white/5 rounded-3xl p-8 space-y-8"
     >
       <div className="flex items-center gap-3">
-        <DollarSign className="h-5 w-5 text-dashboard-primary" />
+        <DollarSign className="h-5 w-5 text-primary" />
         <h2 className="text-xl font-bold text-white tracking-tight">Precio</h2>
       </div>
 

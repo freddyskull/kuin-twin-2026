@@ -49,7 +49,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   ];
 
   return (
-    <aside className={cn(
+    <aside 
+      data-sidebar="sidebar"
+      className={cn(
       "fixed left-0 top-0 h-screen w-72 bg-sidebar border-r border-sidebar-border flex flex-col p-6 z-50 transition-transform duration-300 ease-in-out",
       isMobile && !isOpen ? "-translate-x-full" : "translate-x-0"
     )}>

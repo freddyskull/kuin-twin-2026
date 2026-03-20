@@ -131,7 +131,7 @@ export const ServiceMediaStep: React.FC = () => {
       {/* Featured Image Section */}
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <ImageIcon className="h-5 w-5 text-dashboard-primary" />
+          <ImageIcon className="h-5 w-5 text-primary" />
           <h2 className="text-xl font-bold text-white tracking-tight">Imagen Destacada</h2>
         </div>
 
@@ -145,8 +145,8 @@ export const ServiceMediaStep: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div onClick={() => featuredInputRef.current?.click()} className="border-2 border-dashed border-white/10 rounded-2xl h-48 max-w-2xl flex flex-col items-center justify-center gap-3 group hover:border-dashboard-primary/40 transition-all cursor-pointer bg-[#0a0b1e]/20">
-            <div className="h-12 w-12 rounded-xl bg-[#1a1c3d] flex items-center justify-center text-slate-600 group-hover:text-dashboard-primary group-hover:scale-110 transition-all duration-300">
+          <div onClick={() => featuredInputRef.current?.click()} className="border-2 border-dashed border-white/10 rounded-2xl h-48 max-w-2xl flex flex-col items-center justify-center gap-3 group hover:border-primary/40 transition-all cursor-pointer bg-[#0a0b1e]/20">
+            <div className="h-12 w-12 rounded-xl bg-[#1a1c3d] flex items-center justify-center text-slate-600 group-hover:text-primary group-hover:scale-110 transition-all duration-300">
               <Plus className="h-5 w-5" />
             </div>
             <p className="text-slate-500 font-bold text-sm">Click para subir imagen destacada</p>
@@ -191,9 +191,9 @@ export const ServiceMediaStep: React.FC = () => {
 
           {/* Nuevas (Previews locales) */}
           {galleryPreviews.map((url, idx) => (
-            <div key={`file-${idx}`} className="relative group rounded-xl overflow-hidden bg-[#0a0b1e]/40 border border-dashboard-primary/30 aspect-square shadow-lg">
+            <div key={`file-${idx}`} className="relative group rounded-xl overflow-hidden bg-[#0a0b1e]/40 border border-primary/30 aspect-square shadow-lg">
               <img src={url} alt="Gallery item" className="w-full h-full object-cover" />
-              <div className="absolute top-1.5 right-1.5 px-2 py-0.5 bg-dashboard-primary/90 backdrop-blur-sm rounded text-[7px] font-black text-primary uppercase">Nuevo</div>
+              <div className="absolute top-1.5 right-1.5 px-2 py-0.5 bg-primary/90 backdrop-blur-sm rounded text-[7px] font-black text-primary uppercase">Nuevo</div>
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <button type="button" onClick={() => removeGalleryFile(idx)} className="p-2 text-white bg-red-500 rounded-lg hover:scale-110 transition-all">
                   <Trash2 className="h-4 w-4" />
@@ -205,13 +205,13 @@ export const ServiceMediaStep: React.FC = () => {
           {/* Selector / Dropzone Placeholder */}
           <div
             onClick={() => galleryInputRef.current?.click()}
-            className={`border-2 border-dashed border-white/5 rounded-xl flex flex-col items-center justify-center gap-2 group hover:border-dashboard-primary/20 transition-all cursor-pointer bg-[#0a0b1e]/10 aspect-square ${isDragging ? 'border-blue-500 animate-pulse bg-blue-500/5' : ''
+            className={`border-2 border-dashed border-white/5 rounded-xl flex flex-col items-center justify-center gap-2 group hover:border-primary/20 transition-all cursor-pointer bg-[#0a0b1e]/10 aspect-square ${isDragging ? 'border-blue-500 animate-pulse bg-blue-500/5' : ''
               }`}
           >
-            <div className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-700 group-hover:text-dashboard-primary group-hover:bg-dashboard-primary/10 transition-all">
+            <div className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-700 group-hover:text-primary group-hover:bg-primary/10 transition-all">
               <Plus className="h-5 w-5" />
             </div>
-            <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.2em] group-hover:text-dashboard-primary transition-all text-center px-2">
+            <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.2em] group-hover:text-primary transition-all text-center px-2">
               {isDragging ? 'Suelta aquí' : 'Añadir'}
             </span>
           </div>

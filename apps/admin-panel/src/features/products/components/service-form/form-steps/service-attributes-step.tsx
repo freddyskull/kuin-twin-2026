@@ -105,7 +105,7 @@ export const ServiceAttributesStep: React.FC = () => {
       className="bg-accent/40 backdrop-blur-2xl border border-white/5 rounded-3xl p-8 space-y-8"
     >
       <div className="flex items-center gap-3">
-        <Star className="h-5 w-5 text-dashboard-primary" />
+        <Star className="h-5 w-5 text-primary" />
         <h2 className="text-xl font-bold text-white tracking-tight">Atributos</h2>
       </div>
 
@@ -114,7 +114,7 @@ export const ServiceAttributesStep: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Especificaciones Técnicas</Label>
-            <button type="button" onClick={() => append({ key: '', value: '' })} className="text-dashboard-primary text-[10px] font-bold uppercase tracking-wider hover:underline">
+            <button type="button" onClick={() => append({ key: '', value: '' })} className="text-primary text-[10px] font-bold uppercase tracking-wider hover:underline">
               + Añadir Spec
             </button>
           </div>
@@ -122,8 +122,8 @@ export const ServiceAttributesStep: React.FC = () => {
             {fields.map((field, index) => (
               <div key={field.id} className="space-y-1">
                 <div className="flex gap-2 items-center">
-                  <input {...register(`metadata.${index}.key` as const)} placeholder="Etiqueta" className="flex-1 bg-[#0a0b1e]/40 border border-white/5 rounded-lg py-2.5 px-4 text-white text-xs font-bold focus:ring-1 focus:ring-dashboard-primary/30 outline-none" />
-                  <input {...register(`metadata.${index}.value` as const)} placeholder="Valor" className="flex-1 bg-[#0a0b1e]/40 border border-white/5 rounded-lg py-2.5 px-4 text-white text-xs font-bold focus:ring-1 focus:ring-dashboard-primary/30 outline-none" />
+                  <input {...register(`metadata.${index}.key` as const)} placeholder="Etiqueta" className="flex-1 bg-[#0a0b1e]/40 border border-white/5 rounded-lg py-2.5 px-4 text-white text-xs font-bold focus:ring-1 focus:ring-primary/30 outline-none" />
+                  <input {...register(`metadata.${index}.value` as const)} placeholder="Valor" className="flex-1 bg-[#0a0b1e]/40 border border-white/5 rounded-lg py-2.5 px-4 text-white text-xs font-bold focus:ring-1 focus:ring-primary/30 outline-none" />
                   <button type="button" onClick={() => handleRemove(index)} className="p-2 text-slate-600 hover:text-red-500 transition-colors">
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -141,7 +141,7 @@ export const ServiceAttributesStep: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Preguntas Frecuentes (FAQs)</Label>
-            <button type="button" onClick={() => appendFaq({ question: '', answer: '', order: 0 })} className="text-dashboard-primary text-[10px] font-bold uppercase tracking-wider hover:underline">
+            <button type="button" onClick={() => appendFaq({ question: '', answer: '', order: 0 })} className="text-primary text-[10px] font-bold uppercase tracking-wider hover:underline">
               + Añadir FAQ
             </button>
           </div>
@@ -157,13 +157,13 @@ export const ServiceAttributesStep: React.FC = () => {
                 <input
                   {...register(`faqs.${index}.question` as const)}
                   placeholder="¿Pregunta?"
-                  className="w-full bg-[#0a0b1e]/40 border border-white/5 rounded-lg py-2.5 px-4 text-white text-xs font-bold focus:ring-1 focus:ring-dashboard-primary/30 outline-none"
+                  className="w-full bg-[#0a0b1e]/40 border border-white/5 rounded-lg py-2.5 px-4 text-white text-xs font-bold focus:ring-1 focus:ring-primary/30 outline-none"
                 />
                 <textarea
                   {...register(`faqs.${index}.answer` as const)}
                   placeholder="Respuesta..."
                   rows={2}
-                  className="w-full bg-[#0a0b1e]/40 border border-white/5 rounded-lg py-2.5 px-4 text-white text-xs font-medium focus:ring-1 focus:ring-dashboard-primary/30 outline-none resize-none"
+                  className="w-full bg-[#0a0b1e]/40 border border-white/5 rounded-lg py-2.5 px-4 text-white text-xs font-medium focus:ring-1 focus:ring-primary/30 outline-none resize-none"
                 />
                 {errors.faqs?.[index] && (
                   <p className="text-[10px] text-red-500 font-bold pl-1">
@@ -184,7 +184,7 @@ export const ServiceAttributesStep: React.FC = () => {
         />
 
         <div className="bg-[#0a0b1e]/40 p-6 rounded-2xl border border-white/5 space-y-4">
-          <div className="flex items-center gap-3 text-dashboard-primary mb-2">
+          <div className="flex items-center gap-3 text-primary mb-2">
             <MapPin className="h-4 w-4" />
             <span className="text-xs font-bold uppercase tracking-widest">Localización</span>
           </div>
@@ -199,7 +199,7 @@ export const ServiceAttributesStep: React.FC = () => {
             <Button
               type="button"
               onClick={handleSearchAddress}
-              className="mb-0.5 bg-dashboard-primary/20 hover:bg-dashboard-primary/30 text-dashboard-primary border-dashboard-primary/30 rounded-xl h-[46px] px-4"
+              className="mb-0.5 bg-primary/20 hover:bg-primary/30 text-primary border-primary/30 rounded-xl h-[46px] px-4"
             >
               <Search className="h-4 w-4" />
             </Button>

@@ -63,7 +63,7 @@ export const ServicePreview: React.FC<ServicePreviewProps> = ({ currentStep, isE
       </div>
 
       <div className="bg-[#1a1c3d]/20 border border-white/5 rounded-2xl p-4 flex gap-3">
-        <Lightbulb className="h-4 w-4 text-dashboard-primary shrink-0" />
+        <Lightbulb className="h-4 w-4 text-primary shrink-0" />
         <p className="text-slate-400 text-[10px] font-medium leading-relaxed">
           {currentStep === 1 && "Los títulos claros atraen más miradas."}
           {currentStep === 2 && "El precio es decisivo para el cliente."}

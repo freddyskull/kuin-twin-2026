@@ -72,13 +72,13 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({ value, onCha
       <div
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-full bg-[#0a0b1e]/40 border border-white/5 rounded-xl py-3 px-4 text-white font-bold flex items-center justify-between cursor-pointer transition-all hover:bg-[#0a0b1e]/60 focus:ring-2 focus:ring-dashboard-primary/30",
-          isOpen && "ring-2 ring-dashboard-primary/30",
+          "w-full bg-[#0a0b1e]/40 border border-white/5 rounded-xl py-3 px-4 text-white font-bold flex items-center justify-between cursor-pointer transition-all hover:bg-[#0a0b1e]/60 focus:ring-2 focus:ring-primary/30",
+          isOpen && "ring-2 ring-primary/30",
           error && "border-red-500/50"
         )}
       >
         <div className="flex items-center gap-3 overflow-hidden">
-          <Tag className="h-4 w-4 text-dashboard-primary shrink-0" />
+          <Tag className="h-4 w-4 text-primary shrink-0" />
           <span className="truncate">
             {selectedCategory ? selectedCategory.name : 'Seleccionar categoría...'}
           </span>
@@ -124,7 +124,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({ value, onCha
                       }}
                       className={cn(
                         "w-full flex items-center justify-between p-3 rounded-xl transition-all hover:bg-white/5 group text-left",
-                        value === cat.id && "bg-dashboard-primary/20"
+                        value === cat.id && "bg-primary/20"
                       )}
                     >
                       <div className="flex items-center gap-3 overflow-hidden">
@@ -138,12 +138,12 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({ value, onCha
                         </div>
                         <span className={cn(
                           "text-sm font-semibold text-white",
-                          value === cat.id && "text-dashboard-primary"
+                          value === cat.id && "text-primary"
                         )}>
                           {cat.name}
                         </span>
                       </div>
-                      {value === cat.id && <Check className="h-4 w-4 text-dashboard-primary shrink-0" />}
+                      {value === cat.id && <Check className="h-4 w-4 text-primary shrink-0" />}
                     </button>
                   ))
                 ) : (

@@ -23,7 +23,7 @@ export const MainLayout: React.FC = () => {
         !isMobile ? "ml-72" : "ml-0"
       )}>
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
-        <main className="p-4 md:p-8 lg:p-10 flex-1 w-full max-w-[1600px] mx-auto animate-in fade-in duration-500">
+        <main className="bg-background p-4 md:p-8 lg:p-10 flex-1 w-full max-w-[1600px] mx-auto animate-in fade-in duration-500">
           <Outlet />
         </main>
       </div>

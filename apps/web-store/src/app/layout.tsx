@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Ubuntu, Plus_Jakarta_Sans } from "next/font/google";
-import "./globals.css";
+import "ui-components/styles";
 import Providers from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Footer } from "@/components/footer";
