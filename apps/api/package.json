@@ -42,10 +42,8 @@
     "bcrypt": "^6.0.0",
     "cache-manager": "^7.2.8",
     "cache-manager-redis-yet": "^5.1.5",
-    "keyv": "^5.2.3",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.3",
     "dotenv": "^17.2.3",
+    "keyv": "^5.2.3",
     "multer": "^2.0.2",
     "nestjs-zod": "^5.1.1",
     "passport": "^0.7.0",
@@ -56,7 +54,8 @@
     "shared-types": "*",
     "sharp": "^0.34.5",
     "socket.io": "^4.8.3",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^3.25.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

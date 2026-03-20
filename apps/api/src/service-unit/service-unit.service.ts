@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateServiceUnitInput, UpdateServiceUnitDto } from './dto/service-unit.dto';
-import { ServiceUnit } from '@prisma/client';
+import { ServiceUnit, Prisma } from '@prisma/client';
 
 @Injectable()
 export class ServiceUnitService {
@@ -22,8 +22,13 @@ export class ServiceUnitService {
       throw new ConflictException(`La abreviación ${createDto.abbreviation} ya existe`);
     }
 
+    const data: Prisma.ServiceUnitCreateInput = {
+      name: createDto.name,
+      abbreviation: createDto.abbreviation,
+    };
+
     return this.prisma.serviceUnit.create({
-      data: createDto,
+      data,
     });
   }
 
@@ -52,9 +57,14 @@ export class ServiceUnitService {
       throw new NotFoundException(`Unidad de servicio con ID ${id} no encontrada`);
     }
 
+    const data: Prisma.ServiceUnitUpdateInput = {
+      name: updateDto.name,
+      abbreviation: updateDto.abbreviation,
+    };
+
     return this.prisma.serviceUnit.update({
       where: { id },
-      data: updateDto as any,
+      data,
     });
   }
 

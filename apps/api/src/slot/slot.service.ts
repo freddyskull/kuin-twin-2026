@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateSlotInput, UpdateSlotDto } from './dto/slot.dto';
-import { ServiceSlot, SlotStatus } from '@prisma/client';
+import { ServiceSlot, SlotStatus, Prisma } from '@prisma/client';
 import { SocketGateway } from '../socket/socket.gateway';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class SlotService {
    * Crear un slot de tiempo para un servicio
    */
   async create(createDto: CreateSlotInput): Promise<ServiceSlot> {
-    const { serviceId, startTime, endTime } = createDto;
+    const { serviceId, startTime, endTime, ...rest } = createDto;
 
     // 1. Validar que el servicio existe
     const service = await this.prisma.service.findUnique({ where: { id: serviceId } });
@@ -43,12 +43,15 @@ export class SlotService {
       throw new ConflictException('El horario se solapa con un slot existente para este servicio');
     }
 
+    const data: Prisma.ServiceSlotCreateInput = {
+      ...rest,
+      startTime: new Date(startTime),
+      endTime: new Date(endTime),
+      service: { connect: { id: serviceId } },
+    };
+
     const slot = await this.prisma.serviceSlot.create({
-      data: {
-        ...createDto,
-        startTime: new Date(startTime),
-        endTime: new Date(endTime),
-      },
+      data,
     });
 
     // Notificar actualización de disponibilidad global
@@ -91,13 +94,16 @@ export class SlotService {
     const slot = await this.prisma.serviceSlot.findUnique({ where: { id } });
     if (!slot) throw new NotFoundException('Slot no encontrado');
 
+    const updateData: Prisma.ServiceSlotUpdateInput = {
+      status: updateDto.status as SlotStatus,
+      isRecurring: updateDto.isRecurring,
+      startTime: updateDto.startTime ? new Date(updateDto.startTime) : undefined,
+      endTime: updateDto.endTime ? new Date(updateDto.endTime) : undefined,
+    };
+
     return this.prisma.serviceSlot.update({
       where: { id },
-      data: {
-        ...updateDto,
-        startTime: updateDto.startTime ? new Date(updateDto.startTime) : undefined,
-        endTime: updateDto.endTime ? new Date(updateDto.endTime) : undefined,
-      } as any,
+      data: updateData,
     });
   }
 

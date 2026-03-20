@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreatePortfolioItemInput } from './dto';
-import { PortfolioItem } from '@prisma/client';
+import { PortfolioItem, Prisma } from '@prisma/client';
 
 @Injectable()
 export class PortfolioService {
@@ -19,14 +19,16 @@ export class PortfolioService {
       throw new NotFoundException(`El usuario con ID ${userId} no tiene un perfil creado aún.`);
     }
 
+    const data: Prisma.PortfolioItemCreateInput = {
+      imageUrl: itemDto.imageUrl,
+      description: itemDto.description,
+      imageGallery: itemDto.imageGallery ?? [],
+      dynamicAttributes: itemDto.dynamicAttributes as Prisma.InputJsonValue ?? Prisma.JsonNull,
+      profile: { connect: { id: profile.id } },
+    };
+
     return this.prisma.portfolioItem.create({
-      data: {
-        imageUrl: itemDto.imageUrl,
-        description: itemDto.description,
-        imageGallery: itemDto.imageGallery,
-        dynamicAttributes: itemDto.dynamicAttributes as any,
-        profileId: profile.id,
-      },
+      data,
     });
   }
 

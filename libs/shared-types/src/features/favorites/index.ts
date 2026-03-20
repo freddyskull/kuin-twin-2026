@@ -1,1 +1,1 @@
-export * from './favorite.schema';
+export * from "./favorite.schema";

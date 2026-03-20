@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { SocketGateway } from '../socket/socket.gateway';
 import { SendMessageInput } from './dto/chat.dto';
-import { Message } from '@prisma/client';
+import { Message, Prisma } from '@prisma/client';
 
 @Injectable()
 export class ChatService {
@@ -24,10 +24,10 @@ export class ChatService {
     // 2. Guardar en DB
     const message = await this.prisma.message.create({
       data: {
-        senderId,
-        receiverId,
         content,
-      },
+        sender: { connect: { id: senderId } },
+        receiver: { connect: { id: receiverId } },
+      } as Prisma.MessageCreateInput,
       include: {
         sender: {
           select: { id: true, email: true, profile: { select: { displayName: true, avatarUrl: true } } },
@@ -44,7 +44,7 @@ export class ChatService {
     // 4. Notificar a administradores (broadcast global para monitoreo)
     this.socketGateway.broadcast('admin_new_message', message);
 
-    return message;
+    return message as Message;
   }
 
   /**

@@ -1,7 +1,14 @@
 import axios from 'axios';
 
-// Default API URL that can be overridden by environment variables
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+// Detect if we are on the server to use the internal Docker network URL
+const isServer = typeof window === 'undefined';
+const DEFAULT_API_URL = isServer ? 'http://api:3001/api' : '/api';
+
+// On the server, we MUST use an absolute URL. 
+// If NEXT_PUBLIC_API_URL is relative (starts with /), we ignore it on the server.
+const API_URL = (isServer && process.env.NEXT_PUBLIC_API_URL?.startsWith('/')) 
+  ? DEFAULT_API_URL 
+  : (process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL);
 
 export const api = axios.create({
   baseURL: API_URL,

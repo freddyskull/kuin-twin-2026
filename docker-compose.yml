@@ -36,7 +36,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/kuin_twin?schema=public
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=super-secret-token-2026
-      - PORT=3000
+      - PORT=3001
     volumes:
       - uploads_data:/app/apps/api/uploads
     depends_on:
@@ -53,8 +53,6 @@ services:
         - NEXT_PUBLIC_API_URL=/api
     container_name: kuin-twin-web-store
     restart: always
-    environment:
-      - NEXT_PUBLIC_API_URL=/api
     depends_on:
       - api
 

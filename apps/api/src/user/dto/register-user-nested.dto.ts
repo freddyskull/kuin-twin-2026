@@ -1,16 +1,10 @@
-import { IsOptional, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
-import { CreateUserDto } from './create-user.dto';
-import { CreateProfileDto } from './create-profile.dto';
+import { createZodDto } from 'nestjs-zod';
+import { RegisterUserNestedSchema } from 'shared-types';
 
 /**
  * DTO para registro anidado (Usuario + Perfil)
+ * Ahora hereda directamente del esquema compartido para asegurar consistencia.
  */
-export class RegisterUserNestedDto extends CreateUserDto {
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => CreateProfileDto)
-  profile?: CreateProfileDto;
-}
+export class RegisterUserNestedDto extends createZodDto(RegisterUserNestedSchema) {}
 
 export type RegisterUserNestedInput = RegisterUserNestedDto;

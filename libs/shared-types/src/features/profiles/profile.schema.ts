@@ -5,26 +5,26 @@ import { DecimalSchema } from '../../common/decimal';
 export const ProfileSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid(),
-  displayName: z.string().min(1),
-  bio: z.string().nullable(),
-  avatarUrl: z.string().url().nullable(),
+  displayName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+  bio: z.string().max(1000, 'La biografía no puede exceder los 1000 caracteres').nullable(),
+  avatarUrl: z.string().url('URL de avatar inválida').nullable(),
   
   // Localización (Geometría PostGIS serializada)
   location: z.any().nullable(),
   
-  serviceRadiusKm: z.number().int().default(10),
+  serviceRadiusKm: z.number().int().min(1).max(500).default(10),
   starsRatio: z.number().int().default(0),
   
   // Redes y contacto
-  phone: z.string().nullable(),
-  whatsapp: z.string().nullable(),
-  facebook: z.string().nullable(),
-  instagram: z.string().nullable(),
-  tiktok: z.string().nullable(),
-  twitter: z.string().nullable(),
-  linkedin: z.string().nullable(),
-  youtube: z.string().nullable(),
-  website: z.string().nullable(),
+  phone: z.string().min(8, 'Teléfono inválido').nullable(),
+  whatsapp: z.string().min(8, 'WhatsApp inválido').nullable(),
+  facebook: z.string().url('URL de Facebook inválida').nullable(),
+  instagram: z.string().url('URL de Instagram inválida').nullable(),
+  tiktok: z.string().url('URL de TikTok inválida').nullable(),
+  twitter: z.string().url('URL de Twitter inválida').nullable(),
+  linkedin: z.string().url('URL de LinkedIn inválida').nullable(),
+  youtube: z.string().url('URL de YouTube inválida').nullable(),
+  website: z.string().url('URL de sitio web inválida').nullable(),
   
   ratingAvg: DecimalSchema,
   reviewsCount: z.number().int().default(0),

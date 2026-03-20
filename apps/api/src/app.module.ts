@@ -80,28 +80,13 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     ReviewModule,
     FavoriteModule,
 
-    // Servir archivos estáticos
+    // Servir archivos estáticos solo para uploads si es necesario
     ServeStaticModule.forRoot(
       {
         rootPath: join(process.cwd(), 'uploads'),
         serveRoot: '/uploads',
         serveStaticOptions: {
           index: false,
-        },
-      },
-      {
-        rootPath: join(process.cwd(), 'apps/admin-panel/dist'),
-        serveRoot: '/admin',
-        serveStaticOptions: {
-          index: ['index.html'],
-        },
-      },
-      {
-        rootPath: join(process.cwd(), 'apps/web-store/out'),
-        exclude: ['/api/*path', '/admin/*path', '/uploads/*path'],
-        serveStaticOptions: {
-          index: ['index.html'],
-          extensions: ['html'],
         },
       },
     ),

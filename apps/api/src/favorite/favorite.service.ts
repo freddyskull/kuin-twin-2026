@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class FavoriteService {
@@ -19,8 +20,13 @@ export class FavoriteService {
       return { isFavorite: false };
     }
 
+    const data: Prisma.FavoriteCreateInput = {
+      user: { connect: { id: userId } },
+      service: { connect: { id: serviceId } },
+    };
+
     await this.prisma.favorite.create({
-      data: { userId, serviceId },
+      data,
     });
     return { isFavorite: true };
   }

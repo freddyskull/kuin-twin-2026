@@ -35,6 +35,8 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
 
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
@@ -46,5 +48,5 @@ COPY --from=build /app/libs ./libs
 
 EXPOSE 3000
 
-# Arrancar Next.js usando el comando del workspace
-CMD ["npm", "start", "--workspace=web-store"]
+# Arrancar Next.js directamente desde el workspace especificando host y puerto
+CMD ["npx", "next", "start", "apps/web-store", "--port", "3000", "--hostname", "0.0.0.0"]

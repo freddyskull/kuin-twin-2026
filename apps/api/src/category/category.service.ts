@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
-import { Category } from '@prisma/client';
+import { Category, Prisma } from '@prisma/client';
 
 @Injectable()
 export class CategoryService {
@@ -25,10 +25,16 @@ export class CategoryService {
       throw new ConflictException(`Ya existe una categoría con el slug: ${createDto.slug}`);
     }
 
+    const { parentId, name, slug, ...rest } = createDto;
+    const data: Prisma.CategoryCreateInput = {
+      ...rest,
+      name,
+      slug,
+      parent: parentId ? { connect: { id: parentId } } : undefined,
+    };
+
     const category = await this.prisma.category.create({
-      data: {
-        ...createDto,
-      },
+      data,
     });
 
     // Invalidar cache de categorías
@@ -119,9 +125,15 @@ export class CategoryService {
       }
     }
 
+    const { parentId, ...rest } = updateDto;
+    const data: Prisma.CategoryUpdateInput = {
+      ...rest,
+      parent: parentId ? { connect: { id: parentId } } : (parentId === null ? { disconnect: true } : undefined),
+    };
+
     const updated = await this.prisma.category.update({
       where: { id },
-      data: updateDto as any,
+      data,
     });
 
     // Invalidar caches

@@ -57,7 +57,7 @@ export default async function ServicePage({ params }: PageProps) {
     if (!service.isActive) {
       notFound();
     }
-  } catch (error) {
+  } catch (error: any) {
     notFound();
   }
 

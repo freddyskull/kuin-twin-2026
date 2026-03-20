@@ -1,30 +1,15 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString, IsUrl, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class CreateMediaDto {
-  @IsUrl({}, { message: 'URL de medio inválida' })
-  url: string;
+export const CreateMediaSchema = z.object({
+  url: z.string().url({ message: 'URL de medio inválida' }),
+  key: z.string().optional(),
+  fileName: z.string().min(1, { message: 'El nombre de archivo es requerido' }),
+  mimeType: z.string().min(1, { message: 'El tipo MIME es requerido' }),
+  size: z.coerce.number().int().min(0),
+  alt: z.string().optional(),
+});
 
-  @IsString()
-  @IsOptional()
-  key?: string;
-
-  @IsString()
-  @IsNotEmpty({ message: 'El nombre de archivo es requerido' })
-  fileName: string;
-
-  @IsString()
-  @IsNotEmpty({ message: 'El tipo MIME es requerido' })
-  mimeType: string;
-
-  @IsInt()
-  @Min(0)
-  @Type(() => Number)
-  size: number;
-
-  @IsString()
-  @IsOptional()
-  alt?: string;
-}
+export class CreateMediaDto extends createZodDto(CreateMediaSchema) {}
 
 export type CreateMediaInput = CreateMediaDto;

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateBookingInput, UpdateBookingInput } from 'shared-types';
-import { Booking, BookingStatus, SlotStatus } from '@prisma/client';
+import { Booking, BookingStatus, SlotStatus, Prisma } from '@prisma/client';
 import { SocketGateway } from '../socket/socket.gateway';
 
 @Injectable()
@@ -67,19 +67,21 @@ export class BookingService {
     }
 
     // 3. Iniciar Transacción
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       // 3.1 Crear la Reserva
+      const bookingData: Prisma.BookingCreateInput = {
+        customer: { connect: { id: customerId } },
+        service: { connect: { id: serviceId } },
+        scheduledDate: new Date(scheduledDate),
+        status: BookingStatus.PENDING,
+        notes: createDto.notes,
+        slots: slotIds ? {
+          connect: slotIds.map(id => ({ id })),
+        } : undefined,
+      };
+
       const booking = await tx.booking.create({
-        data: {
-          customerId,
-          serviceId,
-          scheduledDate: new Date(scheduledDate),
-          status: BookingStatus.PENDING,
-          notes: createDto.notes,
-          slots: slotIds ? {
-            connect: slotIds.map(id => ({ id })),
-          } : undefined,
-        },
+        data: bookingData,
       });
 
       // 3.2 Crear los Detalles (Snapshot)
@@ -89,11 +91,11 @@ export class BookingService {
 
       await tx.bookingDetails.create({
         data: {
-          bookingId: booking.id,
-          serviceSnapshot: service as any,
+          booking: { connect: { id: booking.id } },
+          serviceSnapshot: service as unknown as Prisma.InputJsonValue,
           unitPrice,
           quantity: quantityVal,
-          taxTotal: 0, // Por ahora sin impuestos complejos
+          taxTotal: 0, 
           grandTotal,
         },
       });
@@ -111,39 +113,41 @@ export class BookingService {
         include: { details: true, slots: true, service: true },
       });
 
-      // --- NOTIFICACIONES REAL-TIME ---
-      // 1. Notificar al Vendedor
-      if (bookingWithData) {
-        this.socketGateway.sendToUser(
-          bookingWithData.service.vendorId,
-          'new_booking',
-          bookingWithData,
-        );
-      }
-
-      // 2. Notificar actualización de disponibilidad local/global
-      if (slotIds && slotIds.length > 0) {
-        this.socketGateway.broadcast('slots_updated', {
-          serviceId,
-          slotIds,
-          status: SlotStatus.BOOKED,
-        });
-      }
-
-      return bookingWithData as unknown as Booking;
+      return bookingWithData;
     });
+
+    if (!result) throw new BadRequestException('Error al crear la reserva');
+
+    // --- NOTIFICACIONES REAL-TIME ---
+    this.socketGateway.sendToUser(
+      result.service.vendorId,
+      'new_booking',
+      result,
+    );
+
+    if (slotIds && slotIds.length > 0) {
+      this.socketGateway.broadcast('slots_updated', {
+        serviceId,
+        slotIds,
+        status: SlotStatus.BOOKED,
+      });
+    }
+
+    return result as Booking;
   }
 
   /**
    * Obtener todas las reservas (con filtros)
    */
   async findAll(filters: { customerId?: string; vendorId?: string; status?: BookingStatus }): Promise<Booking[]> {
+    const where: Prisma.BookingWhereInput = {
+      customerId: filters.customerId,
+      service: filters.vendorId ? { vendorId: filters.vendorId } : undefined,
+      status: filters.status,
+    };
+
     return this.prisma.booking.findMany({
-      where: {
-        customerId: filters.customerId,
-        service: filters.vendorId ? { vendorId: filters.vendorId } : undefined,
-        status: filters.status,
-      },
+      where,
       include: {
         customer: { select: { email: true, profile: true } },
         service: true,
@@ -173,7 +177,7 @@ export class BookingService {
     });
 
     if (!booking) throw new NotFoundException('Reserva no encontrada');
-    return booking;
+    return booking as Booking;
   }
 
   /**
@@ -197,7 +201,7 @@ export class BookingService {
 
     const updatedBooking = await this.prisma.booking.update({
       where: { id },
-      data: { status: updateDto.status },
+      data: { status: updateDto.status as BookingStatus },
       include: { 
         details: true, 
         service: true,
@@ -209,6 +213,6 @@ export class BookingService {
     this.socketGateway.sendToUser(updatedBooking.customerId, 'booking_status_changed', updatedBooking);
     this.socketGateway.sendToUser(updatedBooking.service.vendorId, 'booking_status_changed', updatedBooking);
 
-    return updatedBooking;
+    return updatedBooking as Booking;
   }
 }

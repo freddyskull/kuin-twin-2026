@@ -1,26 +1,19 @@
-import { IsBoolean, IsDateString, IsEnum, IsOptional, IsUUID } from 'class-validator';
-import { PartialType } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 import { SlotStatus } from '@prisma/client';
 
-export class CreateSlotDto {
-  @IsUUID('4', { message: 'ID de servicio inválido' })
-  serviceId: string;
+export const CreateSlotSchema = z.object({
+  serviceId: z.string().uuid({ message: 'ID de servicio inválido' }),
+  startTime: z.coerce.date({ message: 'Formato de fecha de inicio inválido' }),
+  endTime: z.coerce.date({ message: 'Formato de fecha de fin inválido' }),
+  status: z.nativeEnum(SlotStatus).optional().default(SlotStatus.AVAILABLE),
+  isRecurring: z.boolean().optional().default(false),
+});
 
-  @IsDateString({}, { message: 'Formato de fecha de inicio inválido' })
-  startTime: string;
-
-  @IsDateString({}, { message: 'Formato de fecha de fin inválido' })
-  endTime: string;
-
-  @IsEnum(SlotStatus)
-  @IsOptional()
-  status?: SlotStatus = SlotStatus.AVAILABLE;
-
-  @IsBoolean()
-  @IsOptional()
-  isRecurring?: boolean = false;
-}
+export class CreateSlotDto extends createZodDto(CreateSlotSchema) {}
 
 export type CreateSlotInput = CreateSlotDto;
 
-export class UpdateSlotDto extends PartialType(CreateSlotDto) {}
+export const UpdateSlotSchema = CreateSlotSchema.partial();
+
+export class UpdateSlotDto extends createZodDto(UpdateSlotSchema) {}

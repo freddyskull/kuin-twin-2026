@@ -1,6 +1,7 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ReviewService {
@@ -36,11 +37,11 @@ export class ReviewService {
     return await this.prisma.$transaction(async (tx) => {
       const review = await tx.review.create({
         data: {
-          userId,
-          serviceId,
           rating,
           content,
-        },
+          user: { connect: { id: userId } },
+          service: { connect: { id: serviceId } },
+        } as Prisma.ReviewCreateInput,
         include: {
           user: {
             select: {

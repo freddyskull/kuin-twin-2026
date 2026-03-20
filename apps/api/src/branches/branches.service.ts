@@ -2,14 +2,20 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class BranchesService {
   constructor(private prisma: PrismaService) {}
 
   async create(createBranchDto: CreateBranchDto) {
+    const { companyId, ...data } = createBranchDto;
     return this.prisma.branch.create({
-      data: createBranchDto,
+      data: {
+        ...data,
+        company: { connect: { id: companyId } },
+        businessHours: createBranchDto.businessHours as Prisma.InputJsonValue ?? Prisma.JsonNull,
+      } as Prisma.BranchCreateInput,
     });
   }
 
@@ -43,9 +49,18 @@ export class BranchesService {
 
   async update(id: string, updateBranchDto: UpdateBranchDto) {
     try {
+      const { businessHours, ...data } = updateBranchDto;
+      const updateData: Prisma.BranchUpdateInput = {
+        ...data,
+      };
+      
+      if (businessHours !== undefined) {
+        updateData.businessHours = businessHours as Prisma.InputJsonValue ?? Prisma.JsonNull;
+      }
+
       return await this.prisma.branch.update({
         where: { id },
-        data: updateBranchDto,
+        data: updateData,
       });
     } catch (error) {
       throw new NotFoundException(`Sucursal con ID ${id} no encontrada`);

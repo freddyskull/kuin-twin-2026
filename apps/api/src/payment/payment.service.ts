@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreatePaymentInput } from './dto/payment.dto';
-import { Payment, BookingStatus } from '@prisma/client';
+import { Payment, BookingStatus, Prisma } from '@prisma/client';
 import { SocketGateway } from '../socket/socket.gateway';
 
 @Injectable()
@@ -21,11 +21,15 @@ export class PaymentService {
     if (!booking) throw new NotFoundException('Reserva no encontrada');
 
     const result = await this.prisma.$transaction(async (tx) => {
+      const paymentData: Prisma.PaymentCreateInput = {
+        amount: rest.amount,
+        processorId: rest.processorId,
+        status: rest.status,
+        booking: { connect: { id: bookingId } },
+      };
+
       const payment = await tx.payment.create({
-        data: {
-          ...rest,
-          bookingId,
-        },
+        data: paymentData,
       });
 
       // Si el pago es exitoso, actualizar la reserva a ACTIVE
@@ -53,12 +57,12 @@ export class PaymentService {
       return payment;
     });
 
-    return result;
+    return result as Payment;
   }
 
   async findOne(id: string): Promise<Payment> {
     const payment = await this.prisma.payment.findUnique({ where: { id } });
     if (!payment) throw new NotFoundException('Pago no encontrado');
-    return payment;
+    return payment as Payment;
   }
 }

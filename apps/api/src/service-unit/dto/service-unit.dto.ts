@@ -1,16 +1,15 @@
-import { IsString, MinLength } from 'class-validator';
-import { PartialType } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class CreateServiceUnitDto {
-  @IsString()
-  @MinLength(1, { message: 'el nombre es requerido' })
-  name: string;
+export const CreateServiceUnitSchema = z.object({
+  name: z.string().min(1, { message: 'el nombre es requerido' }),
+  abbreviation: z.string().min(1, { message: 'la abreviación es requerida' }),
+});
 
-  @IsString()
-  @MinLength(1, { message: 'la abreviación es requerida' })
-  abbreviation: string;
-}
+export class CreateServiceUnitDto extends createZodDto(CreateServiceUnitSchema) {}
 
 export type CreateServiceUnitInput = CreateServiceUnitDto;
 
-export class UpdateServiceUnitDto extends PartialType(CreateServiceUnitDto) {}
+export const UpdateServiceUnitSchema = CreateServiceUnitSchema.partial();
+
+export class UpdateServiceUnitDto extends createZodDto(UpdateServiceUnitSchema) {}

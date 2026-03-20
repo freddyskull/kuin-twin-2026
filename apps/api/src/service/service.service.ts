@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma.service';
 import { CreateServiceDto, UpdateServiceDto } from './dto';
-import { Service, Role } from '@prisma/client';
+import { Service, Role, Prisma } from '@prisma/client';
 import { slugify, transformSlots } from './service-mapper.utils';
 import { mapCreateServiceData, mapUpdateServiceData } from './service.mapper';
 
@@ -27,14 +27,31 @@ export class ServiceService {
     });
     if (existing) throw new ForbiddenException(`Ya tienes un servicio registrado con el título "${createDto.title}"`);
 
-    const data = mapCreateServiceData(createDto, slug);
-    const service = await this.prisma.service.create({
-      data: {
-        ...data,
-        metadata: { create: createDto.metadata || [] },
-        faqs: { create: createDto.faqs || [] },
-        slots: { create: transformSlots(createDto.slots || []) }
+    const mappedData = mapCreateServiceData(createDto, slug);
+    
+    // Extender mappedData con relaciones anidadas manteniendo el tipado
+    const data: Prisma.ServiceCreateInput = {
+      ...mappedData,
+      metadata: { 
+        create: (createDto.metadata || []).map(m => ({
+          key: m.key,
+          value: m.value
+        }))
       },
+      faqs: { 
+        create: (createDto.faqs || []).map(f => ({
+          question: f.question,
+          answer: f.answer,
+          order: f.order
+        }))
+      },
+      slots: { 
+        create: transformSlots(createDto.slots || [])
+      }
+    };
+
+    const service = await this.prisma.service.create({
+      data,
       include: { metadata: true, faqs: true, slots: true, branches: true, unit: true }
     });
 
@@ -49,7 +66,7 @@ export class ServiceService {
     const limit = filters?.limit || 10;
     const skip = (page - 1) * limit;
 
-    const where = { 
+    const where: Prisma.ServiceWhereInput = { 
       vendorId: filters?.vendorId, 
       categoryId: filters?.categoryId, 
       isActive: filters?.isActive 
@@ -74,7 +91,7 @@ export class ServiceService {
       this.prisma.service.count({ where }),
     ]);
 
-    return { items, total };
+    return { items: items as Service[], total };
   }
 
   async findOne(term: string): Promise<Service> {
@@ -101,7 +118,7 @@ export class ServiceService {
 
     if (!service) throw new NotFoundException(`Servicio no encontrado: ${term}`);
     await this.cacheManager.set(`service:${term}`, service, 600000);
-    return service;
+    return service as Service;
   }
 
   async update(id: string, updateDto: UpdateServiceDto): Promise<Service> {
@@ -116,9 +133,27 @@ export class ServiceService {
     }
 
     const updateData = mapUpdateServiceData(updateDto);
-    if (updateDto.metadata) updateData.metadata = { deleteMany: {}, create: updateDto.metadata };
-    if (updateDto.faqs) updateData.faqs = { deleteMany: {}, create: updateDto.faqs };
-    if (updateDto.slots) updateData.slots = { deleteMany: {}, create: transformSlots(updateDto.slots) };
+    
+    if (updateDto.metadata) {
+      updateData.metadata = { 
+        deleteMany: {}, 
+        create: updateDto.metadata.map(m => ({ key: m.key, value: m.value })) 
+      };
+    }
+    
+    if (updateDto.faqs) {
+      updateData.faqs = { 
+        deleteMany: {}, 
+        create: updateDto.faqs.map(f => ({ question: f.question, answer: f.answer, order: f.order })) 
+      };
+    }
+    
+    if (updateDto.slots) {
+      updateData.slots = { 
+        deleteMany: {}, 
+        create: transformSlots(updateDto.slots) 
+      };
+    }
 
     const updated = await this.prisma.service.update({
       where: { id },
@@ -129,7 +164,7 @@ export class ServiceService {
     await this.updateGisLocation(id, updateDto.latitude, updateDto.longitude);
     
     await this.clearServiceCache(service.vendorId, service.categoryId, id);
-    return updated;
+    return updated as Service;
   }
 
   async updateGisLocation(id: string, lat?: number, lng?: number) {
@@ -201,7 +236,7 @@ export class ServiceService {
       orderBy: { starsRate: 'desc' }
     });
 
-    return related;
+    return related as Service[];
   }
 
   private async clearServiceCache(vId: string, cId: string, sId?: string) {
@@ -232,5 +267,3 @@ export class ServiceService {
     }
   }
 }
-
-

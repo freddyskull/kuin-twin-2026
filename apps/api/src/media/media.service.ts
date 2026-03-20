@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateMediaInput } from './dto/create-media.dto';
-import { Media, Role } from '@prisma/client';
+import { Media, Role, Prisma } from '@prisma/client';
 import { join } from 'path';
 import { promises as fs } from 'fs';
 
@@ -27,11 +27,18 @@ export class MediaService {
       throw new ForbiddenException('Solo los usuarios tipo VENDOR pueden gestionar una galería de medios');
     }
 
+    const data: Prisma.MediaCreateInput = {
+      url: createMediaDto.url,
+      key: createMediaDto.key,
+      fileName: createMediaDto.fileName,
+      mimeType: createMediaDto.mimeType,
+      size: createMediaDto.size,
+      alt: createMediaDto.alt,
+      user: { connect: { id: userId } },
+    };
+
     return this.prisma.media.create({
-      data: {
-        ...createMediaDto,
-        userId,
-      },
+      data,
     });
   }
 

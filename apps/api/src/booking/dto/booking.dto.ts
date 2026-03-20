@@ -1,32 +1,21 @@
-import { IsArray, IsDateString, IsEnum, IsInt, IsOptional, IsUUID, Min } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 import { BookingStatus } from '@prisma/client';
-import { Type } from 'class-transformer';
 
-export class CreateBookingDto {
-  @IsUUID('4', { message: 'ID de cliente inválido' })
-  customerId: string;
+export const CreateBookingSchema = z.object({
+  customerId: z.string().uuid({ message: 'ID de cliente inválido' }),
+  serviceId: z.string().uuid({ message: 'ID de servicio inválido' }),
+  scheduledDate: z.coerce.date({ message: 'Fecha programada inválida' }),
+  slotIds: z.array(z.string().uuid()).optional(),
+  quantity: z.coerce.number().int().min(1).optional().default(1),
+});
 
-  @IsUUID('4', { message: 'ID de servicio inválido' })
-  serviceId: string;
-
-  @IsDateString({}, { message: 'Fecha programada inválida' })
-  scheduledDate: string;
-
-  @IsArray()
-  @IsUUID('4', { each: true })
-  @IsOptional()
-  slotIds?: string[];
-
-  @IsInt()
-  @Min(1)
-  @IsOptional()
-  @Type(() => Number)
-  quantity?: number = 1;
-}
+export class CreateBookingDto extends createZodDto(CreateBookingSchema) {}
 
 export type CreateBookingInput = CreateBookingDto;
 
-export class UpdateBookingDto {
-  @IsEnum(BookingStatus)
-  status: BookingStatus;
-}
+export const UpdateBookingSchema = z.object({
+  status: z.nativeEnum(BookingStatus),
+});
+
+export class UpdateBookingDto extends createZodDto(UpdateBookingSchema) {}

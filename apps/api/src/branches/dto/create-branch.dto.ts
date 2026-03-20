@@ -1,67 +1,23 @@
-import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class CreateBranchDto {
-  @IsString()
-  @IsNotEmpty()
-  companyId: string;
+export const CreateBranchSchema = z.object({
+  companyId: z.string().uuid(),
+  name: z.string().min(1),
+  isMain: z.boolean().optional(),
+  description: z.string().optional(),
+  phone: z.string().optional(),
+  whatsapp: z.string().optional(),
+  email: z.string().email().optional(),
+  address: z.string().min(1),
+  addressLine2: z.string().optional(),
+  city: z.string().min(1),
+  state: z.string().min(1),
+  county: z.string().optional(),
+  zipCode: z.string().max(5).min(1),
+  country: z.string().optional(),
+  addressNotes: z.string().optional(),
+  businessHours: z.any().optional(),
+});
 
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @IsBoolean()
-  @IsOptional()
-  isMain?: boolean;
-
-  @IsString()
-  @IsOptional()
-  description?: string;
-
-  @IsString()
-  @IsOptional()
-  phone?: string;
-
-  @IsString()
-  @IsOptional()
-  whatsapp?: string;
-
-  @IsEmail()
-  @IsOptional()
-  email?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  address: string;
-
-  @IsString()
-  @IsOptional()
-  addressLine2?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  city: string;
-
-  @IsString()
-  @IsNotEmpty()
-  state: string;
-
-  @IsString()
-  @IsOptional()
-  county?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(5)
-  zipCode: string;
-
-  @IsString()
-  @IsOptional()
-  country?: string;
-
-  @IsString()
-  @IsOptional()
-  addressNotes?: string;
-
-  @IsOptional()
-  businessHours?: any;
-}
+export class CreateBranchDto extends createZodDto(CreateBranchSchema) {}

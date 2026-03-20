@@ -1,6 +1,7 @@
+import { Prisma } from '@prisma/client';
 import { CreateServiceDto, UpdateServiceDto } from './dto';
 
-export function mapCreateServiceData(createDto: CreateServiceDto, slug: string) {
+export function mapCreateServiceData(createDto: CreateServiceDto, slug: string): Prisma.ServiceCreateInput {
   const { 
     vendorId, categoryId, unitId, companyId, 
     metadata, faqs, slots, workSchedule, tags, 
@@ -9,17 +10,18 @@ export function mapCreateServiceData(createDto: CreateServiceDto, slug: string) 
     ...rest 
   } = createDto;
 
-  const data: any = {
+  const data: Prisma.ServiceCreateInput = {
     ...rest,
     slug,
-    vendorId,
-    categoryId,
-    unitId: unitId || null,
-    companyId: companyId || null,
+    title: createDto.title,
+    vendor: { connect: { id: vendorId } },
+    category: { connect: { id: categoryId } },
+    unit: unitId ? { connect: { id: unitId } } : undefined,
+    company: companyId ? { connect: { id: companyId } } : undefined,
     tags: tags || [],
-    dynamicAttributes: dynamicAttributes ?? undefined,
-    workSchedule: workSchedule ?? undefined,
-    commentsBox: commentsBox ?? undefined,
+    dynamicAttributes: dynamicAttributes as Prisma.InputJsonValue ?? Prisma.JsonNull,
+    workSchedule: workSchedule as Prisma.InputJsonValue ?? Prisma.JsonNull,
+    commentsBox: commentsBox as Prisma.InputJsonValue ?? Prisma.JsonNull,
     latitude,
     longitude,
     address,
@@ -34,7 +36,7 @@ export function mapCreateServiceData(createDto: CreateServiceDto, slug: string) 
   return data;
 }
 
-export function mapUpdateServiceData(updateDto: UpdateServiceDto) {
+export function mapUpdateServiceData(updateDto: UpdateServiceDto): Prisma.ServiceUpdateInput {
   const { 
     metadata, faqs, slots, workSchedule, companyId, 
     tags, dynamicAttributes, commentsBox,
@@ -42,13 +44,24 @@ export function mapUpdateServiceData(updateDto: UpdateServiceDto) {
     ...rest 
   } = updateDto;
 
-  const data: any = { ...rest };
+  const data: Prisma.ServiceUpdateInput = { 
+    ...rest,
+    title: updateDto.title ?? undefined,
+  };
   
   if (tags !== undefined) data.tags = tags;
-  if (companyId !== undefined) data.companyId = companyId;
-  if (workSchedule !== undefined) data.workSchedule = workSchedule ?? undefined;
-  if (dynamicAttributes !== undefined) data.dynamicAttributes = dynamicAttributes ?? undefined;
-  if (commentsBox !== undefined) data.commentsBox = commentsBox ?? undefined;
+  if (companyId !== undefined) {
+    data.company = companyId ? { connect: { id: companyId } } : { disconnect: true };
+  }
+  if (workSchedule !== undefined) {
+    data.workSchedule = workSchedule as Prisma.InputJsonValue ?? Prisma.JsonNull;
+  }
+  if (dynamicAttributes !== undefined) {
+    data.dynamicAttributes = dynamicAttributes as Prisma.InputJsonValue ?? Prisma.JsonNull;
+  }
+  if (commentsBox !== undefined) {
+    data.commentsBox = commentsBox as Prisma.InputJsonValue ?? Prisma.JsonNull;
+  }
   if (latitude !== undefined) data.latitude = latitude;
   if (longitude !== undefined) data.longitude = longitude;
   if (address !== undefined) data.address = address;

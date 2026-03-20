@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma.service';
 import { CreateUserDto, CreateUserInput, CreateProfileInput, RegisterUserNestedInput, UpdateUserInput } from './dto';
-import { User, Profile } from '@prisma/client';
+import { User, Profile, Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { updateProfileLocation } from './user-geo.utils';
 
@@ -19,7 +19,14 @@ export class UserService {
     if (existing) throw new ConflictException('El email ya está registrado');
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const user = await this.prisma.user.create({ data: { ...createUserDto, password: hashedPassword } });
+    
+    const user = await this.prisma.user.create({
+      data: {
+        email: createUserDto.email,
+        password: hashedPassword,
+        role: createUserDto.role,
+      } as Prisma.UserCreateInput,
+    });
 
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
@@ -31,8 +38,25 @@ export class UserService {
     if (existing) throw new ConflictException('El email ya está registrado');
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    
+    const data: Prisma.UserCreateInput = {
+      email,
+      password: hashedPassword,
+      role,
+      profile: profile ? {
+        create: {
+          displayName: profile.displayName,
+          bio: profile.bio,
+          avatarUrl: profile.avatarUrl,
+          phone: profile.phone,
+          whatsapp: profile.whatsapp,
+          businessHours: profile.businessHours as Prisma.InputJsonValue,
+        }
+      } : undefined
+    };
+
     const user = await this.prisma.user.create({
-      data: { email, password: hashedPassword, role, profile: profile ? { create: profile } : undefined },
+      data,
       include: { profile: { include: { portfolio: true } } }
     });
 
@@ -41,21 +65,47 @@ export class UserService {
   }
 
   async createProfile(userId: string, profileDto: CreateProfileInput): Promise<Profile> {
-    const { latitude, longitude, ...data } = profileDto;
+    const { latitude, longitude, displayName, bio, avatarUrl, phone, whatsapp, businessHours, companyId, ...rest } = profileDto;
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException(`Usuario con ID ${userId} no encontrado`);
 
+    const updateData: Prisma.ProfileUpdateInput = {
+      displayName,
+      bio,
+      avatarUrl,
+      phone,
+      whatsapp,
+      company: companyId ? { connect: { id: companyId } } : undefined,
+      businessHours: businessHours as Prisma.InputJsonValue ?? Prisma.JsonNull,
+      ...rest,
+    };
+
+    const createData: Prisma.ProfileCreateInput = {
+      displayName,
+      bio,
+      avatarUrl,
+      phone,
+      whatsapp,
+      company: companyId ? { connect: { id: companyId } } : undefined,
+      user: { connect: { id: userId } },
+      businessHours: businessHours as Prisma.InputJsonValue ?? Prisma.JsonNull,
+      ...rest,
+    };
+
     const profile = await this.prisma.profile.upsert({
       where: { userId },
-      update: { ...data, businessHours: data.businessHours ?? undefined },
-      create: { ...data, userId, businessHours: data.businessHours ?? undefined },
+      update: updateData,
+      create: createData,
     });
 
     if (latitude !== undefined && longitude !== undefined) {
       await updateProfileLocation(this.prisma, profile.id, latitude, longitude);
     }
 
-    return this.prisma.profile.findUnique({ where: { id: profile.id } }) as Promise<Profile>;
+    const result = await this.prisma.profile.findUnique({ where: { id: profile.id } });
+    if (!result) throw new NotFoundException('Error al recuperar el perfil creado');
+    
+    return result;
   }
 
   async findAll(): Promise<Omit<User, 'password'>[]> {
@@ -99,10 +149,18 @@ export class UserService {
       if (emailExists) throw new ConflictException('El email ya está registrado');
     }
 
-    const updateData: any = { ...updateUserDto };
-    if (updateUserDto.password) updateData.password = await bcrypt.hash(updateUserDto.password, 10);
+    const updateData: Prisma.UserUpdateInput = {};
+    if (updateUserDto.email) updateData.email = updateUserDto.email;
+    if (updateUserDto.role) updateData.role = updateUserDto.role;
+    if (updateUserDto.password) {
+      updateData.password = await bcrypt.hash(updateUserDto.password, 10);
+    }
 
-    const user = await this.prisma.user.update({ where: { id }, data: updateData });
+    const user = await this.prisma.user.update({ 
+      where: { id }, 
+      data: updateData 
+    });
+    
     await this.cacheManager.del(`user:${id}`);
     await this.cacheManager.del('users:all');
 
@@ -119,4 +177,3 @@ export class UserService {
     await this.prisma.user.delete({ where: { id } });
   }
 }
-
