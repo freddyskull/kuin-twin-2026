@@ -117,7 +117,7 @@ export const CreateCompanyPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-700 pb-20">
+    <div className="mx-auto space-y-8 animate-in fade-in duration-700 pb-20">
       <div className="mb-12">
         <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Registrar Nueva Empresa</h1>
         <p className="text-slate-400 font-medium">Completa la información fiscal y comercial de la empresa.</p>
@@ -135,96 +135,98 @@ export const CreateCompanyPage: React.FC = () => {
 
           return (
             <>
-              {/* Información Comercial */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
-              >
-                <div className="flex items-center gap-3 mb-6">
-                  <Building2 className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold text-white">Información Comercial</h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="col-span-1 md:col-span-2">
-                    <FormInput name="businessName" label="Nombre Comercial" required placeholder="Ej: Servicios Profesionales SA" />
+              <div className="grid grid-cols-2 gap-12">
+                {/* Información Comercial */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-card/40 backdrop-blur-2xl border border-border rounded-[2rem] p-8 space-y-6"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <Building2 className="h-6 w-6 text-primary" />
+                    <h2 className="text-2xl font-bold text-white">Información Comercial</h2>
                   </div>
 
-                  <div className="col-span-1 md:col-span-2">
-                    <FormInput name="logoUrl" label="URL del Logo" type="url" placeholder="https://ejemplo.com/logo.png" />
-                  </div>
-
-                  <div className="col-span-1 md:col-span-2">
-                    <FormTextarea name="description" label="Descripción" rows={3} placeholder="Breve descripción de la empresa..." />
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Información Fiscal */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-6 w-6 text-primary" />
-                    <h2 className="text-2xl font-bold text-white">Datos Fiscales (SAT)</h2>
-                  </div>
-                  {isVerified && (
-                    <div className="flex items-center gap-2 bg-green-500/10 text-green-500 px-4 py-1.5 rounded-full text-xs font-bold border border-green-500/20">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Verificado por SAT
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="col-span-1 md:col-span-2">
+                      <FormInput name="businessName" label="Nombre Comercial" required placeholder="Ej: Servicios Profesionales SA" />
                     </div>
-                  )}
-                </div>
 
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="relative group">
-                    <FormInput
-                      name="rfc"
-                      label="RFC"
-                      required
-                      placeholder="ABC123456XYZ"
-                      className="uppercase"
-                      disabled={isVerified}
-                    />
-                    {!isVerified && (
-                      <button
-                        type="button"
-                        onClick={() => handleVerifySat(currentRfc, setValue)}
-                        disabled={verifySatMutation.isPending}
-                        className="absolute right-2 bottom-1.5 p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary transition-all active:scale-95 disabled:opacity-50"
-                        title="Verificar ante el SAT"
-                      >
-                        {verifySatMutation.isPending ? (
-                          <Search className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Search className="h-4 w-4" />
-                        )}
-                      </button>
+                    <div className="col-span-1 md:col-span-2">
+                      <FormInput name="logoUrl" label="URL del Logo" type="url" placeholder="https://ejemplo.com/logo.png" />
+                    </div>
+
+                    <div className="col-span-1 md:col-span-2">
+                      <FormTextarea name="description" label="Descripción" rows={3} placeholder="Breve descripción de la empresa..." />
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Información Fiscal */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-card/40 backdrop-blur-2xl border border-border rounded-[2rem] p-8 space-y-6"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-6 w-6 text-primary" />
+                      <h2 className="text-2xl font-bold text-white">Datos Fiscales (SAT)</h2>
+                    </div>
+                    {isVerified && (
+                      <div className="flex items-center gap-2 bg-green-500/10 text-green-500 px-4 py-1.5 rounded-full text-xs font-bold border border-green-500/20">
+                        <CheckCircle2 className="h-3.5 w-3.5" /> Verificado por SAT
+                      </div>
                     )}
                   </div>
 
-                  <FormSelect name="fiscalRegime" label="Régimen Fiscal" required options={fiscalRegimeOptions} />
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="relative group">
+                      <FormInput
+                        name="rfc"
+                        label="RFC"
+                        required
+                        placeholder="ABC123456XYZ"
+                        className="uppercase"
+                        disabled={isVerified}
+                      />
+                      {!isVerified && (
+                        <button
+                          type="button"
+                          onClick={() => handleVerifySat(currentRfc, setValue)}
+                          disabled={verifySatMutation.isPending}
+                          className="absolute right-2 bottom-1.5 p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary transition-all active:scale-95 disabled:opacity-50"
+                          title="Verificar ante el SAT"
+                        >
+                          {verifySatMutation.isPending ? (
+                            <Search className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Search className="h-4 w-4" />
+                          )}
+                        </button>
+                      )}
+                    </div>
 
-                  <div className="col-span-2">
-                    <FormInput name="legalName" label="Razón Social" required placeholder="Nombre legal completo de la empresa" />
-                  </div>
+                    <FormSelect name="fiscalRegime" label="Régimen Fiscal" required options={fiscalRegimeOptions} />
 
-                  <div className="col-span-2">
-                    <FormCheckbox name="isSatVerified" label="Confirmar Verificación SAT" />
+                    <div className="col-span-2">
+                      <FormInput name="legalName" label="Razón Social" required placeholder="Nombre legal completo de la empresa" />
+                    </div>
+
+                    <div className="col-span-2">
+                      <FormCheckbox name="isSatVerified" label="Confirmar Verificación SAT" />
+                    </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              </div>
 
               {/* Domicilio Fiscal */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-[#1a1c3d]/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-8 space-y-6"
+                className="bg-card/40 backdrop-blur-2xl border border-border rounded-[2rem] p-8 space-y-6"
               >
                 <div className="flex items-center gap-3 mb-6">
                   <MapPin className="h-6 w-6 text-primary" />

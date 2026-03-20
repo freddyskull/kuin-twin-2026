@@ -19,9 +19,9 @@ export const MainLayout: React.FC = () => {
 
       {/* Sidebar - Ahora flotante y cristalino */}
       <div className="relative z-50">
-        <Sidebar 
-          isOpen={isSidebarOpen} 
-          onClose={() => setIsSidebarOpen(false)} 
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
         />
       </div>
 
@@ -31,20 +31,20 @@ export const MainLayout: React.FC = () => {
         !isMobile ? "ml-72" : "ml-0"
       )}>
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
-        
-        <main className="container-app py-10 md:py-16 flex-1 w-full animate-in fade-in slide-in-from-bottom-4 duration-1000">
+
+        <main className="w-[96%] mx-auto py-10 md:py-16 flex-1 animate-in fade-in slide-in-from-bottom-4 duration-1000 px-6 md:px-10">
           <Outlet />
         </main>
 
         <footer className="py-10 text-center opacity-20 pointer-events-none">
-          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-foreground">KuinTwin Admin Experience — 2026</p>
+          {/* <p className="text-[10px] font-black uppercase tracking-[0.5em] text-foreground">KuinTwin Admin Experience — 2026</p> */}
         </footer>
       </div>
 
 
       {/* Mobile Overlay */}
       {isMobile && isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 animate-in fade-in"
           onClick={() => setIsSidebarOpen(false)}
         />

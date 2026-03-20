@@ -15,17 +15,22 @@ export class ServiceService {
   ) {}
 
   async create(createDto: CreateServiceDto): Promise<Service> {
-    const slug = createDto.slug || slugify(createDto.title);
+    const cleanTitle = createDto.title.trim();
+    const slug = createDto.slug || slugify(cleanTitle);
+    
     const vendor = await this.prisma.user.findUnique({ where: { id: createDto.vendorId } });
     
     if (!vendor || (vendor.role !== Role.VENDOR && vendor.role !== Role.ADMIN)) {
       throw new ForbiddenException('Solo los usuarios con rol VENDOR pueden crear servicios');
     }
 
-    const existing = await this.prisma.service.findFirst({
-      where: { vendorId: createDto.vendorId, title: { equals: createDto.title, mode: 'insensitive' } }
+    const existingTitle = await this.prisma.service.findFirst({
+      where: { vendorId: createDto.vendorId, title: { equals: cleanTitle, mode: 'insensitive' } }
     });
-    if (existing) throw new ForbiddenException(`Ya tienes un servicio registrado con el título "${createDto.title}"`);
+    if (existingTitle) throw new ForbiddenException(`Ya tienes un servicio registrado con el título "${cleanTitle}"`);
+
+    const existingSlug = await this.prisma.service.findUnique({ where: { slug } });
+    if (existingSlug) throw new ForbiddenException(`El slug "${slug}" ya está en uso por otro servicio`);
 
     const mappedData = mapCreateServiceData(createDto, slug);
     

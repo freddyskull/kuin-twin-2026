@@ -1,7 +1,7 @@
 import * as z from 'zod';
-import { CreateServiceSchema, sanitizeJsonObject } from 'shared-types';
+import { CreateServiceBaseSchema, sanitizeJsonObject } from 'shared-types';
 
-export const serviceSchema = CreateServiceSchema.extend({
+export const serviceSchema = CreateServiceBaseSchema.extend({
   // Override or add UI-specific fields/transforms
   tags: z.union([z.array(z.string()), z.string()])
     .default([])

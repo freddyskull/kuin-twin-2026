@@ -58,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
 
     if (user) {
       return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <div className="flex items-center gap-3 cursor-pointer outline-none group/user">
               <div className="text-right hidden sm:block">
@@ -157,16 +157,6 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
                 Inicio
               </Link>
               <Link href="/planes" className={cn("hover:text-primary transition-colors font-bold", pathname === "/planes" ? "text-foreground" : "text-muted-foreground")}>Planes</Link>
-              
-              {isMounted && user && (user.role === 'ADMIN' || user.role === 'VENDOR') && (
-                <Link
-                  href="/admin" 
-                  className="flex items-center gap-1.5 text-primary hover:text-primary/80 transition-all font-black uppercase tracking-widest text-[10px] bg-primary/5 px-3 py-1.5 rounded-full border border-primary/20 hover:bg-primary/10"
-                >
-                  <LayoutDashboard className="w-3 h-3" />
-                  Panel Admin
-                </Link>
-              )}
             </div>
 
             <div className="flex items-center gap-2 md:gap-3">

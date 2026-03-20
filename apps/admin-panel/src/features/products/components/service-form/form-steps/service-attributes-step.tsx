@@ -102,7 +102,7 @@ export const ServiceAttributesStep: React.FC = () => {
   return (
     <motion.section
       key="step4" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
-      className="bg-accent/40 backdrop-blur-2xl border border-white/5 rounded-3xl p-8 space-y-8"
+      className="bg-card/40 backdrop-blur-2xl border border-border rounded-[2rem] p-8 space-y-8"
     >
       <div className="flex items-center gap-3">
         <Star className="h-5 w-5 text-primary" />

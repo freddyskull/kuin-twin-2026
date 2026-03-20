@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { Search, ChevronRight, LogOut, Settings as SettingsIcon, Menu } from 'lucide-react';
+import { Search, ChevronRight, LogOut, Settings as SettingsIcon, Menu, ShoppingBag } from 'lucide-react';
 import { useAuthStore } from '../stores/auth.store';
 import { useMessagesStore } from '../stores/messages.store';
 import { NotificationBell } from 'ui-components';
@@ -144,6 +144,10 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                 <SettingsIcon className="h-3.5 w-3.5" />
                 <span>Mi Perfil</span>
               </Link>
+              <a href="/" className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-secondary text-sm font-medium text-foreground/80 hover:text-foreground transition-all">
+                <ShoppingBag className="h-3.5 w-3.5" />
+                <span>Ir a la Tienda</span>
+              </a>
               <button
                 onClick={logout}
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-destructive/10 text-sm font-medium text-muted-foreground hover:text-destructive transition-all"

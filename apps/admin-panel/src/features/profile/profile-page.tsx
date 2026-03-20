@@ -21,7 +21,7 @@ export function ProfilePage() {
         Administra la información de tu perfil, ubicación y redes sociales.
       </p>
 
-      <div className="mx-auto max-w-4xl py-6">
+      <div className="mx-auto py-6">
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
           <ProfileForm />
         </div>

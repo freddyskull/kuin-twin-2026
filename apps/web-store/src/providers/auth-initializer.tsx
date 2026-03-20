@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/features/auth/auth.store';
+import { PageLoader } from '@/components/page-loader';
 
 export function AuthInitializer({ children }: { children: React.ReactNode }) {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -23,7 +24,7 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
   // Si no ha hidratado o no ha montado, no renderizamos los children
   // para asegurar consistencia total en el primer render
   if (!isMounted || !isHydrated) {
-    return null;
+    return <PageLoader />;
   }
 
   return <>{children}</>;

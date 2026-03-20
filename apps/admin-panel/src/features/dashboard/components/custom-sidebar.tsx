@@ -9,7 +9,8 @@ import {
   Plus,
   Building2,
   MessageSquare,
-  X
+  X,
+  Globe
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../../stores/auth.store';
@@ -53,15 +54,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       data-sidebar="sidebar"
       className={cn(
         "fixed left-6 top-6 bottom-6 w-64 glass-card bg-card/60 border border-white/10 flex flex-col p-6 z-[60] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] rounded-[2.5rem] shadow-2xl",
-        isMobile && !isOpen ? "-translate-x-[120%]" : "translate-x-0",
-        !isMobile && "hover:bg-card/70 hover:scale-[1.02]"
+        isMobile && !isOpen ? "-translate-x-[120%]" : "translate-x-0"
       )}>
       {/* Background Glow */}
       <div className="absolute -top-10 -left-10 w-32 h-32 bg-primary/20 rounded-full blur-[60px] pointer-events-none" />
       {/* Logo & Close Button */}
       <div className="flex items-center justify-between mb-12 px-2">
         <Link to="/" className="flex items-center gap-2 group/logo">
-          <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25 group-hover/logo:scale-105 transition-transform duration-300">
+          <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25 transition-all duration-300">
             <span className="text-primary-foreground font-black text-xl">K</span>
           </div>
           <div className="flex flex-col">
@@ -86,6 +86,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <nav className="flex-1 space-y-1.5 overflow-y-auto custom-scrollbar pr-2 -mr-2">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.to;
+          if (item.external) {
+            return (
+              <a
+                key={item.label}
+                href={item.to}
+                className="block"
+              >
+                <motion.div
+                  whileHover={{ x: 4 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl transition-all duration-500 relative group/item text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
+                >
+                  <item.icon className="h-5 w-5 transition-colors duration-300 group-hover/item:text-primary" />
+                  <span className="text-xs font-black uppercase tracking-widest flex-1 opacity-70 group-hover/item:opacity-100">
+                     {item.label}
+                  </span>
+                </motion.div>
+              </a>
+            );
+          }
+
           return (
             <Link
               key={item.label}
@@ -104,7 +125,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 )}
               >
                 <item.icon className={cn(
-                  "h-5 w-5 transition-transform duration-300 group-hover/item:scale-110",
+                  "h-5 w-5 transition-colors duration-300",
                   isActive ? 'text-black' : 'text-muted-foreground group-hover/item:text-primary'
                 )} />
                 <span className={cn(
@@ -135,7 +156,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           onClick={handleLogout}
           className="w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-destructive transition-all py-3 rounded-2xl hover:bg-destructive/5 group"
         >
-          <LogOut className="h-4 w-4 group-hover:scale-110 transition-transform" />
+          <LogOut className="h-4 w-4 transition-colors" />
           <span>Finalizar Sesión</span>
         </button>
       </div>

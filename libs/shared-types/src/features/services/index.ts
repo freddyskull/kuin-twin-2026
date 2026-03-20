@@ -1,4 +1,5 @@
 export * from "./create-service.schema";
+export { CreateServiceBaseSchema } from "./create-service.schema";
 export * from "./review.schema";
 export * from "./service-metadata.schema";
 export * from "./service-slot.schema";

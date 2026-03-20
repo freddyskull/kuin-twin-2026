@@ -5,7 +5,7 @@ import { disconnectSocket } from '@/lib/socket';
 
 // Usamos una instancia local o compartida para evitar conflictos de import.meta en Next.js
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+  baseURL: (typeof window !== 'undefined' && window.location.origin + '/api') || process.env.NEXT_PUBLIC_API_URL || '/api',
 });
 
 interface User {
@@ -48,19 +48,24 @@ export const useAuthStore = create<AuthState>()(
         set({ user: null, token: null, isAuthenticated: false });
       },
       checkAuth: async () => {
-        // Obtenemos el token del estado (que ya fue hidratado por persist)
-        // o del localStorage como fallback seguro
         const token = get().token || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
         
-        if (!token) return;
+        if (!token) {
+          console.log('[auth.store] No token found during checkAuth');
+          return;
+        }
+
+        console.log('[auth.store] Validating session with token:', token.substring(0, 10) + '...');
 
         try {
           const response = await api.get('/auth/me', {
             headers: { Authorization: `Bearer ${token}` }
           });
           const { user } = response.data;
+          console.log('[auth.store] Session validated successfully for:', user.email);
           set({ user, token, isAuthenticated: true });
-        } catch (error) {
+        } catch (error: any) {
+          console.error('[auth.store] checkAuth failed:', error.response?.data || error.message);
           get().logout();
         }
       },

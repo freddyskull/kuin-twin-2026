@@ -9,14 +9,16 @@ export function cn(...inputs: ClassValue[]) {
  * Resuelve la URL absoluta para el servidor de API.
  * Soporta URLs completas, rutas relativas y blobs para vistas previas.
  */
-export function getAbsoluteUrl(path: string | null | undefined, apiUrlFallback = 'http://localhost:3001'): string | null {
+export function getAbsoluteUrl(path: string | null | undefined, apiUrlFallback = ''): string | null {
   if (!path) return null;
   if (path.startsWith('http')) return path;
   if (path.startsWith('blob:')) return path;
   
-  const apiUrl = (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) || apiUrlFallback;
+  const apiUrl = (typeof window !== 'undefined' && window.location.origin) || (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) || apiUrlFallback;
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  const cleanApiUrl = apiUrl.endsWith('/api') ? apiUrl.replace('/api', '') : apiUrl;
+  
+  // Si la URL termina en /api, la limpiamos para servir archivos estáticos desde la raíz del dominio
+  const cleanApiUrl = apiUrl.replace(/\/api$/, '');
   
   return `${cleanApiUrl}${cleanPath}`;
 }
