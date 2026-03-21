@@ -3,16 +3,18 @@ import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { Search, ChevronRight, LogOut, Settings as SettingsIcon, Menu, ShoppingBag } from 'lucide-react';
 import { useAuthStore } from '../stores/auth.store';
 import { useMessagesStore } from '../stores/messages.store';
-import { NotificationBell } from 'ui-components';
+import { NotificationBell, getAbsoluteUrl } from 'ui-components';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useMyProfile } from '../features/profile/api/profile.service';
 
 interface HeaderProps {
   onMenuClick?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
-  const { user, profile, logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
+  const { data: profile } = useMyProfile();
   const { unreadCount, notificationMessages, removeNotification, clearUnread } = useMessagesStore();
   const notificationRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
@@ -37,6 +39,15 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
     const lastPart = path[path.length - 1];
     return lastPart.charAt(0).toUpperCase() + lastPart.slice(1).replace(/-/g, ' ');
+  };
+
+  const getInitials = (name: string) => {
+    if (!name) return "??";
+    const parts = name.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   };
 
   const breadcrumbs = location.pathname.split('/').filter(Boolean);
@@ -124,10 +135,10 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           </div>
           <div className="h-12 w-12 rounded-2xl bg-primary/10 border-2 border-primary/20 ring-4 ring-primary/5 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:ring-primary/20 shadow-lg relative">
             {profile?.avatarUrl ? (
-              <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500" />
+              <img src={getAbsoluteUrl(profile.avatarUrl) || ''} alt="Avatar" className="h-full w-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500" />
             ) : (
               <span className="text-primary font-black text-sm">
-                {(profile?.displayName || user?.email || 'U').substring(0, 2).toUpperCase()}
+                {getInitials(profile?.displayName || user?.email || 'U')}
               </span>
             )}
             <div className="absolute bottom-1 right-1 w-3 h-3 bg-primary border-2 border-black rounded-full shadow-[0_0_10px_rgba(245,192,106,0.5)]" />
