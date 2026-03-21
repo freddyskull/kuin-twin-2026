@@ -14,7 +14,16 @@ export function getAbsoluteUrl(path: string | null | undefined, apiUrlFallback =
   if (path.startsWith('http')) return path;
   if (path.startsWith('blob:')) return path;
   
-  const apiUrl = (typeof window !== 'undefined' && window.location.origin) || (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) || apiUrlFallback;
+  let apiUrl = apiUrlFallback;
+  
+  if (typeof window !== 'undefined') {
+    // Intenta obtener de Vite o de la URL actual
+    apiUrl = (import.meta as any)?.env?.VITE_API_URL || window.location.origin;
+  } else if (typeof process !== 'undefined') {
+    // Intenta obtener de Next.js
+    apiUrl = process.env.NEXT_PUBLIC_API_URL || apiUrlFallback;
+  }
+  
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   
   // Si la URL termina en /api, la limpiamos para servir archivos estáticos desde la raíz del dominio
