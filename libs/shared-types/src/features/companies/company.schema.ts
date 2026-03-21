@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const CompanySchema = z.object({
   id: z.string().uuid(),
   businessName: z.string().min(3),
-  logoUrl: z.string().url().nullish(),
+  logoUrl: z.string().nullish(),
   description: z.string().nullish(),
   
   // Datos Fiscales (RFC)
@@ -21,8 +21,8 @@ export const CompanySchema = z.object({
   // SAT Verification
   isSatVerified: z.boolean().default(false),
   satVerifiedAt: z.coerce.date().nullish(),
-  satCertificateUrl: z.string().url().nullish(),
-  satVerificationDoc: z.string().url().nullish(),
+  satCertificateUrl: z.string().nullish(),
+  satVerificationDoc: z.string().nullish(),
   
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),

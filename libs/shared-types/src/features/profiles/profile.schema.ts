@@ -7,7 +7,7 @@ export const ProfileSchema = z.object({
   userId: z.string().uuid(),
   displayName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   bio: z.string().max(1000, 'La biografía no puede exceder los 1000 caracteres').nullable(),
-  avatarUrl: z.string().url('URL de avatar inválida').nullable(),
+  avatarUrl: z.string().nullable(),
   
   // Localización (Geometría PostGIS serializada)
   location: z.any().nullable(),
