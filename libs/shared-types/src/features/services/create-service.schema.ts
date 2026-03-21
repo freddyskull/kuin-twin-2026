@@ -15,7 +15,7 @@ export const CreateServiceBaseSchema = z.object({
   imageGallery: z.array(z.string()).default([]),
   tags: z.array(z.string()).default([]),
   
-  basePrice: z.number().nonnegative('El precio no puede ser negativo').default(0).nullish(),
+  basePrice: z.coerce.number().nonnegative('El precio no puede ser negativo').default(0).nullish(),
   showPrice: z.boolean().default(true),
   isActive: z.boolean().default(true),
   

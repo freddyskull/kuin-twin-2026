@@ -1,17 +1,24 @@
 import React, { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Building2, CheckCircle, XCircle, Store } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Pencil, Trash2, Building2, CheckCircle, XCircle, Store } from 'lucide-react';
 import { useCompanies, useDeleteCompany } from './companies.hooks';
 import type { Company } from '../../stores/companies.store';
-import { Button, DataTable, getAbsoluteUrl } from 'ui-components';
+import { getAbsoluteUrl, ResourceTable, useQueryState, useQueryPagination } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Modal } from '../../components/Modal';
 import { BranchList } from './components/branch-list';
 
 export const CompaniesPage: React.FC = () => {
+  const navigate = useNavigate();
   const { data: companies = [], isLoading, error } = useCompanies();
   const deleteMutation = useDeleteCompany();
-  const [filter, setFilter] = useState<'all' | 'verified' | 'unverified'>('all');
+  
+  // URL-Synced state
+  const [filter, setFilter] = useQueryState<'all' | 'verified' | 'unverified'>('filter', 'all');
+  const [page, setPage] = useQueryPagination();
+  const [searchTerm, setSearchTerm] = useQueryState('search', '');
+  
+  const pageSize = 10;
 
   // Estado para el modal de sucursales desde la tabla
   const [isBranchModalOpen, setIsBranchModalOpen] = useState(false);
@@ -32,13 +39,28 @@ export const CompaniesPage: React.FC = () => {
     setIsBranchModalOpen(true);
   };
 
-  const filteredCompanies = useMemo(() => {
-    return companies.filter(c => {
+  const { filteredCompanies, paginatedCompanies, totalPages, total } = useMemo(() => {
+    const filtered = companies.filter(c => {
       const matchesFilter = filter === 'all' ||
         (filter === 'verified' ? c.isSatVerified : !c.isSatVerified);
-      return matchesFilter;
+      
+      const matchesSearch = searchTerm === '' || 
+        c.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.rfc.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return matchesFilter && matchesSearch;
     });
-  }, [companies, filter]);
+    
+    const total = filtered.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
+    
+    return { filteredCompanies: filtered, paginatedCompanies: paginated, totalPages, total };
+  }, [companies, filter, page, searchTerm]);
+
+  const handleFilterChange = (f: 'all' | 'verified' | 'unverified') => {
+    setFilter(f);
+  };
 
   const columns: ColumnDef<Company>[] = [
     {
@@ -130,58 +152,44 @@ export const CompaniesPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 md:space-y-8 max-w-[1400px] mx-auto pb-10 font-sans">
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-        <div className="space-y-1">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Empresas</h1>
-          <p className="text-muted-foreground text-xs md:text-sm">Gestiona tus empresas registradas y sus sucursales.</p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-          <div className="flex bg-secondary/50 p-1 rounded-xl border border-border overflow-x-auto no-scrollbar">
-            {(['all', 'verified', 'unverified'] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`flex-1 sm:flex-none px-4 py-1.5 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider whitespace-nowrap ${filter === f
-                  ? 'bg-background text-primary shadow-sm border border-border/50'
-                  : 'text-muted-foreground hover:text-foreground'
-                  }`}
-              >
-                {f === 'all' ? 'Todas' : f === 'verified' ? 'Verificadas' : 'Pendientes'}
-              </button>
-            ))}
-          </div>
-          
-          <Link to="/empresas/crear" className="flex">
-            <Button className="flex-1 h-10 px-5 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-              <Plus className="h-4 w-4 mr-2" />
-              Nueva Empresa
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      {error && (
-        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
-          <XCircle className="h-4 w-4" />
-          Error: {(error as Error).message}
-        </div>
-      )}
-
-      <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden relative">
-        <div className="overflow-x-auto custom-scrollbar">
-          <div className="min-w-[800px]">
-            <DataTable
-              columns={columns}
-              data={filteredCompanies}
-              isLoading={isLoading}
-              emptyMessage="No se encontraron empresas."
-              className="border-none"
-            />
-          </div>
-        </div>
-      </div>
+    <>
+      <ResourceTable<Company>
+        title="Empresas"
+        subtitle="Gestiona tus empresas registradas y sus sucursales."
+        total={total}
+        isLoading={isLoading}
+        columns={columns}
+        data={paginatedCompanies}
+        emptyMessage="No se encontraron empresas."
+        search={{
+          value: searchTerm,
+          onChange: setSearchTerm,
+          placeholder: "Buscar por nombre o RFC..."
+        }}
+        createButton={{
+          label: "Nueva Empresa",
+          onClick: () => navigate('/empresas/crear')
+        }}
+        pagination={{
+          currentPage: page,
+          totalPages: totalPages,
+          onPageChange: setPage
+        }}
+        filters={
+          (['all', 'verified', 'unverified'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => handleFilterChange(f)}
+              className={`px-4 py-1.5 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider whitespace-nowrap ${filter === f
+                ? 'bg-background text-primary shadow-sm border border-border/50'
+                : 'text-muted-foreground hover:text-foreground'
+                }`}
+            >
+              {f === 'all' ? 'Todas' : f === 'verified' ? 'Verificadas' : f === 'unverified' ? 'Pendientes' : ''}
+            </button>
+          ))
+        }
+      />
 
       {/* Modal para gestionar sucursales */}
       <Modal
@@ -194,6 +202,6 @@ export const CompaniesPage: React.FC = () => {
           <BranchList companyId={selectedCompany.id} />
         )}
       </Modal>
-    </div>
+    </>
   );
 };

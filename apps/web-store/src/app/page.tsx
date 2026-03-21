@@ -61,11 +61,20 @@ function HomeContent() {
         toast.success("Ubicación activada: Buscando cerca de ti");
       },
       (err) => {
-        console.error("Geo error:", err);
+        console.error("Geo error details:", {
+          code: err.code,
+          message: err.message
+        });
         setIsLoadingLoc(false);
-        toast.error("No pudimos obtener tu ubicación. Revisa los permisos.");
+        
+        let errorMsg = "No pudimos obtener tu ubicación.";
+        if (err.code === 1) errorMsg = "Permiso de ubicación denegado. Revisa los ajustes de tu navegador.";
+        if (err.code === 2) errorMsg = "Ubicación no disponible en este momento.";
+        if (err.code === 3) errorMsg = "Tiempo de espera agotado al obtener ubicación.";
+        
+        toast.error(errorMsg);
       },
-      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
     );
   };
 
@@ -76,19 +85,51 @@ function HomeContent() {
   };
 
   const {
-    data,
-    isLoading,
-    isError,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteServices({ 
+    data: nearbyData,
+    isLoading: isNearbyLoading,
+    fetchNextPage: fetchNextNearbyPage,
+    hasNextPage: hasNextNearbyPage,
+    isFetchingNextPage: isFetchingNextNearbyPage,
+  } = useInfiniteServices({
     limit: 12,
     categoryId: currentCategory !== 'all' ? currentCategory : undefined,
     search: currentSearch || undefined,
     lat: userCoords?.lat,
     lng: userCoords?.lng,
   });
+
+  const {
+    data: allData,
+    isLoading: isAllLoading,
+    fetchNextPage: fetchNextAllPage,
+    hasNextPage: hasNextAllPage,
+    isFetchingNextPage: isFetchingNextAllPage,
+  } = useInfiniteServices({
+    limit: 12,
+    categoryId: currentCategory !== 'all' ? currentCategory : undefined,
+    search: currentSearch || undefined,
+    enabled: !!userCoords,
+    lat: userCoords?.lat,
+    lng: userCoords?.lng,
+    radius: 10000, // 10,000 km to include services far away but with distance calculation
+  });
+
+  // Extraer y desduplicar servicios cercanos
+  const rawNearby = nearbyData?.pages.flatMap((p) => p.items) ?? [];
+  const nearbyServices = Array.from(new Map(rawNearby.map(s => [s.id, s])).values());
+  const nearbyTotal = nearbyData?.pages[0]?.total ?? 0;
+  
+  // Extraer, desduplicar y filtrar servicios generales (los que no están en cercanos)
+  const nearbyIds = new Set(nearbyServices.map(s => s.id));
+  const rawAll = allData?.pages.flatMap((p) => p.items) ?? [];
+  const allServices = Array.from(new Map(
+    rawAll
+      .filter(s => !nearbyIds.has(s.id))
+      .map(s => [s.id, s])
+  ).values());
+  const allTotal = allData?.pages[0]?.total ?? 0;
+
+  const isLoading = userCoords ? isNearbyLoading : isNearbyLoading; // Simplificado
 
   const { data: categories = [] } = useCategories();
   const user = useAuthStore((state) => state.user);
@@ -147,27 +188,28 @@ function HomeContent() {
     };
   }, [checkScroll, categories]);
 
-  const services = data?.pages.flatMap((p) => p.items) ?? [];
-  const total = data?.pages[0]?.total ?? 0;
-  const sentinelRef = useRef<HTMLDivElement>(null);
-
-  const handleObserver = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries;
-      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    },
-    [hasNextPage, isFetchingNextPage, fetchNextPage]
-  );
+  const nearbySentinelRef = useRef<HTMLDivElement>(null);
+  const allSentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(handleObserver, { rootMargin: "300px" });
-    observer.observe(sentinel);
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextNearbyPage && !isFetchingNextNearbyPage) {
+        fetchNextNearbyPage();
+      }
+    }, { rootMargin: "300px" });
+    if (nearbySentinelRef.current) observer.observe(nearbySentinelRef.current);
     return () => observer.disconnect();
-  }, [handleObserver]);
+  }, [hasNextNearbyPage, isFetchingNextNearbyPage, fetchNextNearbyPage]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextAllPage && !isFetchingNextAllPage) {
+        fetchNextAllPage();
+      }
+    }, { rootMargin: "300px" });
+    if (allSentinelRef.current) observer.observe(allSentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasNextAllPage, isFetchingNextAllPage, fetchNextAllPage]);
 
   return (
     <main className="relative z-10 container-app pt-20 pb-32 flex flex-col items-center text-center">
@@ -209,41 +251,116 @@ function HomeContent() {
       </motion.form>
 
       {/* Categories */}
-      <div className="w-full max-w-5xl mt-12 relative group/categories px-4">
-        <motion.div ref={scrollRef} onScroll={checkScroll} className="w-full flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-2" variants={fadeUp} initial="hidden" animate="visible" custom={0.4}>
-          <button onClick={() => updateFilters({ category: 'all' })} className={cn("px-6 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all border", currentCategory === 'all' ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20" : "bg-card border-border hover:border-primary/50 text-muted-foreground")}>Todos</button>
-          {categories.map((cat) => (
-            <button key={cat.id} onClick={() => updateFilters({ category: cat.id })} className={cn("px-6 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all border", currentCategory === cat.id ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20" : "bg-card border-border hover:border-primary/50 text-muted-foreground")}>{cat.name}</button>
-          ))}
-        </motion.div>
+      <div className="w-full max-w-5xl mt-12 relative group/categories px-12">
+        {/* Left Arrow */}
+        <AnimatePresence>
+          {showLeftArrow && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8, x: -10 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.8, x: -10 }}
+              onClick={() => scrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-card/80 border border-border rounded-full hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-all backdrop-blur-md shadow-xl"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+
+        <div className="w-full relative overflow-hidden">
+          <motion.div 
+            ref={scrollRef} 
+            onScroll={checkScroll} 
+            className="w-full flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-2 cursor-grab active:cursor-grabbing"
+            variants={fadeUp} 
+            initial="hidden" 
+            animate="visible" 
+            custom={0.4}
+            drag="x"
+            dragConstraints={scrollRef}
+            dragElastic={0.1}
+            whileDrag={{ scale: 0.995 }}
+          >
+            <button 
+              onClick={() => updateFilters({ category: 'all' })} 
+              className={cn(
+                "px-6 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all border", 
+                currentCategory === 'all' 
+                  ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20" 
+                  : "bg-card border-border hover:border-primary/50 text-muted-foreground"
+              )}
+            >
+              Todos
+            </button>
+            {categories.map((cat) => (
+              <button 
+                key={cat.id} 
+                onClick={() => updateFilters({ category: cat.id })} 
+                className={cn(
+                  "px-6 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all border", 
+                  currentCategory === cat.id 
+                    ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20" 
+                    : "bg-card border-border hover:border-primary/50 text-muted-foreground"
+                )}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Right Arrow */}
+        <AnimatePresence>
+          {showRightArrow && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8, x: 10 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.8, x: 10 }}
+              onClick={() => scrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-card/80 border border-border rounded-full hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-all backdrop-blur-md shadow-xl"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Services Grid */}
+      {/* Services Grid - Section 1: Nearby */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0.5} className="mt-24 w-full text-left">
         <div className="flex items-center justify-between mb-10 pl-2">
           <div className="flex items-center gap-4">
             <div className="h-8 w-1 bg-primary rounded-full" />
-            <h2 className="text-2xl font-bold">{currentSearch ? `Resultados para "${currentSearch}"` : 'Populares cerca de ti'}</h2>
+            <h2 className="text-2xl font-bold">
+              {userCoords ? "Servicios cerca de ti" : (currentSearch ? `Resultados para "${currentSearch}"` : "Populares cerca de ti")}
+            </h2>
           </div>
-          {!isLoading && total > 0 && <span className="text-sm text-muted-foreground font-semibold bg-card border border-border/50 px-3 py-1.5 rounded-full">{services.length} / {total} servicios</span>}
+          {!isNearbyLoading && nearbyTotal > 0 && <span className="text-sm text-muted-foreground font-semibold bg-card border border-border/50 px-3 py-1.5 rounded-full">{nearbyServices.length} / {nearbyTotal} servicios</span>}
         </div>
 
-        {isLoading ? (
+        {isNearbyLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-72 rounded-2xl bg-card border border-border/50 animate-pulse" />)}
           </div>
-        ) : services.length > 0 ? (
+        ) : nearbyServices.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {services.map((service, i) => (
+              {nearbyServices.map((service, i) => (
                 <motion.div key={service.id} variants={cardVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-40px" }} custom={(i % 12) * 0.06} className="h-full">
                   <ServiceCard service={service} currentUserId={user?.id} onEdit={handleEdit} onDelete={handleDelete} />
                 </motion.div>
               ))}
             </div>
-            <div ref={sentinelRef} className="h-2 w-full mt-4" />
-            {isFetchingNextPage && <div className="flex justify-center mt-10"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}
+            <div ref={nearbySentinelRef} className="h-2 w-full mt-4" />
+            {isFetchingNextNearbyPage && <div className="flex justify-center mt-10"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}
           </>
+        ) : userCoords ? (
+          <div className="text-center py-12 bg-accent/30 rounded-3xl border border-dashed border-border flex flex-col items-center gap-4">
+            <MapPin className="h-10 w-10 text-muted-foreground opacity-30" />
+            <div className="space-y-1">
+              <p className="font-bold text-lg text-foreground">No hay servicios justo a tu alrededor</p>
+              <p className="text-muted-foreground">Pero no te preocupes, mira lo que tenemos para ti un poco más lejos.</p>
+            </div>
+          </div>
         ) : (
           <div className="text-center py-20 opacity-60 flex flex-col items-center gap-4">
             <Search className="h-12 w-12 text-muted-foreground opacity-20" />
@@ -252,6 +369,37 @@ function HomeContent() {
           </div>
         )}
       </motion.div>
+
+      {/* Services Grid - Section 2: All Services (Far) */}
+      {userCoords && (
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0.6} className="mt-24 w-full text-left">
+          <div className="flex items-center justify-between mb-10 pl-2">
+            <div className="flex items-center gap-4">
+              <div className="h-8 w-1 bg-muted-foreground/30 rounded-full" />
+              <h2 className="text-2xl font-bold text-muted-foreground">Explorar otros servicios</h2>
+            </div>
+            {!isAllLoading && allTotal > 0 && <span className="text-sm text-muted-foreground font-semibold bg-card border border-border/50 px-3 py-1.5 rounded-full">{allServices.length} / {allTotal} servicios</span>}
+          </div>
+
+          {isAllLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-72 rounded-2xl bg-card border border-border/50 animate-pulse" />)}
+            </div>
+          ) : allServices.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 opacity-80 hover:opacity-100 transition-opacity">
+                {allServices.map((service, i) => (
+                  <motion.div key={service.id} variants={cardVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-40px" }} custom={(i % 12) * 0.06} className="h-full">
+                    <ServiceCard service={service} currentUserId={user?.id} onEdit={handleEdit} onDelete={handleDelete} />
+                  </motion.div>
+                ))}
+              </div>
+              <div ref={allSentinelRef} className="h-2 w-full mt-4" />
+              {isFetchingNextAllPage && <div className="flex justify-center mt-10"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}
+            </>
+          ) : null}
+        </motion.div>
+      )}
     </main>
   );
 }

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Pencil, Trash2, LayoutDashboard, Building2, XCircle } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Pencil, Trash2, LayoutDashboard, Building2, XCircle } from 'lucide-react';
 import { useServices, useDeleteService, useToggleServiceStatus } from './services.hooks';
-import { Button, DataTable, getAbsoluteUrl } from 'ui-components';
+import { useAuthStore } from '../../stores/auth.store';
+import { getAbsoluteUrl, ResourceTable, useQueryState, useQueryPagination } from 'ui-components';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ServiceDto } from 'shared-types';
 import { Modal } from '@/components/Modal';
@@ -10,14 +11,22 @@ import { ServiceCompanyManager } from './components/service-company-manager';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const ServicesPage: React.FC = () => {
-  const [page, setPage] = useState(1);
-  const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+  
+  // URL-Synced state
+  const [page, setPage] = useQueryPagination();
+  const [filter, setFilter] = useQueryState<'all' | 'active' | 'inactive'>('filter', 'all');
+  const [searchTerm, setSearchTerm] = useQueryState('search', '');
+  
   const limit = 10;
 
   const { data, isLoading, error } = useServices({
     page,
     limit,
-    isActive: filter === 'all' ? undefined : (filter === 'active')
+    isActive: filter === 'all' ? undefined : (filter === 'active'),
+    vendorId: user?.role === 'ADMIN' ? undefined : user?.id,
+    search: searchTerm || undefined
   });
 
   const services = data?.items || [];
@@ -57,7 +66,6 @@ export const ServicesPage: React.FC = () => {
 
   const handleFilterChange = (f: 'all' | 'active' | 'inactive') => {
     setFilter(f);
-    setPage(1); // Reset to first page on filter change
   };
 
   const columns: ColumnDef<ServiceDto>[] = [
@@ -85,6 +93,24 @@ export const ServicesPage: React.FC = () => {
         );
       },
     },
+    ...(user?.role === 'ADMIN' ? [{
+      accessorKey: 'vendor',
+      header: 'Vendedor',
+      cell: ({ row }: { row: any }) => {
+        const vendor = row.original.vendor;
+        const profile = vendor?.profile;
+        return (
+          <div className="max-w-[150px]">
+            <div className="text-[10px] font-bold text-foreground truncate">
+              {profile?.displayName || 'Sin nombre'}
+            </div>
+            <div className="text-[9px] text-muted-foreground truncate italic">
+              {vendor?.email}
+            </div>
+          </div>
+        );
+      },
+    }] : []),
     {
       accessorKey: 'company',
       header: 'Empresa',
@@ -113,6 +139,23 @@ export const ServicesPage: React.FC = () => {
           >
             {service.isActive ? 'Activo' : 'Inactivo'}
           </button>
+        );
+      },
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Creado',
+      cell: ({ row }) => {
+        const date = row.original.createdAt;
+        if (!date) return <span className="text-muted-foreground text-[10px]">-</span>;
+        return (
+          <div className="text-[10px] font-medium text-muted-foreground whitespace-nowrap">
+            {new Intl.DateTimeFormat('es-MX', { 
+              day: '2-digit', 
+              month: 'short', 
+              year: 'numeric' 
+            }).format(new Date(date))}
+          </div>
         );
       },
     },
@@ -166,89 +209,46 @@ export const ServicesPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 md:space-y-8 max-w-[1400px] mx-auto pb-10 font-sans">
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-        <div className="space-y-1">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Servicios</h1>
-          <p className="text-muted-foreground text-xs md:text-sm">Gestiona el catálogo de servicios ofrecidos en la plataforma.</p>
-        </div>
+    <>
+      <ResourceTable<ServiceDto>
+        title="Servicios"
+        subtitle="Gestiona el catálogo de servicios ofrecidos en la plataforma."
+        total={total}
+        isLoading={isLoading}
+        columns={columns}
+        data={services}
+        emptyMessage="No se encontraron servicios."
+        search={{
+          value: searchTerm,
+          onChange: setSearchTerm,
+          placeholder: "Buscar servicio..."
+        }}
+        createButton={{
+          label: "Nuevo Servicio",
+          onClick: () => navigate('/servicios/crear')
+        }}
+        pagination={{
+          currentPage: page,
+          totalPages: totalPages,
+          onPageChange: setPage
+        }}
+        filters={
+          (['all', 'active', 'inactive'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => handleFilterChange(f)}
+              className={`px-4 py-1.5 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider whitespace-nowrap ${filter === f
+                ? 'bg-background text-primary shadow-sm border border-border/50'
+                : 'text-muted-foreground hover:text-foreground'
+                }`}
+            >
+              {f === 'all' ? 'Todos' : f === 'active' ? 'Activos' : f === 'inactive' ? 'Inactivos' : ''}
+            </button>
+          ))
+        }
+      />
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-          <div className="flex bg-secondary/50 p-1 rounded-xl border border-border overflow-x-auto no-scrollbar">
-            {(['all', 'active', 'inactive'] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => handleFilterChange(f)}
-                className={`flex-1 sm:flex-none px-4 py-1.5 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider whitespace-nowrap ${filter === f
-                  ? 'bg-background text-primary shadow-sm border border-border/50'
-                  : 'text-muted-foreground hover:text-foreground'
-                  }`}
-              >
-                {f === 'all' ? 'Todos' : f === 'active' ? 'Activos' : 'Inactivos'}
-              </button>
-            ))}
-          </div>
-          
-          <Link to="/servicios/crear" className="flex">
-            <Button className="flex-1 h-10 px-5 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-              <Plus className="h-4 w-4 mr-2" />
-              Nuevo Servicio
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      {error && (
-        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
-          <XCircle className="h-4 w-4" />
-          Error: {(error as Error).message}
-        </div>
-      )}
-
-      <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden relative">
-        <div className="overflow-x-auto custom-scrollbar">
-          <div className="min-w-[800px]">
-            <DataTable
-              columns={columns}
-              data={services}
-              isLoading={isLoading}
-              emptyMessage="No se encontraron servicios."
-              className="border-none"
-            />
-          </div>
-        </div>
-
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="p-4 border-t border-border bg-secondary/20 flex items-center justify-between">
-            <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
-              Pag <span className="text-foreground">{page}</span> de <span className="text-foreground">{totalPages}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="h-8 rounded-lg text-xs"
-              >
-                Anterior
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="h-8 rounded-lg text-xs"
-              >
-                Siguiente
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-      
-      <p className="text-[10px] text-muted-foreground font-medium italic px-2">
+      <p className="text-[10px] text-muted-foreground font-medium italic px-2 max-w-[1400px] mx-auto -mt-6 mb-10">
         * Para eliminar un servicio, primero cámbialo a estado inactivo.
       </p>
 
@@ -308,6 +308,6 @@ export const ServicesPage: React.FC = () => {
           />
         )}
       </Modal>
-    </div>
+    </>
   );
 };

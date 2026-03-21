@@ -38,11 +38,14 @@ export const ReviewList: React.FC<ReviewListProps> = ({ serviceId }) => {
     <div className="space-y-6">
       {reviews.map((review) => (
         <div key={review.id} className="flex gap-4 p-5 rounded-2xl bg-card border border-border/40 shadow-sm transition-all hover:shadow-md hover:border-primary/20">
-          <Avatar className="w-10 h-10 border border-border/40 shadow-inner">
-            <AvatarImage src={review.user?.profile?.avatarUrl || undefined} />
-            <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold uppercase">
-              {review.user?.profile?.displayName?.[0] || '?'}
-            </AvatarFallback>
+          <Avatar className="w-10 h-10 border border-border/40 shadow-inner overflow-hidden">
+            {review.user?.profile?.avatarUrl ? (
+              <AvatarImage src={review.user.profile.avatarUrl} alt={review.user.profile.displayName || 'Avatar'} />
+            ) : (
+              <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-bold uppercase w-full h-full flex items-center justify-center">
+                {(review.user?.profile?.displayName || 'U').substring(0, 2).toUpperCase()}
+              </AvatarFallback>
+            )}
           </Avatar>
 
           <div className="flex-1 space-y-1">

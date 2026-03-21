@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Star, ArrowRight, MapPin, Pencil, Trash2, User } from 'lucide-react';
+import { Star, ArrowRight, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn, getAbsoluteUrl, formatCurrency } from '../lib/utils';
 import { Card } from './ui/card';
@@ -20,6 +20,7 @@ interface ServiceDtoLite {
   company?: { businessName: string };
   vendorId?: string;
   unit?: { name: string; abbreviation: string };
+  distance?: number;
 }
 
 interface ServiceCardProps {
@@ -144,9 +145,34 @@ export const ServiceCard = ({
             )}
 
             <div className="pt-4 border-t border-border/40 flex items-center justify-between mt-auto">
-              <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                <MapPin className="w-3 h-3" />
-                <span>Disponible</span>
+              <div className="flex items-center gap-1.5 text-[10px] font-bold">
+                {service.distance !== undefined && service.distance !== null ? (
+                  <div className={cn(
+                    "flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-bold",
+                    service.distance < 5000 
+                      ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" 
+                      : service.distance < 20000
+                        ? "bg-blue-500/10 text-blue-500 border border-blue-500/20"
+                        : "bg-slate-500/10 text-slate-500 border border-slate-500/20"
+                  )}>
+                    <MapPin className="w-3 h-3" />
+                    <span>
+                      {service.distance < 1000 
+                        ? '¡Casi llegas!' 
+                        : service.distance < 5000
+                          ? 'Cerca de ti'
+                          : service.distance < 100000
+                            ? `${(service.distance / 1000).toFixed(1)} km`
+                            : 'Muy lejos de ti'
+                      }
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-muted-foreground/60 italic">
+                    <MapPin className="w-3 h-3 opacity-50" />
+                    <span>Activa GPS para ver cercanía</span>
+                  </div>
+                )}
               </div>
 
               {isOwner ? (

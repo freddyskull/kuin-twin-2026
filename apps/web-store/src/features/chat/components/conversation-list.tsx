@@ -50,11 +50,14 @@ export const ConversationList = ({ userId, selectedUserId, onSelect }: Conversat
                 : "hover:bg-muted/50 border border-transparent"
             )}
           >
-            <Avatar className="h-12 w-12 border border-border/50">
-              <AvatarImage src={otherUser.profile?.avatarUrl} alt={otherUser.profile?.displayName || otherUser.email} />
-              <AvatarFallback className="bg-primary/5 text-primary text-xs font-bold">
-                {(otherUser.profile?.displayName || otherUser.email).substring(0, 2).toUpperCase()}
-              </AvatarFallback>
+            <Avatar className="h-12 w-12 border border-border/50 overflow-hidden">
+              {otherUser.profile?.avatarUrl ? (
+                <AvatarImage src={otherUser.profile?.avatarUrl} alt={otherUser.profile?.displayName || otherUser.email} />
+              ) : (
+                <AvatarFallback className="bg-primary/5 text-primary text-xs font-bold w-full h-full flex items-center justify-center">
+                  {(otherUser.profile?.displayName || otherUser.email).substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              )}
             </Avatar>
 
             <div className="flex-1 min-w-0">

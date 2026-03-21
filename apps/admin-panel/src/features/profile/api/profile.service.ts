@@ -1,7 +1,7 @@
 
 import { api } from 'api-client'; // Importar de librería local
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { CreateProfileInput, Profile } from 'shared-types';
+import type { CreateProfileInput, Profile, User } from 'shared-types';
 
 /**
  * Obtener el usuario actual y su perfil
@@ -21,6 +21,14 @@ export const updateMyProfile = async (profileData: CreateProfileInput): Promise<
     // Si la lat/lng son vacías, no enviarlas o enviar undefined
     const { data } = await api.post('/users/me/profile', profileData);
     return data;
+};
+
+/**
+ * Actualizar datos básicos del usuario (ej. email)
+ */
+export const updateMyUser = async ({ id, data }: { id: string; data: Partial<User> }): Promise<User> => {
+    const { data: responseData } = await api.patch(`/users/${id}`, data);
+    return responseData;
 };
 
 // Hook principal para obtener perfil
@@ -46,4 +54,31 @@ export const useUpdateProfile = () => {
             queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
         },
     });
+};
+
+// Hook para actualizar usuario
+export const useUpdateUser = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: updateMyUser,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+        },
+    });
+};
+
+export const useUploadMedia = () => {
+  return useMutation({
+    mutationFn: async ({ userId, file }: { userId: string; file: File }) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      const { data } = await api.post(`/media/${userId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return data;
+    },
+  });
 };

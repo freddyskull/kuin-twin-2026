@@ -19,7 +19,7 @@ export const SocketListener: React.FC = () => {
     if (!socket) return;
 
     const handleNewMessage = (payload: any, isGlobal: boolean) => {
-      console.log(`📩 Mensaje recibido (${isGlobal ? 'Global' : 'Directo'}):`, payload);
+      console.log(`📩 [SocketListener] Mensaje recibido (${isGlobal ? 'Global' : 'Directo'}):`, payload);
 
       // Add to store as notification
       addMessage(payload, true);

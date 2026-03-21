@@ -1,8 +1,9 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import { useAuthStore } from "@/features/auth/auth.store";
 import { ChatBox, ConversationList } from "@/features/chat/components";
-import { ArrowLeft, MessageSquare } from "lucide-react";
+import { ArrowLeft, MessageSquare, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui";
@@ -14,9 +15,9 @@ export default function IndividualChatPage() {
   const router = useRouter();
   const params = useParams();
   const otherUserId = params.id as string;
-  const [isMounted, setIsMounted] = React.useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setIsMounted(true);
   }, []);
 

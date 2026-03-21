@@ -66,6 +66,7 @@ export const ServiceSchema = z.object({
     order: z.number().int().optional(),
   })).optional(),
 
+  distance: z.number().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 });

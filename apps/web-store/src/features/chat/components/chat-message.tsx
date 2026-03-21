@@ -7,7 +7,7 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({ message, isMe }: ChatMessageProps) => {
-  const time = new Date(message.createdAt).toLocaleTimeString('es-ES', {
+  const time = (message.createdAt ? new Date(message.createdAt) : new Date()).toLocaleTimeString('es-ES', {
     hour: '2-digit',
     minute: '2-digit',
   });

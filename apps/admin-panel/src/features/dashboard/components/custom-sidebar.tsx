@@ -3,19 +3,16 @@ import {
   LayoutDashboard,
   Briefcase,
   ShoppingBag,
-  BarChart3,
-  Settings,
   LogOut,
-  Plus,
   Building2,
   MessageSquare,
   X,
-  Globe
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../../stores/auth.store';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { usePendingServicesCount } from '../../bookings/bookings.hooks';
+import { useMessagesStore } from '../../../stores/messages.store';
 import { useIsMobile } from '../../../hooks/use-mobile';
 import { cn } from 'ui-components';
 
@@ -32,6 +29,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const user = useAuthStore((state) => state.user);
   const pendingCount = usePendingServicesCount(user?.id);
+  const unreadMessagesCount = useMessagesStore((state) => state.unreadCount);
 
   const handleLogout = () => {
     logout();
@@ -39,18 +37,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   };
 
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', to: '/' },
-    { icon: Plus, label: 'Nuevo Servicio', to: '/servicios/crear' },
-    { icon: Briefcase, label: 'Mis Servicios', to: '/servicios' },
-    { icon: Building2, label: 'Empresas', to: '/empresas' },
-    { icon: MessageSquare, label: 'Mensajes', to: '/mensajes' },
-    { icon: ShoppingBag, label: 'Pedidos', to: '/pedidos', badge: pendingCount > 0 ? pendingCount : null },
-    { icon: BarChart3, label: 'Estadísticas', to: '/estadisticas' },
-    { icon: Settings, label: 'Ajustes', to: '/ajustes' },
+    { icon: LayoutDashboard, label: 'Dashboard', to: '/', external: false },
+    { icon: Briefcase, label: 'Mis Servicios', to: '/servicios', external: false },
+    { icon: Building2, label: 'Empresas', to: '/empresas', external: false },
+    { icon: MessageSquare, label: 'Mensajes', to: '/mensajes', badge: unreadMessagesCount > 0 ? unreadMessagesCount : null, external: false },
+    { icon: ShoppingBag, label: 'Pedidos', to: '/pedidos', badge: pendingCount > 0 ? pendingCount : null, external: false },
   ];
 
   return (
-    <aside 
+    <aside
       data-sidebar="sidebar"
       className={cn(
         "fixed left-6 top-6 bottom-6 w-64 glass-card bg-card/60 border border-white/10 flex flex-col p-6 z-[60] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] rounded-[2.5rem] shadow-2xl",
@@ -71,9 +66,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-0.5 opacity-60">Admin Panel</span>
           </div>
         </Link>
-        
+
         {isMobile && (
-          <button 
+          <button
             onClick={onClose}
             className="p-2 rounded-lg bg-secondary/50 text-muted-foreground hover:text-foreground transition-all"
           >
@@ -100,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 >
                   <item.icon className="h-5 w-5 transition-colors duration-300 group-hover/item:text-primary" />
                   <span className="text-xs font-black uppercase tracking-widest flex-1 opacity-70 group-hover/item:opacity-100">
-                     {item.label}
+                    {item.label}
                   </span>
                 </motion.div>
               </a>
@@ -132,7 +127,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   "text-xs font-black uppercase tracking-widest flex-1",
                   isActive ? "text-shadow-none" : "opacity-70 group-hover/item:opacity-100"
                 )}>
-                   {item.label}
+                  {item.label}
                 </span>
 
                 {item.badge && (

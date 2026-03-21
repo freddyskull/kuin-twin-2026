@@ -11,6 +11,8 @@ interface Service {
   imageUrl: string | null;
   basePrice: number;
   isActive: boolean;
+  latitude?: number;
+  longitude?: number;
   category?: { name: string };
   unit?: { name: string, abbreviation: string };
   metadata?: Array<{ key: string; value: string }>;
@@ -67,7 +69,8 @@ export const useServicesStore = create<ServicesState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await api.get('/services');
-      set({ services: response.data, isLoading: false });
+      // La API devuelve { items: Service[], total: number }
+      set({ services: response.data.items || [], isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
     }

@@ -68,15 +68,15 @@ export const useMessagesStore = create<MessagesState>((set) => ({
 
       let newNotifications = state.notificationMessages;
       if (isNotification) {
-        // Filtrar cualquier notificación previa del mismo emisor para mostrar solo la última
+        // Un mensaje por remitente para contar conversaciones/personas únicas
         const filtered = state.notificationMessages.filter(m => m.senderId !== message.senderId);
-        newNotifications = [message, ...filtered].slice(0, 5); // Mantener máximo 5 conversaciones recientes
+        newNotifications = [message, ...filtered]; 
       }
 
       return {
         messages: [message, ...state.messages],
         notificationMessages: newNotifications,
-        unreadCount: isNotification ? newNotifications.length : state.unreadCount
+        unreadCount: newNotifications.length
       };
     });
   },

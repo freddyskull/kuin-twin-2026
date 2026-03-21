@@ -97,7 +97,10 @@ export const ServiceInfoStep: React.FC = () => {
         />
 
         <div className="space-y-4">
-          <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1">Empresas y Sucursales Asociadas</Label>
+          <div className="flex items-center justify-between pl-1">
+            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Empresas y Sucursales Asociadas</Label>
+            <span className="text-[10px] font-medium text-slate-500 italic">(Opcional)</span>
+          </div>
           <Controller
             name="companyId"
             control={control}

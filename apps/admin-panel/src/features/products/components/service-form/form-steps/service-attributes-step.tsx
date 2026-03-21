@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import { useFormContext, useFieldArray, useWatch } from 'react-hook-form';
 import { Star, Trash2, MapPin, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Label, FormTextarea, FormInput, Button } from 'ui-components';
+import { Label, FormInput, Button } from 'ui-components';
 import { MapSelector, geocode } from 'ui-components/components/map-selector';
 import type { ServiceFormValues } from '../schema';
+import { useServicesStore } from '../../../../../stores/services.store';
 
 export const ServiceAttributesStep: React.FC = () => {
   const { register, control, formState: { errors }, setValue, getValues } = useFormContext<ServiceFormValues>();
@@ -55,7 +56,7 @@ export const ServiceAttributesStep: React.FC = () => {
         if (newJsonString !== currentJson) {
           setValue('dynamicAttributes', newJsonString, { shouldValidate: true });
         }
-      } catch (e) {
+      } catch {
         // If current JSON is invalid, don't try to merge, just leave it be
       }
     }
@@ -80,7 +81,7 @@ export const ServiceAttributesStep: React.FC = () => {
               setValue('dynamicAttributes', JSON.stringify(parsed, null, 2), { shouldValidate: true });
             }
           }
-        } catch (e) {
+        } catch {
           // Ignore parsing errors
         }
       }
@@ -98,6 +99,41 @@ export const ServiceAttributesStep: React.FC = () => {
       }
     }
   };
+
+  // Use a type-safe way to get the ID if it exists
+  const values = getValues() as ServiceFormValues & { id?: string };
+  const serviceId = values.id;
+  const { services, fetchServices } = useServicesStore();
+
+  useEffect(() => {
+    fetchServices();
+  }, [fetchServices]);
+
+  const referencePoints = React.useMemo(() => {
+    return services
+      .filter(s => s.latitude && s.longitude && s.id !== serviceId)
+      .map(s => ({
+        id: s.id,
+        lat: s.latitude!,
+        lng: s.longitude!,
+        title: s.title
+      }));
+  }, [services, serviceId]);
+
+  const handleLocationChange = React.useCallback((lat: number, lng: number) => {
+    const currentLat = getValues('latitude');
+    const currentLng = getValues('longitude');
+    if (!currentLat || !currentLng || Math.abs(currentLat - lat) > 0.00001 || Math.abs(currentLng - lng) > 0.00001) {
+      setValue('latitude', lat, { shouldDirty: true });
+      setValue('longitude', lng, { shouldDirty: true });
+    }
+  }, [setValue, getValues]);
+
+  const handleAddressChange = React.useCallback((address: string) => {
+    if (getValues('address') !== address) {
+      setValue('address', address, { shouldDirty: true });
+    }
+  }, [setValue, getValues]);
 
   return (
     <motion.section
@@ -175,14 +211,6 @@ export const ServiceAttributesStep: React.FC = () => {
           </div>
         </div>
 
-        <FormTextarea
-          name="dynamicAttributes"
-          label="Atributos JSON"
-          rows={3}
-          placeholder='{"clave": "valor"}'
-          className="font-mono text-xs"
-        />
-
         <div className="bg-[#0a0b1e]/40 p-6 rounded-2xl border border-white/5 space-y-4">
           <div className="flex items-center gap-3 text-primary mb-2">
             <MapPin className="h-4 w-4" />
@@ -208,13 +236,9 @@ export const ServiceAttributesStep: React.FC = () => {
           <MapSelector
             initialLatitude={watchedLatitude}
             initialLongitude={watchedLongitude}
-            onLocationChange={(lat, lng) => {
-              setValue('latitude', lat, { shouldDirty: true });
-              setValue('longitude', lng, { shouldDirty: true });
-            }}
-            onAddressChange={(address) => {
-              setValue('address', address, { shouldDirty: true });
-            }}
+            referencePoints={referencePoints}
+            onLocationChange={handleLocationChange}
+            onAddressChange={handleAddressChange}
           />
         </div>
       </div>

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { NotificationBell, getAbsoluteUrl } from "ui-components";
 import { useMessagesStore } from "@/features/chat";
 import { useRouter } from "next/navigation";
-import { LayoutDashboard, LogOut, User as UserIcon, Settings, Sparkles } from "lucide-react";
+import { LayoutDashboard, LogOut, User as UserIcon, Settings, Sparkles, MessageSquare } from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -110,6 +110,13 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
                 </DropdownMenuItem>
               )}
               
+              <DropdownMenuItem asChild>
+                <Link href="/chat" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-foreground/70 focus:text-foreground hover:bg-white/5 transition-all cursor-pointer">
+                  <MessageSquare className="w-4 h-4" />
+                  <span className="text-xs font-bold">Mensajes</span>
+                </Link>
+              </DropdownMenuItem>
+
               <DropdownMenuItem className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-foreground/70 focus:text-foreground transition-all cursor-pointer">
                 <UserIcon className="w-4 h-4" />
                 <span className="text-xs font-bold">Mi Perfil</span>

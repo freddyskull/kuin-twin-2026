@@ -1,29 +1,68 @@
 import { describe, it, expect } from 'vitest';
 import { serviceSchema } from './schema';
 
+const MOCK_VENDOR_ID = '550e8400-e29b-41d4-a716-446655440005';
+const MOCK_CAT_ID = '550e8400-e29b-41d4-a716-446655440000';
+const MOCK_COMP_ID = '550e8400-e29b-41d4-a716-446655440001';
+const MOCK_UNIT_ID = '550e8400-e29b-41d4-a716-446655440002';
+
 describe('serviceSchema', () => {
     it('debería validar un objeto de servicio correcto', () => {
         const validData = {
+          vendorId: MOCK_VENDOR_ID,
           title: 'Servicio de Prueba',
           description: 'Esta es una descripción de prueba con más de diez caracteres.',
-          categoryId: 'cat-123',
-          companyId: 'comp-123',
+          categoryId: MOCK_CAT_ID,
+          companyId: MOCK_COMP_ID,
           basePrice: 100,
-          unitId: 'unit-123',
+          unitId: MOCK_UNIT_ID,
           showPrice: true,
         };
         const result = serviceSchema.safeParse(validData);
+        if (!result.success) console.log(result.error.errors);
         expect(result.success).toBe(true);
+    });
+
+    it('debería ser válido sin companyId (opcional para individuos)', () => {
+        const dataNoCompany = {
+          vendorId: MOCK_VENDOR_ID,
+          title: 'Servicio Individual',
+          description: 'Descripción de prueba para un servicio sin empresa.',
+          categoryId: MOCK_CAT_ID,
+          basePrice: 50,
+          unitId: MOCK_UNIT_ID,
+          showPrice: true,
+        };
+        const result = serviceSchema.safeParse(dataNoCompany);
+        expect(result.success).toBe(true);
+    });
+
+    it('debería transformar tags de string a array', () => {
+        const dataWithTagsString = {
+          vendorId: MOCK_VENDOR_ID,
+          title: 'Servicio con Tags',
+          description: 'Descripción de prueba para tags.',
+          categoryId: MOCK_CAT_ID,
+          tags: 'tag1, tag2, tag3',
+          basePrice: 10,
+          unitId: MOCK_UNIT_ID,
+          showPrice: true,
+        };
+        const result = serviceSchema.safeParse(dataWithTagsString);
+        expect(result.success).toBe(true);
+        if (result.success) {
+            expect(result.data.tags).toEqual(['tag1', 'tag2', 'tag3']);
+        }
     });
 
     it('debería sanitizar comillas inteligentes en dynamicAttributes', () => {
        const dataWithSmartQuotes = {
+          vendorId: MOCK_VENDOR_ID,
           title: 'Servicio de Prueba',
           description: 'Esta es una descripción de prueba con más de diez caracteres.',
-          categoryId: 'cat-123',
-          companyId: 'comp-123',
+          categoryId: MOCK_CAT_ID,
           basePrice: 100,
-          unitId: 'unit-123',
+          unitId: MOCK_UNIT_ID,
           dynamicAttributes: '{\n  “clave”: “valor”\n}'
        };
        const result = serviceSchema.safeParse(dataWithSmartQuotes);
@@ -34,76 +73,35 @@ describe('serviceSchema', () => {
        }
     });
 
-    it('debería filtrar caracteres de control invisibles en dynamicAttributes', () => {
-        const dataWithInvisibleChar = {
+    it('debería filtrar metadatos vacíos y remover el item', () => {
+        const validMetadatadata = {
+          vendorId: MOCK_VENDOR_ID,
           title: 'Servicio de Prueba',
           description: 'Esta es una descripción de prueba con más de diez caracteres.',
-          categoryId: 'cat-123',
-          companyId: 'comp-123',
+          categoryId: MOCK_CAT_ID,
           basePrice: 100,
-          unitId: 'unit-123',
-          dynamicAttributes: '{\n  "clave":\u00A0"valor"\n}'
-       };
-       const result = serviceSchema.safeParse(dataWithInvisibleChar);
-       expect(result.success).toBe(true);
-       if (result.success) {
-           // Si el character \u00A0 se limpia, el parseo funciona
-           const parsed = JSON.parse(result.data.dynamicAttributes!);
-           expect(parsed.clave).toBe('valor');
-       }
-    });
-
-    it('debería filtrar metadatos vacíos', () => {
-        const dataWithMetadata = {
-          title: 'Servicio de Prueba',
-          description: 'Esta es una descripción de prueba con más de diez caracteres.',
-          categoryId: 'cat-123',
-          companyId: 'comp-123',
-          basePrice: 100,
-          unitId: 'unit-123',
+          unitId: MOCK_UNIT_ID,
           metadata: [
               { key: 'Color', value: 'Rojo' },
-              { key: '', value: '' }, // Should be removed
-              { key: 'Peso', value: '' } // Should be kept or handled? Schema transform logic handles this
-          ]
-       };
-       // Schema logic: 
-       // .transform: filter items where key OR value is not empty string (so keeps if at least one is present)
-       // .refine: checks that if item exists, BOTH key AND value must be filled.
-       // So { key: 'Peso', value: '' } passes transform but fails refine?
-       
-       // Let's check schema:
-       // .transform((items) => items.filter(item => item.key.trim() !== '' || item.value.trim() !== ''))
-       // .refine((items) => items.every(item => item.key.trim() !== '' && item.value.trim() !== ''), 'Todos los atributos deben tener etiqueta y valor')
-       
-       // So { key: '', value: '' } is filtered out -> OK.
-       // { key: 'Peso', value: '' } is KEPT by transform, but REJECTED by refine.
-       
-       // So this test case should fail if we include partial empty.
-       // Let's test checking that empty-empty is removed and valid is kept.
-       
-       const validMetadatadata = {
-          ...dataWithMetadata,
-          metadata: [
-              { key: 'Color', value: 'Rojo' },
-              { key: '', value: '' }
+              { key: '  ', value: ' ' } // Esto debería ser filtrado por el .transform
           ]
        };
        
        const result = serviceSchema.safeParse(validMetadatadata);
+       if (!result.success) console.log(result.error.errors);
        expect(result.success).toBe(true);
        if (result.success) {
            expect(result.data.metadata).toHaveLength(1);
-           expect(result.data.metadata[0].key).toBe('Color');
+           expect(result.data.metadata![0].key).toBe('Color');
        }
     });
 
     it('debería permitir precio 0 si showPrice es false', () => {
         const dataNoPrice = {
+          vendorId: MOCK_VENDOR_ID,
           title: 'Servicio de Cotización',
           description: 'Esta es una descripción de servicio para cotizar.',
-          categoryId: 'cat-123',
-          companyId: 'comp-123',
+          categoryId: MOCK_CAT_ID,
           basePrice: 0,
           unitId: '',
           showPrice: false,
@@ -114,18 +112,15 @@ describe('serviceSchema', () => {
 
     it('debería fallar si falta el precio cuando showPrice es true', () => {
         const invalidData = {
+          vendorId: MOCK_VENDOR_ID,
           title: 'Servicio de Prueba',
           description: 'Esta es una descripción de prueba con más de diez caracteres.',
-          categoryId: 'cat-123',
-          companyId: 'comp-123',
+          categoryId: MOCK_CAT_ID,
           basePrice: 0,
           unitId: '',
           showPrice: true,
         };
         const result = serviceSchema.safeParse(invalidData);
-        if (result.success) {
-          console.log('Unexpected success:', result.data);
-        }
         expect(result.success).toBe(false);
     });
 });

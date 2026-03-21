@@ -205,8 +205,8 @@ export const ServiceWizardForm: React.FC<ServiceWizardFormProps> = ({
       if (stepErrors.length > 0) {
         toast({
           variant: "destructive",
-          title: "Revisa los campos",
-          description: "Hay errores en el formulario que debes corregir antes de continuar.",
+          title: "Atención: Faltan datos",
+          description: "Por favor, completa los campos requeridos para continuar.",
         });
       }
     }

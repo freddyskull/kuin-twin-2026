@@ -34,17 +34,18 @@ Este documento define las reglas técnicas y de arquitectura exclusivas para el 
     - Priorizar **React Server Components (RSC)** para el SEO y performance.
     - Usar `next/image` y `next/font` obligatoriamente.
 19. **Vite (admin-panel):** Enfoque en SPA altamente interactiva usando TanStack Table para listados masivos.
+20. **URL-Sync (Tablas):** Todo estado de tabla (paginación, filtros, búsqueda) debe estar sincronizado obligatoriamente con el **Query String** de la URL. Esto permite compartir enlaces con filtros aplicados y mantener el estado al recargar.
 
 ## 🌍 5. Geolocalización (PostGIS)
-20. **Lógica en Servidor:** Toda lógica espacial (distancias, áreas) debe ejecutarse en PostgreSQL mediante **PostGIS**.
-21. **Tipado Geográfico:** Usar los tipos de `shared-types` que reflejen la estructura `Point` de la base de datos.
+21. **Lógica en Servidor:** Toda lógica espacial (distancias, áreas) debe ejecutarse en PostgreSQL mediante **PostGIS**.
+22. **Tipado Geográfico:** Usar los tipos de `shared-types` que reflejen la estructura `Point` de la base de datos.
 
 ## 🧪 6. Estándar de Pruebas (Vitest)
-22. **Runner:** Vitest es el único runner permitido.
-23. **Mocking:** Usar `vi.mock` para dependencias externas y MSW para interceptar peticiones de red en frontend.
+23. **Runner:** Vitest es el único runner permitido.
+24. **Mocking:** Usar `vi.mock` para dependencias externas y MSW para interceptar peticiones de red en frontend.
 
 ## 🚀 7. Git Workflow & Commits
-24. **Mensaje de Commit Obligatorio:** Formato: `[scope/app] emoji tipo: descripción`.
+25. **Mensaje de Commit Obligatorio:** Formato: `[scope/app] emoji tipo: descripción`.
     * **Scopes:** `backend`, `frontend`, `shared`, `infra`.
     * **Apps:** `api`, `web-store`, `admin-panel`.
     * **Tipos:** `feat`, `fix`, `refactor`, `style`, `ui`, `test`, `docs`, `config`.

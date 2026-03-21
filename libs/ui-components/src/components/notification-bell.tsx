@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Bell, X, MessageSquare, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "../lib/utils";
+import { cn, getAbsoluteUrl } from "../lib/utils";
 
 export interface NotificationMessage {
   id: string;
@@ -135,7 +135,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                       >
                         <div className="h-12 w-12 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0 group-hover:bg-primary/30 group-hover:scale-110 transition-all overflow-hidden shadow-xl shadow-primary/5">
                           {avatarUrl ? (
-                            <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                            <img src={getAbsoluteUrl(avatarUrl) || ''} alt="Avatar" className="h-full w-full object-cover" />
                           ) : (
                             <MessageSquare className="h-5 w-5 text-primary" />
                           )}

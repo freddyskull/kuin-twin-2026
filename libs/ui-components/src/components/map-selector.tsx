@@ -1,14 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { MapContainer, TileLayer, Marker, Tooltip, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
+// @ts-ignore
 import 'leaflet/dist/leaflet.css';
 import { cn } from '../lib/utils';
 
-// Fix for default marker icons and customIcon at runtime to avoid SSR errors
+interface ReferencePoint {
+  id: string;
+  lat: number;
+  lng: number;
+  title?: string;
+}
+
+interface MapSelectorProps {
+  initialLatitude?: number;
+  initialLongitude?: number;
+  onLocationChange: (lat: number, lng: number) => void;
+  onAddressChange?: (address: string) => void;
+  referencePoints?: ReferencePoint[];
+  className?: string;
+}
+
 let customIcon: any = null;
+let referenceIcon: any = null;
 
 if (typeof window !== 'undefined') {
-  // @ts-ignore
+  /* @ts-ignore */
   delete L.Icon.Default.prototype._getIconUrl;
   L.Icon.Default.mergeOptions({
     iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -20,7 +37,7 @@ if (typeof window !== 'undefined') {
     className: 'custom-div-icon',
     html: `
       <div class="relative flex flex-col items-center group">
-        <div class="bg-[#E5C068] text-[#0a0b1e] p-2 rounded-full shadow-[0_0_20px_rgba(229,192,104,0.4)] transform -translate-y-4 transition-transform scale-125">
+        <div class="bg-[#E5C068] text-[#0a0b1e] p-2 rounded-full shadow-[0_0_20px_rgba(229,192,104,0.4)] transform -translate-y-4 transition-all scale-125 z-50">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
       </div>
@@ -28,76 +45,83 @@ if (typeof window !== 'undefined') {
     iconSize: [30, 42],
     iconAnchor: [15, 42],
   });
+
+  referenceIcon = L.divIcon({
+    className: 'reference-div-icon',
+    html: `
+      <div class="relative flex flex-col items-center opacity-60 hover:opacity-100 transition-opacity">
+        <div class="bg-slate-400 text-[#0a0b1e] p-1.5 rounded-full shadow-lg transform -translate-y-2 scale-90">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+      </div>
+    `,
+    iconSize: [20, 28],
+    iconAnchor: [10, 28],
+  });
 }
 
-interface MapSelectorProps {
-  initialLatitude?: number;
-  initialLongitude?: number;
-  onLocationChange: (lat: number, lng: number) => void;
-  onAddressChange?: (address: string) => void;
-  className?: string;
-}
+// Cache simple para evitar peticiones repetidas al mismo punto
+const geocodeCache = new Map<string, string>();
+const failedGeocodes = new Set<string>();
 
 // Helper for reverse geocoding (Nominatim - Free OSM API)
 const reverseGeocode = async (lat: number, lng: number) => {
+  const key = `${lat.toFixed(5)},${lng.toFixed(5)}`;
+  if (geocodeCache.has(key)) return geocodeCache.get(key)!;
+  if (failedGeocodes.has(key)) return '';
+
   try {
     const response = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
       {
         headers: {
-          'Accept-Language': 'es', // Prefer Spanish addresses
-          'User-Agent': 'KuinTwin-AdminPanel'
+          'Accept-Language': 'es',
+          'User-Agent': 'KuinTwin-AdminPanel-V2'
         }
       }
     );
+    
+    if (response.status === 429) {
+      console.warn("Nominatim API rate limit reached (429). Stopping requests for this point.");
+      failedGeocodes.add(key);
+      return '';
+    }
+
     const data = await response.json();
-    return data.display_name || '';
+    const address = data.display_name || '';
+    if (address) geocodeCache.set(key, address);
+    return address;
   } catch (error) {
     console.error("Reverse geocoding error:", error);
+    failedGeocodes.add(key);
     return '';
   }
 };
 
-// Helper for geocoding (Address to Coordinates)
-const geocode = async (address: string) => {
-  if (!address || address.length < 3) return null;
-  try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`,
-      {
-        headers: {
-          'Accept-Language': 'es',
-          'User-Agent': 'KuinTwin-AdminPanel'
-        }
-      }
-    );
-    const data = await response.json();
-    if (data && data.length > 0) {
-      return {
-        lat: parseFloat(data[0].lat),
-        lng: parseFloat(data[0].lon)
-      };
-    }
-    return null;
-  } catch (error) {
-    console.error("Geocoding error:", error);
-    return null;
-  }
-};
-
 // Component to handle map clicks and recentering
-const MapController = ({ position, setPosition, onLocationChange, onAddressChange }: any) => {
+const MapController = ({ position, setPosition, onLocationChange, onAddressChange, lastReportedRef }: any) => {
   const map = useMap();
 
-  const handleUpdate = async (lat: number, lng: number) => {
+  const handleUpdate = useCallback(async (lat: number, lng: number, skipGeocode = false) => {
+    // Evitar llamadas duplicadas si la posición no ha cambiado significativamente
+    if (lastReportedRef.current && 
+        Math.abs(lastReportedRef.current.lat - lat) < 0.00001 && 
+        Math.abs(lastReportedRef.current.lng - lng) < 0.00001) {
+      return;
+    }
+
+    lastReportedRef.current = { ...lastReportedRef.current, lat, lng };
     setPosition([lat, lng]);
     onLocationChange(lat, lng);
 
-    if (onAddressChange) {
+    if (onAddressChange && !skipGeocode) {
       const address = await reverseGeocode(lat, lng);
-      onAddressChange(address);
+      if (address && lastReportedRef.current.address !== address) {
+        lastReportedRef.current.address = address;
+        onAddressChange(address);
+      }
     }
-  };
+  }, [onLocationChange, onAddressChange, setPosition, lastReportedRef]);
 
   // Listen for clicks on the map
   useMapEvents({
@@ -130,11 +154,39 @@ const MapController = ({ position, setPosition, onLocationChange, onAddressChang
   ) : null;
 };
 
+// Helper for geocoding (Address to Coordinates)
+const geocode = async (address: string) => {
+  if (!address || address.length < 3) return null;
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`,
+      {
+        headers: {
+          'Accept-Language': 'es',
+          'User-Agent': 'KuinTwin-AdminPanel-V2'
+        }
+      }
+    );
+    const data = await response.json();
+    if (data && data.length > 0) {
+      return {
+        lat: parseFloat(data[0].lat),
+        lng: parseFloat(data[0].lon)
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("Geocoding error:", error);
+    return null;
+  }
+};
+
 export const MapSelector: React.FC<MapSelectorProps> = ({
   initialLatitude = 0,
   initialLongitude = 0,
   onLocationChange,
   onAddressChange,
+  referencePoints = [],
   className,
 }) => {
   // Medellín by default if no coordinates provided and geo fails
@@ -147,53 +199,72 @@ export const MapSelector: React.FC<MapSelectorProps> = ({
       : null
   );
 
+  // Ref to track last values reported to parent or received from initial props
+  const lastReportedRef = useRef<{lat: number, lng: number, address: string | null}>({
+    lat: initialLatitude || 0,
+    lng: initialLongitude || 0,
+    address: null
+  });
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Update position if initial coordinates change significantly (and not from our own update)
+  useEffect(() => {
+    if (initialLatitude && initialLongitude && initialLatitude !== 0) {
+      const hasChanged = Math.abs(lastReportedRef.current.lat - initialLatitude) > 0.0001 || 
+                         Math.abs(lastReportedRef.current.lng - initialLongitude) > 0.0001;
+      
+      if (hasChanged) {
+        lastReportedRef.current.lat = initialLatitude;
+        lastReportedRef.current.lng = initialLongitude;
+        setPosition([initialLatitude, initialLongitude]);
+      }
+    }
+  }, [initialLatitude, initialLongitude]);
+
   // Auto-detect user location if no initial position provided
   useEffect(() => {
-    if ((!initialLatitude || initialLatitude === 0) && !position) {
+    if ((!initialLatitude || initialLatitude === 0) && !position && mounted) {
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (pos) => {
             const { latitude, longitude } = pos.coords;
             const newPos: [number, number] = [latitude, longitude];
+            
+            lastReportedRef.current.lat = latitude;
+            lastReportedRef.current.lng = longitude;
+            
             setPosition(newPos);
             onLocationChange(latitude, longitude);
 
             // Trigger reverse geocode for user location
             if (onAddressChange) {
-              reverseGeocode(latitude, longitude).then(onAddressChange);
+              reverseGeocode(latitude, longitude).then(address => {
+                if (address) {
+                  lastReportedRef.current.address = address;
+                  onAddressChange(address);
+                }
+              });
             }
           },
           (error) => {
             console.warn("Geolocation denied or failed, using default:", error.message);
             setPosition(defaultPos);
+            lastReportedRef.current.lat = defaultPos[0];
+            lastReportedRef.current.lng = defaultPos[1];
             onLocationChange(defaultPos[0], defaultPos[1]);
-            if (onAddressChange) {
-              reverseGeocode(defaultPos[0], defaultPos[1]).then(onAddressChange);
-            }
           }
         );
       } else {
         setPosition(defaultPos);
+        lastReportedRef.current.lat = defaultPos[0];
+        lastReportedRef.current.lng = defaultPos[1];
         onLocationChange(defaultPos[0], defaultPos[1]);
-        if (onAddressChange) {
-          reverseGeocode(defaultPos[0], defaultPos[1]).then(onAddressChange);
-        }
       }
     }
-  }, [initialLatitude, onLocationChange, onAddressChange, position]);
-
-  useEffect(() => {
-    if (initialLatitude && initialLongitude && initialLatitude !== 0) {
-      setPosition([initialLatitude, initialLongitude]);
-      if (onAddressChange) {
-        reverseGeocode(initialLatitude, initialLongitude).then(onAddressChange);
-      }
-    }
-  }, [initialLatitude, initialLongitude, onAddressChange]);
+  }, [initialLatitude, onLocationChange, onAddressChange, position, mounted]);
 
   if (!mounted) return <div className={cn("w-full h-[400px] rounded-3xl bg-[#0a0b1e]", className)} />;
 
@@ -209,11 +280,28 @@ export const MapSelector: React.FC<MapSelectorProps> = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
+        
+        {/* Render reference points (other services) */}
+        {mounted && referencePoints?.map((point) => (
+          <Marker
+            key={point.id}
+            position={[point.lat, point.lng]}
+            icon={referenceIcon}
+          >
+            {point.title && (
+              <Tooltip direction="top" offset={[0, -10]} opacity={1}>
+                <span className="text-[10px] font-bold text-slate-800">{point.title}</span>
+              </Tooltip>
+            )}
+          </Marker>
+        ))}
+
         <MapController
           position={position}
           setPosition={setPosition}
           onLocationChange={onLocationChange}
           onAddressChange={onAddressChange}
+          lastReportedRef={lastReportedRef}
         />
       </MapContainer>
 

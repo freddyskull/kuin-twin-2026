@@ -44,7 +44,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({ company, vendorN
           {logoUrl ? (
             <Image
               src={logoUrl}
-              alt={company.businessName}
+              alt={company.businessName || 'Company Logo'}
               fill
               className="object-contain p-2 transition-transform group-hover:scale-110"
               unoptimized

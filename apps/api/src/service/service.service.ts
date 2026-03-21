@@ -91,39 +91,54 @@ export class ServiceService {
           { slug: { contains: filters.search, mode: 'insensitive' } },
           { description: { contains: filters.search, mode: 'insensitive' } },
           { tags: { hasSome: [filters.search] } },
-          // Búsqueda aproximada en tags (si el backend lo soporta vía JSON o si tags fuera un string simple)
-          // Como tags es string[], hasSome es lo más cercano, pero podemos añadir más campos
         ]
       } : {})
     };
 
-    // Si hay coordenadas, usamos una query diferente para ordenar por relevancia + proximidad
-    if (filters?.lat !== undefined && filters?.lng !== undefined) {
+    // Si hay búsqueda O coordenadas, usamos la query de relevancia
+    if (filters?.search || (filters?.lat !== undefined && filters?.lng !== undefined)) {
+      const search = (filters.search || '').trim();
+      const searchTerm = search ? `%${search}%` : null;
+      const lat = filters.lat || 0;
+      const lng = filters.lng || 0;
+      const hasCoords = filters?.lat !== undefined && filters?.lng !== undefined;
       const radiusMeters = (filters.radiusKm || 50) * 1000;
-      const lng = filters.lng;
-      const lat = filters.lat;
-      const searchTerm = filters.search ? `%${filters.search}%` : null;
 
-      // Query con sistema de puntuación:
+      // Query con sistema de puntuación mejorado:
       // - Score 100: Título coincide exactamente (ignore case)
-      // - Score 50: Título contiene la palabra
-      // - Score 20: Descripción contiene la palabra
+      // - Score 80: El término es uno de los tags exactamente (ignore case)
+      // - Score 70: El título EMPIEZA con la palabra buscada
+      // - Score 50: El título CONTIENE la palabra buscada
+      // - Score 40: El slug contiene la palabra
+      // - Score 20: La descripción contiene la palabra
+      // - Score 15: Algún tag contiene la palabra (búsqueda parcial)
       const items: any[] = await this.prisma.$queryRaw`
         SELECT s.id, 
-               ST_Distance(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326)) as distance,
+               ${hasCoords ? Prisma.sql`ST_DistanceSphere(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326))` : Prisma.sql`0`} as distance,
                CASE 
-                 WHEN ${filters.search || ''} = '' THEN 1
-                 WHEN s."title" ILIKE ${filters.search || ''} THEN 100
+                 WHEN ${search} = '' THEN 1
+                 WHEN s."title" ILIKE ${search} THEN 100
+                 WHEN EXISTS (SELECT 1 FROM unnest(s."tags") t WHERE t ILIKE ${search}) THEN 80
+                 WHEN s."title" ILIKE ${search + '%'} THEN 70
                  WHEN s."title" ILIKE ${searchTerm || ''} THEN 50
+                 WHEN s."slug" ILIKE ${searchTerm || ''} THEN 40
                  WHEN s."description" ILIKE ${searchTerm || ''} THEN 20
+                 WHEN EXISTS (SELECT 1 FROM unnest(s."tags") t WHERE t ILIKE ${searchTerm || ''}) THEN 15
                  ELSE 0
                END as relevance_score
         FROM "Service" s
         WHERE s."isActive" = ${filters.isActive ?? true}
         ${filters.categoryId ? Prisma.sql`AND s."categoryId" = ${filters.categoryId}` : Prisma.empty}
         ${filters.vendorId ? Prisma.sql`AND s."vendorId" = ${filters.vendorId}` : Prisma.empty}
-        ${filters.search ? Prisma.sql`AND (s."title" ILIKE ${searchTerm} OR s."description" ILIKE ${searchTerm} OR ${filters.search} = ANY(s."tags"))` : Prisma.empty}
-        ORDER BY relevance_score DESC, distance ASC NULLS LAST
+        ${hasCoords ? Prisma.sql`AND ST_DWithin(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326), ${radiusMeters})` : Prisma.empty}
+        ${search ? Prisma.sql`AND (
+          s."title" ILIKE ${searchTerm} 
+          OR s."description" ILIKE ${searchTerm} 
+          OR s."slug" ILIKE ${searchTerm} 
+          OR EXISTS (SELECT 1 FROM unnest(s."tags") t WHERE t ILIKE ${search})
+          OR EXISTS (SELECT 1 FROM unnest(s."tags") t WHERE t ILIKE ${searchTerm})
+        )` : Prisma.empty}
+        ORDER BY relevance_score DESC, ${hasCoords ? Prisma.sql`distance ASC NULLS LAST` : Prisma.sql`s."title" ASC`}, s."id" ASC
         LIMIT ${limit} OFFSET ${skip}
       `;
 
@@ -132,7 +147,15 @@ export class ServiceService {
         FROM "Service" s
         WHERE s."isActive" = ${filters.isActive ?? true}
         ${filters.categoryId ? Prisma.sql`AND s."categoryId" = ${filters.categoryId}` : Prisma.empty}
-        ${filters.search ? Prisma.sql`AND (s."title" ILIKE ${searchTerm} OR s."description" ILIKE ${searchTerm})` : Prisma.empty}
+        ${filters.vendorId ? Prisma.sql`AND s."vendorId" = ${filters.vendorId}` : Prisma.empty}
+        ${hasCoords ? Prisma.sql`AND ST_DWithin(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326), ${radiusMeters})` : Prisma.empty}
+        ${search ? Prisma.sql`AND (
+          s."title" ILIKE ${searchTerm} 
+          OR s."description" ILIKE ${searchTerm} 
+          OR s."slug" ILIKE ${searchTerm} 
+          OR EXISTS (SELECT 1 FROM unnest(s."tags") t WHERE t ILIKE ${search})
+          OR EXISTS (SELECT 1 FROM unnest(s."tags") t WHERE t ILIKE ${searchTerm})
+        )` : Prisma.empty}
       `;
 
       if (items.length === 0) return { items: [], total: 0 };
@@ -151,12 +174,17 @@ export class ServiceService {
         }
       });
 
-      // Reordenar por distancia
-      const sortedItems = ids.map(id => services.find(s => s.id === id)).filter(Boolean);
+      // Reordenar para respetar el orden de relevancia/distancia de la query SQL y añadir la propiedad distance
+      const sortedItems = ids.map(id => {
+        const item = items.find(i => i.id === id);
+        const service = services.find(s => s.id === id);
+        if (!service) return null;
+        return { ...service, distance: item?.distance ? Number(item.distance) : null };
+      }).filter(Boolean);
       return { items: sortedItems as Service[], total: total[0]?.count || 0 };
     }
 
-    // Comportamiento estándar sin proximidad
+    // Comportamiento estándar sin búsqueda ni proximidad (solo filtros de categoría/vendor)
     const [items, total] = await Promise.all([
       this.prisma.service.findMany({
         where,
@@ -169,7 +197,7 @@ export class ServiceService {
           faqs: { orderBy: { order: 'asc' } },
           vendor: { select: { id: true, email: true, profile: true } } 
         },
-        orderBy: { title: 'asc' },
+        orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
@@ -362,7 +390,15 @@ export class ServiceService {
     });
 
     // Reordenar para mantener la distancia (ya que findMany no garantiza orden de IN)
-    return ids.map(id => services.find(s => s.id === id)).filter(Boolean) as Service[];
+    return ids.map(id => {
+      const service = services.find(s => s.id === id);
+      const nearbyInfo = nearbyServices.find(s => s.id === id);
+      if (!service) return null;
+      return { 
+        ...service, 
+        distance: nearbyInfo?.distance ? Number(nearbyInfo.distance) : null 
+      };
+    }).filter(Boolean) as Service[];
   }
 
   private async clearServiceCache(vId: string, cId: string, sId?: string) {

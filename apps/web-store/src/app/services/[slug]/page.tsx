@@ -309,7 +309,7 @@ export default async function ServicePage({ params }: PageProps) {
 
           {/* Call to Action Box - Sticky */}
           <div className="sticky top-24">
-            <Card className="p-6 border-primary/20 bg-red-500 dark:bg-primary/5 backdrop-blur-sm shadow-xl shadow-primary/5">
+            <Card className="p-6 border-primary/20 bg-card dark:bg-primary/5 backdrop-blur-sm shadow-xl shadow-primary/5">
               <h3 className="font-bold text-lg mb-4">
                 {service.showPrice ? 'Reservar este servicio' : 'Solicitar Cotización'}
               </h3>

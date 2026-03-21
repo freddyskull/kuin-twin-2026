@@ -16,6 +16,8 @@ export { CustomForm } from "./components/custom-form";
 // export { MapSelector, geocode } from "./components/map-selector";
 export { FormChips } from "./components/form-chips";
 export { DataTable } from "./components/data-table";
+export { Pagination } from "./components/pagination";
+export { ResourceTable } from "./components/resource-table";
 export { SmartSubmitButton } from "./components/smart-submit-button";
 export {
   Select,
@@ -34,9 +36,12 @@ export { Checkbox } from "./components/ui/checkbox";
 export { Switch } from "./components/ui/switch";
 
 
+// Export hooks
+export { useToast } from "./hooks/use-toast";
+export { useQueryState, useQueryPagination } from "./hooks/use-query-state";
+
 // Export toast components
 export { Toaster } from "./components/ui/toaster";
-export { useToast } from "./hooks/use-toast";
 export {
   Toast,
   ToastAction,

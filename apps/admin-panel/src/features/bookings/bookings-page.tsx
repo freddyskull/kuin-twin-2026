@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useBookings, useUpdateBookingStatus } from './bookings.hooks';
-import { DataTable, Avatar, AvatarFallback, AvatarImage } from 'ui-components';
+import { Avatar, AvatarFallback, AvatarImage, ResourceTable, useQueryState, useQueryPagination } from 'ui-components';
 import { useAuthStore } from '../../stores/auth.store';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -12,7 +12,13 @@ import { Modal } from '@/components/Modal';
 
 export const BookingsPage: React.FC = () => {
   const user = useAuthStore((state) => state.user);
-  const [filter, setFilter] = React.useState<'all' | 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED'>('all');
+  
+  // URL-Synced state
+  const [filter, setFilter] = useQueryState<'all' | 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED'>('filter', 'all');
+  const [page, setPage] = useQueryPagination();
+  const [searchTerm, setSearchTerm] = useQueryState('search', '');
+  
+  const pageSize = 10;
 
   const { data: bookings = [], isLoading, error } = useBookings({
     vendorId: user?.id,
@@ -24,12 +30,33 @@ export const BookingsPage: React.FC = () => {
     vendorId: user?.id
   });
 
+  const { filteredBookings, paginatedBookings, totalPages, total } = useMemo(() => {
+    const filtered = bookings.filter(b => {
+      const matchesSearch = searchTerm === '' || 
+        b.service?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        b.customer?.profile?.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        b.id.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return matchesSearch;
+    });
+    
+    const total = filtered.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
+    
+    return { filteredBookings: filtered, paginatedBookings: paginated, totalPages, total };
+  }, [bookings, page, searchTerm]);
+
   const updateStatusMutation = useUpdateBookingStatus();
   const [confirmConfig, setConfirmConfig] = React.useState<{ id: string; status: string; title: string } | null>(null);
   const [selectedBooking, setSelectedBooking] = React.useState<BookingDto | null>(null);
 
   const handleStatusUpdate = (id: string, status: string, title: string) => {
     setConfirmConfig({ id, status, title });
+  };
+
+  const handleFilterChange = (f: typeof filter) => {
+    setFilter(f);
   };
 
   const confirmUpdate = async () => {
@@ -160,51 +187,41 @@ export const BookingsPage: React.FC = () => {
   const totalActive = (allBookings || []).filter((b: BookingDto) => b.status === 'ACTIVE').length;
 
   return (
-    <div className="space-y-6 md:space-y-8 max-w-[1400px] mx-auto pb-10 font-sans">
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-        <div className="space-y-1">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Pedidos</h1>
-          <p className="text-muted-foreground text-xs md:text-sm">Gestiona y realiza seguimiento de todas las reservas.</p>
-        </div>
-
-        <div className="flex bg-secondary/50 p-1 rounded-xl border border-border overflow-x-auto no-scrollbar">
-          {(['all', 'PENDING', 'ACTIVE', 'COMPLETED', 'CANCELLED'] as const).map((f) => (
+    <>
+      <ResourceTable<BookingDto>
+        title="Pedidos"
+        subtitle="Gestiona y realiza seguimiento de todas las reservas."
+        total={total}
+        isLoading={isLoading}
+        columns={columns}
+        data={paginatedBookings}
+        emptyMessage="No se encontraron pedidos."
+        search={{
+          value: searchTerm,
+          onChange: setSearchTerm,
+          placeholder: "Buscar por servicio, cliente o ID..."
+        }}
+        pagination={{
+          currentPage: page,
+          totalPages: totalPages,
+          onPageChange: setPage
+        }}
+        filters={
+          (['all', 'PENDING', 'ACTIVE', 'COMPLETED', 'CANCELLED'] as const).map((f) => (
             <button
               key={f}
-              onClick={() => setFilter(f)}
+              onClick={() => handleFilterChange(f)}
               className={`px-4 py-1.5 text-[10px] font-bold rounded-lg transition-all uppercase tracking-wider whitespace-nowrap ${filter === f
                 ? 'bg-background text-primary shadow-sm border border-border/50'
                 : 'text-muted-foreground hover:text-foreground'
                 }`}
             >
-              {f === 'all' ? 'Todos' : f === 'PENDING' ? `Pendientes (${totalPending})` : f === 'ACTIVE' ? `Activos (${totalActive})` : f === 'COMPLETED' ? 'Completados' : 'Cancelados'}
+              {f === 'all' ? 'Todos' : f === 'PENDING' ? `Pendientes (${totalPending})` : f === 'ACTIVE' ? `Activos (${totalActive})` : f === 'COMPLETED' ? 'Completados' : f === 'CANCELLED' ? 'Cancelados' : ''}
             </button>
-          ))}
-        </div>
-      </div>
+          ))
+        }
+      />
 
-      {error && (
-        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
-          <XCircle className="h-4 w-4" />
-          Error al cargar pedidos: {(error as Error).message}
-        </div>
-      )}
-
-      <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden relative">
-        <div className="overflow-x-auto custom-scrollbar">
-          <div className="min-w-[850px]">
-            <DataTable
-              columns={columns}
-              data={bookings}
-              isLoading={isLoading}
-              emptyMessage="No se encontraron pedidos."
-              className="border-none"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Confirmation Modal */}
       <AnimatePresence>
         {confirmConfig && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
@@ -341,6 +358,6 @@ export const BookingsPage: React.FC = () => {
           </div>
         )}
       </Modal>
-    </div>
+    </>
   );
 };

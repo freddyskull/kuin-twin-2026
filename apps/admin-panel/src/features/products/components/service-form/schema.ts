@@ -45,7 +45,30 @@ export const serviceSchema = CreateServiceBaseSchema.extend({
       return z.NEVER;
     }
   }),
-  companyId: z.string().min(1, 'Debes seleccionar una empresa'),
+  vendorId: z.string().uuid().optional(),
+  categoryId: z.string().uuid('La categoría es obligatoria'),
+  unitId: z.string().uuid('La unidad de medida es obligatoria').or(z.literal('')).nullish(),
+  companyId: z.string().uuid('ID de empresa inválido').optional().or(z.literal('')),
+  
+  // Clean up metadata: remove items where both key and value are empty
+  metadata: z.array(z.object({
+    key: z.string(),
+    value: z.string()
+  })).default([])
+    .transform((items) => items.filter(item => item.key.trim() !== '' || item.value.trim() !== ''))
+    .refine((items) => items.every(item => item.key.trim() !== '' && item.value.trim() !== ''), {
+      message: "Todos los atributos deben tener etiqueta y valor"
+    }),
+}).refine((data) => {
+  // UI-level price validation
+  if (data.showPrice) {
+    const price = Number(data.basePrice);
+    return price > 0 && !!data.unitId && data.unitId !== '';
+  }
+  return true;
+}, {
+  message: "El precio y la unidad son obligatorios si decides mostrar el precio",
+  path: ["basePrice"]
 });
 
 export type ServiceFormValues = z.infer<typeof serviceSchema>;

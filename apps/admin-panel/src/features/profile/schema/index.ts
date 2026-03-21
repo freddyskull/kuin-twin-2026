@@ -7,18 +7,18 @@ import { CreateProfileSchema } from "shared-types";
 export const ProfileFormSchema = CreateProfileSchema.extend({
   // Transformar de null a "" para el formulario
   bio: z.string().nullable().default(""),
-  avatarUrl: z.string().url().nullable().optional(),
-  
+  avatarUrl: z.string().url("URL inválida").or(z.literal("")).nullable().optional(),
+
   // Las redes sociales son opcionales y strings
-  website: z.string().url().nullable().optional(),
+  website: z.string().url("URL inválida").or(z.literal("")).nullable().optional(),
   phone: z.string().nullable().optional(), 
   whatsapp: z.string().nullable().optional(),
-  facebook: z.string().nullable().optional(),
-  instagram: z.string().nullable().optional(),
-  tiktok: z.string().nullable().optional(),
-  twitter: z.string().nullable().optional(),
-  linkedin: z.string().nullable().optional(),
-  youtube: z.string().nullable().optional(),
+  facebook: z.string().url("URL inválida").or(z.literal("")).nullable().optional(),
+  instagram: z.string().url("URL inválida").or(z.literal("")).nullable().optional(),
+  tiktok: z.string().url("URL inválida").or(z.literal("")).nullable().optional(),
+  twitter: z.string().url("URL inválida").or(z.literal("")).nullable().optional(),
+  linkedin: z.string().url("URL inválida").or(z.literal("")).nullable().optional(),
+  youtube: z.string().url("URL inválida").or(z.literal("")).nullable().optional(),
   
   // Location (por ahora opcionales como string o number si queremos inputs manuales)
   latitude: z.number().optional().nullable(),

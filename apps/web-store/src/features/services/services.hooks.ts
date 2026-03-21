@@ -27,8 +27,9 @@ export const useInfiniteServices = (filters: {
   lat?: number;
   lng?: number;
   radius?: number;
+  enabled?: boolean;
 } = {}) => {
-  const { limit = 12, categoryId, search, lat, lng, radius } = filters;
+  const { limit = 12, categoryId, search, lat, lng, radius, enabled = true } = filters;
   
   return useInfiniteQuery({
     queryKey: ['services', 'infinite', limit, categoryId, search, lat, lng, radius],
@@ -47,6 +48,7 @@ export const useInfiniteServices = (filters: {
       return loaded < lastPage.total ? lastPage.page + 1 : undefined;
     },
     staleTime: 1000 * 60 * 5, // 5 minutos
+    enabled,
   });
 };
 
