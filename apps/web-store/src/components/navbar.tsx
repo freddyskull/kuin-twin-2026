@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
-import { NotificationBell } from "ui-components";
+import { NotificationBell, getAbsoluteUrl } from "ui-components";
 import { useMessagesStore } from "@/features/chat";
 import { useRouter } from "next/navigation";
 import { LayoutDashboard, LogOut, User as UserIcon, Settings, Sparkles } from "lucide-react";
@@ -52,11 +52,23 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
   const isHome = pathname === "/";
   const isChat = pathname?.startsWith("/chat");
 
+  const getInitials = (name: string) => {
+    if (!name) return "??";
+    const parts = name.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+
   // Render user section only after mounting to avoid hydration mismatch
   const renderUserSection = () => {
     if (!isMounted) return null;
 
     if (user) {
+      const displayName = user.displayName || user.email.split('@')[0];
+      const initials = getInitials(user.displayName || displayName);
+
       return (
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
@@ -67,11 +79,14 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
                   {user.role === 'ADMIN' ? 'Administrador' : user.role === 'VENDOR' ? 'Proveedor' : 'Cliente'}
                 </p>
               </div>
-              <Avatar className="h-10 w-10 border-2 border-primary/20 ring-4 ring-primary/5 transition-all group-hover/user:ring-primary/10 shadow-lg group-data-[state=open]/user:ring-primary/20">
-                <AvatarImage src={user.avatarUrl} />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold font-mono">
-                  {(user.displayName || user.email).substring(0, 2).toUpperCase()}
-                </AvatarFallback>
+              <Avatar className="h-10 w-10 border-2 border-primary/20 ring-4 ring-primary/5 transition-all group-hover/user:ring-primary/10 shadow-lg group-data-[state=open]/user:ring-primary/20 overflow-hidden">
+                {user.avatarUrl ? (
+                  <AvatarImage src={getAbsoluteUrl(user.avatarUrl) || ''} alt={displayName} />
+                ) : (
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold font-mono w-full h-full flex items-center justify-center">
+                    {initials}
+                  </AvatarFallback>
+                )}
               </Avatar>
             </div>
           </DropdownMenuTrigger>

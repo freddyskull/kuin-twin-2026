@@ -61,7 +61,12 @@ export const useAuthStore = create<AuthState>()(
           const response = await api.get('/auth/me', {
             headers: { Authorization: `Bearer ${token}` }
           });
-          const { user } = response.data;
+          const { user: userData, profile } = response.data;
+          const user = {
+            ...userData,
+            displayName: profile?.displayName,
+            avatarUrl: profile?.avatarUrl,
+          };
           console.log('[auth.store] Session validated successfully for:', user.email);
           set({ user, token, isAuthenticated: true });
         } catch (error: any) {
