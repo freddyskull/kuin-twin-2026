@@ -20,15 +20,15 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:3001/api/:path*',
+        destination: 'http://api:3001/api/:path*',
       },
       {
         source: '/socket.io/:path*',
-        destination: 'http://localhost:3001/socket.io/:path*',
+        destination: 'http://api:3001/socket.io/:path*',
       },
       {
         source: '/uploads/:path*',
-        destination: 'http://localhost:3001/uploads/:path*',
+        destination: 'http://api:3001/uploads/:path*',
       },
     ];
   },

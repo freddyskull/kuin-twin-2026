@@ -41,6 +41,7 @@ export function mapUpdateServiceData(updateDto: UpdateServiceDto): Prisma.Servic
     metadata, faqs, slots, workSchedule, companyId, 
     tags, dynamicAttributes, commentsBox,
     branchIds, latitude, longitude, address,
+    categoryId, unitId,
     ...rest 
   } = updateDto;
 
@@ -50,6 +51,15 @@ export function mapUpdateServiceData(updateDto: UpdateServiceDto): Prisma.Servic
   };
   
   if (tags !== undefined) data.tags = tags;
+  
+  if (categoryId !== undefined) {
+    data.category = { connect: { id: categoryId } };
+  }
+  
+  if (unitId !== undefined) {
+    data.unit = unitId ? { connect: { id: unitId } } : { disconnect: true };
+  }
+
   if (companyId !== undefined) {
     data.company = companyId ? { connect: { id: companyId } } : { disconnect: true };
   }

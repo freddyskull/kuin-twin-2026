@@ -26,7 +26,7 @@ export function getAbsoluteUrl(path: string | null | undefined): string | null {
     }
   } else if (!apiUrl) {
     // Fallback para SSR si no hay env var
-    apiUrl = 'http://localhost:3001';
+    apiUrl = 'http://api:3001';
   }
   
   // Asegurar que no haya doble slash

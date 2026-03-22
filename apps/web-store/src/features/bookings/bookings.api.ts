@@ -1,6 +1,6 @@
 import type { CreateBookingInput, BookingDto } from 'shared-types';
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001') + '/api';
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://api:3001') + '/api';
 
 export const createBooking = async (data: CreateBookingInput): Promise<BookingDto> => {
   const response = await fetch(`${API_URL}/bookings`, {

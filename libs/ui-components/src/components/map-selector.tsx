@@ -181,6 +181,8 @@ const geocode = async (address: string) => {
   }
 };
 
+const DEFAULT_POS: [number, number] = [6.2442, -75.5812];
+
 export const MapSelector: React.FC<MapSelectorProps> = ({
   initialLatitude = 0,
   initialLongitude = 0,
@@ -189,9 +191,6 @@ export const MapSelector: React.FC<MapSelectorProps> = ({
   referencePoints = [],
   className,
 }) => {
-  // Medellín by default if no coordinates provided and geo fails
-  const defaultPos: [number, number] = [6.2442, -75.5812];
-
   const [mounted, setMounted] = useState(false);
   const [position, setPosition] = useState<[number, number] | null>(
     initialLatitude && initialLongitude && initialLatitude !== 0
@@ -226,7 +225,8 @@ export const MapSelector: React.FC<MapSelectorProps> = ({
 
   // Auto-detect user location if no initial position provided
   useEffect(() => {
-    if ((!initialLatitude || initialLatitude === 0) && !position && mounted) {
+    // Solo actuamos si no hay posición inicial, no tenemos una posición actual y el componente ya está montado
+    if (mounted && (!initialLatitude || initialLatitude === 0) && !position) {
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (pos) => {
@@ -251,27 +251,28 @@ export const MapSelector: React.FC<MapSelectorProps> = ({
           },
           (error) => {
             console.warn("Geolocation denied or failed, using default:", error.message);
-            setPosition(defaultPos);
-            lastReportedRef.current.lat = defaultPos[0];
-            lastReportedRef.current.lng = defaultPos[1];
-            onLocationChange(defaultPos[0], defaultPos[1]);
+            // Evitamos ciclos infinitos usando la constante DEFAULT_POS estable
+            lastReportedRef.current.lat = DEFAULT_POS[0];
+            lastReportedRef.current.lng = DEFAULT_POS[1];
+            setPosition(DEFAULT_POS);
+            onLocationChange(DEFAULT_POS[0], DEFAULT_POS[1]);
           }
         );
       } else {
-        setPosition(defaultPos);
-        lastReportedRef.current.lat = defaultPos[0];
-        lastReportedRef.current.lng = defaultPos[1];
-        onLocationChange(defaultPos[0], defaultPos[1]);
+        lastReportedRef.current.lat = DEFAULT_POS[0];
+        lastReportedRef.current.lng = DEFAULT_POS[1];
+        setPosition(DEFAULT_POS);
+        onLocationChange(DEFAULT_POS[0], DEFAULT_POS[1]);
       }
     }
-  }, [initialLatitude, onLocationChange, onAddressChange, position, mounted]);
+  }, [mounted, initialLatitude, onLocationChange, onAddressChange, position]);
 
   if (!mounted) return <div className={cn("w-full h-[400px] rounded-3xl bg-[#0a0b1e]", className)} />;
 
   return (
     <div className={cn("relative w-full h-[400px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0a0b1e]", className)}>
       <MapContainer
-        center={position || defaultPos}
+        center={position || DEFAULT_POS}
         zoom={13}
         scrollWheelZoom={true}
         style={{ width: '100%', height: '100%', background: '#0a0b1e' }}

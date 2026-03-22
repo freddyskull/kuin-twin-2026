@@ -2,15 +2,17 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Image as ImageIcon, Trash2, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useToast } from 'ui-components';
+import { useToast, getAbsoluteUrl } from 'ui-components';
 import type { ServiceFormValues } from '../schema';
 import { useAuthStore } from '../../../../../stores/auth.store';
+
+const EMPTY_ARRAY: any[] = [];
 
 export const ServiceMediaStep: React.FC = () => {
   const { watch, setValue, getValues } = useFormContext<ServiceFormValues>();
   const imageUrl = watch('imageUrl');
-  const imageGallery = watch('imageGallery') || [];
-  const imageGalleryFiles = watch('imageGalleryFiles') || [];
+  const imageGallery = watch('imageGallery') || EMPTY_ARRAY;
+  const imageGalleryFiles = watch('imageGalleryFiles') || EMPTY_ARRAY;
 
   const { user } = useAuthStore();
   const { toast } = useToast();
@@ -24,12 +26,19 @@ export const ServiceMediaStep: React.FC = () => {
 
   // Sync featured image preview with file from form state
   const imageFile = watch('imageFile');
+  // Primitive dependencies to prevent React Hook Form infinite loops when deep cloning arrays
+  const imageFileName = imageFile && (imageFile as File).name ? `${(imageFile as File).name}-${(imageFile as File).size}` : '';
+  const galleryFileNames = imageGalleryFiles
+    .map(f => f && (f as File).name ? `${(f as File).name}-${(f as File).size}` : '')
+    .join('|');
+
+  // Sync featured image preview with file from form state
   useEffect(() => {
-    // Robust check for File object
-    const isFile = imageFile && typeof imageFile === 'object' && ('name' in imageFile || imageFile instanceof File);
+    const currentImageFile = getValues('imageFile');
+    const isFile = currentImageFile && typeof currentImageFile === 'object' && ('name' in currentImageFile || currentImageFile instanceof File);
 
     if (isFile) {
-      const url = URL.createObjectURL(imageFile as File);
+      const url = URL.createObjectURL(currentImageFile as File);
       setPreviewUrl(url);
       return () => {
         URL.revokeObjectURL(url);
@@ -37,23 +46,24 @@ export const ServiceMediaStep: React.FC = () => {
     } else {
       setPreviewUrl(null);
     }
-  }, [imageFile]);
+  }, [imageFileName, getValues]);
 
   // Sync gallery previews with files from form state
   useEffect(() => {
-    if (imageGalleryFiles && imageGalleryFiles.length > 0) {
-      const urls = imageGalleryFiles
-        .filter(file => file && typeof file === 'object' && ('name' in file || file instanceof File))
-        .map(file => URL.createObjectURL(file as File));
+    const currentGalleryFiles = getValues('imageGalleryFiles');
+    if (currentGalleryFiles && currentGalleryFiles.length > 0) {
+      const urls = currentGalleryFiles
+        .filter((file: any) => file && typeof file === 'object' && ('name' in file || file instanceof File))
+        .map((file: any) => URL.createObjectURL(file as File));
 
       setGalleryPreviews(urls);
       return () => {
-        urls.forEach(url => URL.revokeObjectURL(url));
+        urls.forEach((url: string) => URL.revokeObjectURL(url));
       };
     } else {
-      setGalleryPreviews([]);
+      setGalleryPreviews(prev => prev.length === 0 ? prev : EMPTY_ARRAY);
     }
-  }, [imageGalleryFiles]);
+  }, [galleryFileNames, getValues]);
 
   const handleFeaturedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -118,7 +128,7 @@ export const ServiceMediaStep: React.FC = () => {
     setValue('imageGallery', newUrls, { shouldDirty: true });
   };
 
-  const displayFeatured = previewUrl || (imageUrl ? (imageUrl.startsWith('http') || imageUrl.startsWith('blob:') ? imageUrl : `http://localhost:3001${imageUrl}`) : null);
+  const displayFeatured = previewUrl || (imageUrl ? (imageUrl.startsWith('http') || imageUrl.startsWith('blob:') ? imageUrl : getAbsoluteUrl(imageUrl)) : null);
 
   return (
     <motion.section
@@ -137,7 +147,7 @@ export const ServiceMediaStep: React.FC = () => {
 
         {displayFeatured ? (
           <div className="relative group rounded-2xl overflow-hidden bg-[#0a0b1e]/40 border border-white/5 aspect-video max-w-2xl">
-            <img src={displayFeatured} alt="Featured" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <img src={displayFeatured as string} alt="Featured" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <button type="button" onClick={removeFeatured} className="bg-red-500 p-3 rounded-xl text-white shadow-xl hover:scale-110 active:scale-95 transition-all">
                 <Trash2 className="h-5 w-5" />
@@ -180,7 +190,7 @@ export const ServiceMediaStep: React.FC = () => {
           {/* Existentes (URLs) */}
           {imageGallery.map((url, idx) => (
             <div key={`url-${idx}`} className="relative group rounded-xl overflow-hidden bg-[#0a0b1e]/40 border border-white/5 aspect-square shadow-lg">
-              <img src={url.startsWith('http') || url.startsWith('blob:') ? url : `http://localhost:3001${url}`} alt="Gallery item" className="w-full h-full object-cover" />
+              <img src={url.startsWith('http') || url.startsWith('blob:') ? url : (getAbsoluteUrl(url) || '')} alt="Gallery item" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <button type="button" onClick={() => removeGalleryUrl(url)} className="p-2 text-white bg-red-500 rounded-lg hover:scale-110 transition-all">
                   <Trash2 className="h-4 w-4" />

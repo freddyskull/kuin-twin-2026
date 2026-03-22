@@ -1,33 +1,47 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '../../test/utils';
 import { MessagesList } from './messages-list';
-import { MemoryRouter } from 'react-router-dom';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { useMessagesStore } from '../../stores/messages.store';
-import { useAuthStore } from '../../stores/auth.store';
+import { vi, describe, it, expect } from 'vitest';
+import { http, delay, HttpResponse } from 'msw';
+import { server } from '../../mocks/server';
+
+const API_URL = 'http://localhost:3001/api';
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
-// Mock stores
-vi.mock('../../stores/messages.store', () => ({
-  useMessagesStore: vi.fn(),
+// Mock lucide-react
+vi.mock('lucide-react', () => ({
+  Search: () => <span>Search</span>,
+  RefreshCw: () => <span>Refresh</span>,
+  MessageSquare: () => <span>Message</span>,
+  ChevronRight: () => <span>Right</span>,
+  UserCircle: () => <span>User</span>,
+  ShieldCheck: () => <span>Shield</span>,
+  Trash2: () => <span>Trash</span>,
+  Send: () => <span>Send</span>,
+  Clock: () => <span>Clock</span>,
+  Command: () => <span>Command</span>,
 }));
 
-vi.mock('../../stores/auth.store', () => ({
-  useAuthStore: vi.fn(),
+// Mock UI components
+vi.mock('@components/ui/avatar', () => ({
+  Avatar: ({ children, className }: any) => <div className={className}>{children}</div>,
+  AvatarImage: ({ src }: any) => <img src={src} alt="avatar" />,
+  AvatarFallback: ({ children }: any) => <div>{children}</div>,
 }));
 
-// Mock socket
-vi.mock('../../lib/socket', () => ({
-  getSocket: vi.fn(() => ({
-    on: vi.fn(),
-    off: vi.fn(),
-  })),
+vi.mock('@components/ui/button', () => ({
+  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+}));
+
+vi.mock('@components/ui/input', () => ({
+  Input: (props: any) => <input {...props} />,
 }));
 
 const mockNavigate = vi.fn();
@@ -41,75 +55,33 @@ vi.mock('react-router-dom', async () => {
 });
 
 describe('MessagesList', () => {
-  const mockMessages = [
-    {
-      id: '1',
-      content: 'Hola Admin',
-      senderId: 'user-1',
-      receiverId: 'admin-1',
-      createdAt: new Date().toISOString(),
-      sender: { id: 'user-1', email: 'user@test.com', profile: { displayName: 'Juan Perez' } },
-      receiver: { id: 'admin-1', email: 'admin@test.com' },
-    }
-  ];
+  it('renders directory and empty chat state', async () => {
+    render(<MessagesList />);
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-    (useAuthStore as any).mockReturnValue({
-      user: { id: 'admin-1', email: 'admin@test.com' },
-    });
-    (useMessagesStore as any).mockReturnValue({
-      messages: mockMessages,
-      fetchAllMessages: vi.fn(),
-      addMessage: vi.fn(),
-      sendMessage: vi.fn(),
-      deleteUserMessages: vi.fn(),
-      clearUnread: vi.fn(),
-      removeNotificationsBySender: vi.fn(),
-      isLoading: false,
-    });
+    // Esperar a que los datos se carguen y MSW responda
+    expect(await screen.findByText('Juan Perez')).toBeInTheDocument();
+    expect(screen.getByText('Centro de Control')).toBeInTheDocument();
   });
 
-  it('renders directory and empty chat state', () => {
-    render(
-      <MemoryRouter>
-        <MessagesList />
-      </MemoryRouter>
-    );
+  it('navigates when a user is selected', async () => {
+    render(<MessagesList />);
 
-    expect(screen.getByText('Directorio')).toBeInTheDocument();
-    expect(screen.getByText('Juan Perez')).toBeInTheDocument();
-    expect(screen.getByText('Selecciona un Chat')).toBeInTheDocument();
-  });
-
-  it('navigates when a user is selected', () => {
-    render(
-      <MemoryRouter>
-        <MessagesList />
-      </MemoryRouter>
-    );
-
-    const userButton = screen.getByText('Juan Perez').closest('button');
-    fireEvent.click(userButton!);
+    const userButton = await screen.findByText('Juan Perez');
+    fireEvent.click(userButton.closest('button')!);
 
     expect(mockNavigate).toHaveBeenCalledWith('/mensajes/user-1');
   });
 
-  it('shows loading state correctly', () => {
-    (useMessagesStore as any).mockReturnValue({
-      messages: [],
-      fetchAllMessages: vi.fn(),
-      clearUnread: vi.fn(),
-      removeNotificationsBySender: vi.fn(),
-      isLoading: true,
-    });
-
-    render(
-      <MemoryRouter>
-        <MessagesList />
-      </MemoryRouter>
+  it('shows loading state correctly', async () => {
+    // Forzamos un delay infinito para esta prueba específica para ver el loading
+    server.use(
+      http.get(`${API_URL}/chat/admin/all-messages`, async () => {
+        await delay('infinite');
+        return HttpResponse.json([]);
+      })
     );
 
-    expect(screen.getByText(/Sincronizando red de mensajes/i)).toBeInTheDocument();
+    render(<MessagesList />);
+    expect(screen.getByText(/Estableciendo conexión segura/i)).toBeInTheDocument();
   });
 });

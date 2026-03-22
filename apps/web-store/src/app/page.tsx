@@ -40,11 +40,20 @@ function HomeContent() {
 
   const currentCategory = searchParams.get('category') || 'all';
   const currentSearch = searchParams.get('search') || '';
+  const hasGpsParam = searchParams.get('gps') === 'true';
 
   const [searchInput, setSearchInput] = useState(currentSearch);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [locationLabel, setLocationLabel] = useState("");
   const [isLoadingLoc, setIsLoadingLoc] = useState(false);
+
+  // Sync GPS state from URL on mount
+  useEffect(() => {
+    if (hasGpsParam && !userCoords && !isLoadingLoc) {
+      handleGetLocation();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasGpsParam]);
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
@@ -58,6 +67,7 @@ function HomeContent() {
         setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setLocationLabel("Mi ubicación actual");
         setIsLoadingLoc(false);
+        updateFilters({ gps: 'true' });
         toast.success("Ubicación activada: Buscando cerca de ti");
       },
       (err) => {
@@ -81,6 +91,7 @@ function HomeContent() {
   const clearLocation = () => {
     setUserCoords(null);
     setLocationLabel("");
+    updateFilters({ gps: null as any });
     toast.info("Filtro de proximidad desactivado");
   };
 
@@ -145,7 +156,7 @@ function HomeContent() {
     }
   };
 
-  const updateFilters = (params: { category?: string; search?: string }) => {
+  const updateFilters = (params: { category?: string; search?: string; gps?: string }) => {
     const newParams = new URLSearchParams(searchParams.toString());
     if (params.category !== undefined) {
       if (params.category === 'all') newParams.delete('category');
@@ -154,6 +165,10 @@ function HomeContent() {
     if (params.search !== undefined) {
       if (!params.search) newParams.delete('search');
       else newParams.set('search', params.search);
+    }
+    if (params.gps !== undefined) {
+      if (params.gps === 'true') newParams.set('gps', 'true');
+      else newParams.delete('gps');
     }
     router.push(`${pathname}?${newParams.toString()}`, { scroll: false });
   };

@@ -114,7 +114,7 @@ export class ServiceService {
       // - Score 15: Algún tag contiene la palabra (búsqueda parcial)
       const items: any[] = await this.prisma.$queryRaw`
         SELECT s.id, 
-               ${hasCoords ? Prisma.sql`ST_DistanceSphere(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326))` : Prisma.sql`0`} as distance,
+               ${hasCoords ? Prisma.sql`ST_Distance(s.location, ST_GeogFromText(${`POINT(${lng} ${lat})`}))` : Prisma.sql`0`} as distance,
                CASE 
                  WHEN ${search} = '' THEN 1
                  WHEN s."title" ILIKE ${search} THEN 100
@@ -130,7 +130,7 @@ export class ServiceService {
         WHERE s."isActive" = ${filters.isActive ?? true}
         ${filters.categoryId ? Prisma.sql`AND s."categoryId" = ${filters.categoryId}` : Prisma.empty}
         ${filters.vendorId ? Prisma.sql`AND s."vendorId" = ${filters.vendorId}` : Prisma.empty}
-        ${hasCoords ? Prisma.sql`AND ST_DWithin(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326), ${radiusMeters})` : Prisma.empty}
+        ${hasCoords ? Prisma.sql`AND ST_DWithin(s.location, ST_GeogFromText(${`POINT(${lng} ${lat})`}), ${radiusMeters})` : Prisma.empty}
         ${search ? Prisma.sql`AND (
           s."title" ILIKE ${searchTerm} 
           OR s."description" ILIKE ${searchTerm} 
@@ -148,7 +148,7 @@ export class ServiceService {
         WHERE s."isActive" = ${filters.isActive ?? true}
         ${filters.categoryId ? Prisma.sql`AND s."categoryId" = ${filters.categoryId}` : Prisma.empty}
         ${filters.vendorId ? Prisma.sql`AND s."vendorId" = ${filters.vendorId}` : Prisma.empty}
-        ${hasCoords ? Prisma.sql`AND ST_DWithin(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326), ${radiusMeters})` : Prisma.empty}
+        ${hasCoords ? Prisma.sql`AND ST_DWithin(s.location, ST_GeogFromText(${`POINT(${lng} ${lat})`}), ${radiusMeters})` : Prisma.empty}
         ${search ? Prisma.sql`AND (
           s."title" ILIKE ${searchTerm} 
           OR s."description" ILIKE ${searchTerm} 
@@ -286,7 +286,7 @@ export class ServiceService {
     // Usamos raw SQL para PostGIS ya que Prisma no soporta geography(Point) nativamente
     await this.prisma.$executeRaw`
       UPDATE "Service" 
-      SET location = ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326) 
+      SET location = ST_GeogFromText(${`POINT(${lng} ${lat})`}) 
       WHERE id = ${id}
     `;
   }
@@ -361,11 +361,11 @@ export class ServiceService {
     // Necesitamos asegurarnos de que el esquema coincida con lo que esperamos.
     const nearbyServices: any[] = await this.prisma.$queryRaw`
       SELECT s.*, 
-             ST_Distance(s.location, ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326)) as distance
+             ST_Distance(s.location, ST_GeogFromText(${`POINT(${lng} ${lat})`})) as distance
       FROM "Service" s
       WHERE ST_DWithin(
         s.location, 
-        ST_GeomFromText(${`POINT(${lng} ${lat})`}, 4326), 
+        ST_GeogFromText(${`POINT(${lng} ${lat})`}), 
         ${radiusMeters}
       ) AND s."isActive" = true
       ORDER BY distance ASC

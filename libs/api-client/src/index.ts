@@ -25,14 +25,23 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle common errors (optional)
+// Response interceptor to handle common errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized access (e.g., redirect to login or clear token)
-      // localStorage.removeItem('token');
-      // window.location.href = '/login'; // Be careful with direct redirects in shared libs
+      // Clear token and force logout on any 401 error
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+        
+        // Prevent infinite redirect loops if we're already on login/auth pages
+        const isAuthPage = window.location.pathname.includes('/login') || 
+                          window.location.pathname.includes('/auth');
+        
+        if (!isAuthPage) {
+          window.location.href = '/login';
+        }
+      }
     }
     return Promise.reject(error);
   }
